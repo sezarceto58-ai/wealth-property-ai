@@ -19,6 +19,7 @@ import PropertyDetail from "@/pages/PropertyDetail";
 import CompareListings from "@/pages/CompareListings";
 import Alerts from "@/pages/Alerts";
 import InvestorTools from "@/pages/InvestorTools";
+import BuyerPropertyAnalysis from "@/pages/BuyerPropertyAnalysis";
 
 // Seller pages
 import SellerDashboard from "@/pages/SellerDashboard";
@@ -63,6 +64,7 @@ const App = () => (
                   <Route path="/offers" element={<BuyerOffers />} />
                   <Route path="/messages" element={<Messaging />} />
                   <Route path="/investor" element={<InvestorTools />} />
+                  <Route path="/analysis/:id" element={<BuyerPropertyAnalysis />} />
                 </Routes>
               </Layout>
             }

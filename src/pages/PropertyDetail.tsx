@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import TerraScore from "@/components/TerraScore";
 import OfferModal from "@/components/OfferModal";
-import PropertyAIAnalysis from "@/components/PropertyAIAnalysis";
 import { mockProperties, terraScoreBreakdown } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 
@@ -192,8 +191,18 @@ export default function PropertyDetail() {
             </div>
           </div>
 
-          {/* AI Analysis */}
-          <PropertyAIAnalysis property={property} />
+          <div className="rounded-xl bg-card border border-border p-5">
+            <h3 className="font-semibold text-foreground mb-2">AI Analysis Results</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Open full AI investment analysis in a dedicated page for deeper insights.
+            </p>
+            <button
+              onClick={() => navigate(`/buyer/analysis/${property.id}`)}
+              className="w-full py-3 rounded-xl bg-gradient-gold text-primary-foreground font-semibold text-sm shadow-gold hover:opacity-90 transition-opacity"
+            >
+              Open AI Analysis Page
+            </button>
+          </div>
         </div>
       </div>
 

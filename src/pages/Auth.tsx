@@ -25,8 +25,27 @@ export default function Auth() {
   const redirectByRole = async (userId: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const r = user?.user_metadata?.role ?? "buyer";
-      navigate(r === "seller" ? "/seller" : r === "admin" ? "/admin" : "/buyer");
+      const fallbackRole = user?.user_metadata?.role === "seller" ? "seller" : "buyer";
+
+      const { data: roleRow } = await (supabase
+        .from("user_roles" as any)
+        .select("role")
+        .eq("user_id", userId)
+        .maybeSingle() as any);
+
+      let resolvedRole = roleRow?.role as "buyer" | "seller" | "admin" | undefined;
+
+      if (!resolvedRole) {
+        const { data: insertedRole } = await (supabase
+          .from("user_roles" as any)
+          .insert({ user_id: userId, role: fallbackRole })
+          .select("role")
+          .maybeSingle() as any);
+
+        resolvedRole = insertedRole?.role as "buyer" | "seller" | "admin" | undefined;
+      }
+
+      navigate(resolvedRole === "seller" ? "/seller" : resolvedRole === "admin" ? "/admin" : "/buyer");
     } catch {
       navigate("/buyer");
     }

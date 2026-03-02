@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   TrendingUp, DollarSign, BarChart3, AlertTriangle, Brain, Calculator,
   Globe, Search, Shield, Building2, MapPin, Target, Zap, ChevronRight,
@@ -399,8 +399,16 @@ function AIPropertyAnalysis() {
   const [analysis, setAnalysis] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isBuyerView = location.pathname.startsWith("/buyer");
 
   const runAnalysis = async () => {
+    if (isBuyerView) {
+      navigate(`/buyer/analysis/${selectedProperty.id}`);
+      return;
+    }
+
     setLoading(true);
     setAnalysis(null);
     try {
@@ -442,15 +450,15 @@ function AIPropertyAnalysis() {
         className="w-full sm:w-auto bg-gradient-gold text-primary-foreground hover:opacity-90 shadow-gold rounded-xl"
       >
         {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
-        {loading ? "Analyzing with TerraVista AI..." : `Analyze ${selectedProperty.title}`}
+        {loading ? "Analyzing with TerraVista AI..." : isBuyerView ? `Open ${selectedProperty.title} Analysis Page` : `Analyze ${selectedProperty.title}`}
       </Button>
 
       {/* Results */}
-      {analysis && !analysis.raw && (
+      {!isBuyerView && analysis && !analysis.raw && (
         <AIAnalysisResults analysis={analysis} property={selectedProperty} />
       )}
 
-      {analysis?.raw && (
+      {!isBuyerView && analysis?.raw && (
         <div className="rounded-xl bg-card border border-border p-5">
           <p className="text-sm text-foreground whitespace-pre-wrap">{analysis.raw}</p>
         </div>
