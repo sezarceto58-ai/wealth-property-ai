@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import {
   TrendingUp, DollarSign, BarChart3, AlertTriangle, Brain, Calculator,
   Globe, Search, Shield, Building2, MapPin, Target, Zap, ChevronRight,
-  ArrowUpRight, ArrowDownRight, Sparkles, Loader2,
+  ArrowUpRight, ArrowDownRight, Sparkles, Loader2, BadgeCheck,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import StatsCard from "@/components/StatsCard";
+import TerraScore from "@/components/TerraScore";
 import { mockProperties } from "@/data/mockData";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -90,6 +92,307 @@ function MortgageCalculator() {
   );
 }
 
+// ── Property Card for AI Analysis ──
+function PropertyInvestmentCard({ property, isSelected, onSelect }: {
+  property: typeof mockProperties[0];
+  isSelected: boolean;
+  onSelect: () => void;
+}) {
+  const valuationDiff = property.aiValuation - property.price;
+  const valuationPercent = Math.round((valuationDiff / property.price) * 100);
+  const recommendation = valuationDiff > 0 ? "KEEP" : "SELL";
+
+  return (
+    <button
+      onClick={onSelect}
+      className={`relative rounded-xl overflow-hidden border-2 transition-all text-left group ${
+        isSelected
+          ? "border-primary shadow-lg ring-2 ring-primary/20"
+          : "border-border hover:border-primary/40 hover:shadow-md"
+      }`}
+    >
+      {/* Image */}
+      <div className="relative aspect-[16/10] overflow-hidden">
+        <img
+          src={property.image}
+          alt={property.title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+
+        {/* Recommendation badge */}
+        <div className={`absolute top-3 right-3 px-2.5 py-1 rounded-lg text-xs font-bold backdrop-blur-sm ${
+          recommendation === "KEEP"
+            ? "bg-success/90 text-success-foreground"
+            : "bg-warning/90 text-warning-foreground"
+        }`}>
+          {recommendation === "KEEP" ? "📈 KEEP" : "📉 SELL"}
+        </div>
+
+        {/* TerraScore */}
+        <div className="absolute top-3 left-3">
+          <TerraScore score={property.terraScore} size="sm" />
+        </div>
+
+        {/* Selected indicator */}
+        {isSelected && (
+          <div className="absolute bottom-3 left-3 px-2 py-1 rounded-md bg-primary text-primary-foreground text-[10px] font-bold">
+            ANALYZING
+          </div>
+        )}
+      </div>
+
+      {/* Info */}
+      <div className="p-3 bg-card">
+        <h4 className="text-sm font-semibold text-foreground truncate">{property.title}</h4>
+        <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+          <MapPin className="w-3 h-3" /> {property.district}, {property.city}
+        </p>
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-sm font-bold text-foreground">${property.price.toLocaleString()}</p>
+          <p className={`text-xs font-semibold ${valuationDiff >= 0 ? "text-success" : "text-destructive"}`}>
+            {valuationDiff >= 0 ? "+" : ""}{valuationPercent}% AI Val
+          </p>
+        </div>
+        <div className="flex items-center gap-2 mt-2 text-[10px] text-muted-foreground">
+          <span>{property.propertyType}</span>
+          <span>•</span>
+          <span>{property.area}m²</span>
+          {property.verified && (
+            <>
+              <span>•</span>
+              <span className="flex items-center gap-0.5 text-primary">
+                <BadgeCheck className="w-3 h-3" /> Verified
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+    </button>
+  );
+}
+
+// ── AI Analysis Results Page ──
+function AIAnalysisResults({ analysis, property }: { analysis: any; property: typeof mockProperties[0] }) {
+  const recommendation = analysis.recommendation;
+
+  return (
+    <div className="space-y-5 animate-fade-in">
+      {/* Hero Recommendation */}
+      <div className={`rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 ${
+        recommendation === "BUY" || recommendation === "KEEP" ? "bg-success/10 border border-success/20" :
+        recommendation === "HOLD" ? "bg-warning/10 border border-warning/20" :
+        "bg-destructive/10 border border-destructive/20"
+      }`}>
+        <div className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 ${
+          recommendation === "BUY" || recommendation === "KEEP" ? "bg-success/20" :
+          recommendation === "HOLD" ? "bg-warning/20" : "bg-destructive/20"
+        }`}>
+          <Target className="w-7 h-7" />
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-1">
+            <span className={`text-lg font-bold ${
+              recommendation === "BUY" || recommendation === "KEEP" ? "text-success" :
+              recommendation === "HOLD" ? "text-warning" : "text-destructive"
+            }`}>
+              AI Recommendation: {recommendation}
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground">{analysis.summary}</p>
+        </div>
+        <div className="text-right shrink-0">
+          <p className="text-xs text-muted-foreground">For</p>
+          <p className="text-sm font-semibold text-foreground">{property.title}</p>
+        </div>
+      </div>
+
+      {/* Investment Score */}
+      {analysis.investmentScore && (
+        <div className="rounded-xl bg-card border border-border p-5">
+          <h4 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+            <Target className="w-4 h-4 text-primary" /> Investment Scoring
+          </h4>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {Object.entries(analysis.investmentScore).map(([key, val]) => (
+              <div key={key} className="text-center">
+                <div className="w-16 h-16 mx-auto rounded-full border-4 border-primary/20 flex items-center justify-center mb-2 bg-primary/5">
+                  <span className="text-lg font-bold text-primary">{String(val)}</span>
+                </div>
+                <p className="text-xs text-muted-foreground capitalize">{key}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* SWOT */}
+      {analysis.swot && (
+        <div className="rounded-xl bg-card border border-border p-5">
+          <h4 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+            <BarChart3 className="w-4 h-4 text-primary" /> SWOT Analysis
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {(["strengths", "weaknesses", "opportunities", "threats"] as const).map((key) => {
+              const config = {
+                strengths: { bg: "bg-success/10", text: "text-success", icon: "✅" },
+                weaknesses: { bg: "bg-destructive/10", text: "text-destructive", icon: "⚠️" },
+                opportunities: { bg: "bg-primary/10", text: "text-primary", icon: "🚀" },
+                threats: { bg: "bg-warning/10", text: "text-warning", icon: "🔥" },
+              };
+              const c = config[key];
+              return (
+                <div key={key} className={`rounded-xl p-4 ${c.bg}`}>
+                  <p className={`text-xs font-bold uppercase mb-2 flex items-center gap-1.5 ${c.text}`}>
+                    <span>{c.icon}</span> {key}
+                  </p>
+                  <ul className="text-xs space-y-1.5">
+                    {(analysis.swot[key] || []).map((item: string, i: number) => (
+                      <li key={i} className="text-foreground/80">• {item}</li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Financials */}
+      {analysis.financials && (
+        <div className="rounded-xl bg-card border border-border p-5">
+          <h4 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+            <DollarSign className="w-4 h-4 text-primary" /> Financial Metrics
+          </h4>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: "ROI", value: analysis.financials.estimatedROI },
+              { label: "IRR", value: analysis.financials.estimatedIRR },
+              { label: "Cap Rate", value: analysis.financials.capRate },
+              { label: "DSCR", value: analysis.financials.dscr },
+              { label: "NOI", value: `$${(analysis.financials.noi || 0).toLocaleString()}` },
+              { label: "Cash Flow", value: `$${(analysis.financials.annualCashFlow || 0).toLocaleString()}` },
+              { label: "GDV", value: `$${(analysis.financials.gdv || 0).toLocaleString()}` },
+              { label: "P/E Ratio", value: analysis.financials.peRatio },
+            ].map((m) => (
+              <div key={m.label} className="rounded-xl bg-secondary/50 p-3 text-center">
+                <p className="text-xs text-muted-foreground mb-1">{m.label}</p>
+                <p className="text-sm font-bold text-foreground">{m.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Risk Assessment */}
+      {analysis.risk && (
+        <div className="rounded-xl bg-card border border-border p-5">
+          <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+            <Shield className="w-4 h-4 text-primary" /> Risk Assessment
+            <span className={`ml-auto px-2.5 py-1 rounded-lg text-xs font-bold ${riskColors[analysis.risk.level] || "bg-secondary text-muted-foreground"}`}>
+              {analysis.risk.level?.toUpperCase()} · {analysis.risk.overallScore}/100
+            </span>
+          </h4>
+          <div className="space-y-3">
+            {(analysis.risk.factors || []).map((f: any, i: number) => (
+              <div key={i}>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-foreground font-medium">{f.name}</span>
+                  <span className="text-muted-foreground">{f.score}/100</span>
+                </div>
+                <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all ${
+                      f.score > 70 ? "bg-destructive" : f.score > 40 ? "bg-warning" : "bg-success"
+                    }`}
+                    style={{ width: `${f.score}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Demographics */}
+      {analysis.demographics && (
+        <div className="rounded-xl bg-card border border-border p-5">
+          <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+            <Globe className="w-4 h-4 text-primary" /> Area Demographics
+          </h4>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: "Population", value: analysis.demographics.population },
+              { label: "Median Income", value: analysis.demographics.medianIncome },
+              { label: "Employment", value: analysis.demographics.employmentRate },
+              { label: "Growth", value: analysis.demographics.growthRate },
+            ].map((d) => (
+              <div key={d.label} className="rounded-xl bg-secondary/50 p-3 text-center">
+                <p className="text-xs text-muted-foreground mb-1">{d.label}</p>
+                <p className="text-sm font-bold text-foreground">{d.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ESG Score */}
+      {analysis.esg && (
+        <div className="rounded-xl bg-card border border-border p-5">
+          <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-primary" /> ESG Score
+          </h4>
+          <div className="grid grid-cols-4 gap-3">
+            {[
+              { label: "Overall", value: analysis.esg.score },
+              { label: "Environmental", value: analysis.esg.environmental },
+              { label: "Social", value: analysis.esg.social },
+              { label: "Governance", value: analysis.esg.governance },
+            ].map((e) => (
+              <div key={e.label} className="text-center">
+                <div className={`w-14 h-14 mx-auto rounded-full border-4 flex items-center justify-center mb-1 bg-card ${
+                  Number(e.value) >= 70 ? "border-success/40" : Number(e.value) >= 50 ? "border-warning/40" : "border-destructive/40"
+                }`}>
+                  <span className="text-sm font-bold">{e.value}</span>
+                </div>
+                <p className="text-xs text-muted-foreground">{e.label}</p>
+              </div>
+            ))}
+          </div>
+          {analysis.esg.notes && <p className="text-xs text-muted-foreground mt-3">{analysis.esg.notes}</p>}
+        </div>
+      )}
+
+      {/* Developer Reputation */}
+      {analysis.developerReputation && (
+        <div className="rounded-xl bg-card border border-border p-5">
+          <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+            <Building2 className="w-4 h-4 text-primary" /> Developer Reputation
+          </h4>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="rounded-xl bg-secondary/50 p-3 text-center">
+              <p className="text-xs text-muted-foreground">Rating</p>
+              <p className="text-sm font-bold text-primary">{"⭐".repeat(Math.round(analysis.developerReputation.rating || 0))} {analysis.developerReputation.rating}/5</p>
+            </div>
+            <div className="rounded-xl bg-secondary/50 p-3 text-center">
+              <p className="text-xs text-muted-foreground">Completed</p>
+              <p className="text-sm font-bold text-foreground">{analysis.developerReputation.completedProjects} projects</p>
+            </div>
+            <div className="rounded-xl bg-secondary/50 p-3 text-center">
+              <p className="text-xs text-muted-foreground">On-Time</p>
+              <p className="text-sm font-bold text-foreground">{analysis.developerReputation.onTimeDelivery}</p>
+            </div>
+            <div className="rounded-xl bg-secondary/50 p-3 text-center">
+              <p className="text-xs text-muted-foreground">Quality</p>
+              <p className="text-sm font-bold text-foreground">{analysis.developerReputation.qualityScore}/100</p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── AI Analysis Component ──
 function AIPropertyAnalysis() {
   const [selectedProperty, setSelectedProperty] = useState(mockProperties[0]);
@@ -114,222 +417,37 @@ function AIPropertyAnalysis() {
   };
 
   return (
-    <div className="space-y-5">
-      {/* Property Selector */}
-      <div className="rounded-xl bg-card border border-border p-5">
-        <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-          <Brain className="w-4 h-4 text-primary" /> AI Property Analysis
-        </h3>
-        <div className="flex gap-2 flex-wrap mb-4">
+    <div className="space-y-6">
+      {/* Property Cards Grid */}
+      <div>
+        <h3 className="font-semibold text-foreground mb-1 text-sm">Your Investment Properties</h3>
+        <p className="text-xs text-muted-foreground mb-4">Select a property to run AI analysis. Cards show sell/keep recommendation based on AI valuation.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {mockProperties.map((p) => (
-            <button
+            <PropertyInvestmentCard
               key={p.id}
-              onClick={() => { setSelectedProperty(p); setAnalysis(null); }}
-              className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                selectedProperty.id === p.id ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:bg-secondary/80"
-              }`}
-            >
-              {p.title}
-            </button>
+              property={p}
+              isSelected={selectedProperty.id === p.id}
+              onSelect={() => { setSelectedProperty(p); setAnalysis(null); }}
+            />
           ))}
         </div>
-        <button
-          onClick={runAnalysis}
-          disabled={loading}
-          className="w-full py-3 rounded-xl bg-gradient-gold text-primary-foreground font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
-        >
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-          {loading ? "Analyzing with TerraVista AI..." : "Run Full AI Analysis"}
-        </button>
       </div>
 
-      {/* Analysis Results */}
+      {/* Run Analysis Button */}
+      <Button
+        onClick={runAnalysis}
+        disabled={loading}
+        size="lg"
+        className="w-full sm:w-auto bg-gradient-gold text-primary-foreground hover:opacity-90 shadow-gold rounded-xl"
+      >
+        {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
+        {loading ? "Analyzing with TerraVista AI..." : `Analyze ${selectedProperty.title}`}
+      </Button>
+
+      {/* Results */}
       {analysis && !analysis.raw && (
-        <div className="space-y-4 animate-fade-in">
-          {/* Recommendation Badge */}
-          {analysis.recommendation && (
-            <div className={`rounded-xl p-4 flex items-center gap-3 ${
-              analysis.recommendation === "BUY" ? "bg-success/10 border border-success/20" :
-              analysis.recommendation === "HOLD" ? "bg-warning/10 border border-warning/20" :
-              "bg-destructive/10 border border-destructive/20"
-            }`}>
-              <Target className="w-6 h-6" />
-              <div>
-                <p className="text-sm font-bold">AI Recommendation: {analysis.recommendation}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{analysis.summary}</p>
-              </div>
-            </div>
-          )}
-
-          {/* Investment Score */}
-          {analysis.investmentScore && (
-            <div className="rounded-xl bg-card border border-border p-5">
-              <h4 className="text-sm font-semibold text-foreground mb-3">Investment Scoring</h4>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {Object.entries(analysis.investmentScore).map(([key, val]) => (
-                  <div key={key} className="text-center">
-                    <div className="w-14 h-14 mx-auto rounded-full border-4 border-primary/20 flex items-center justify-center mb-1">
-                      <span className="text-sm font-bold text-primary">{String(val)}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground capitalize">{key}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* SWOT */}
-          {analysis.swot && (
-            <div className="rounded-xl bg-card border border-border p-5">
-              <h4 className="text-sm font-semibold text-foreground mb-3">SWOT Analysis</h4>
-              <div className="grid grid-cols-2 gap-3">
-                {(["strengths", "weaknesses", "opportunities", "threats"] as const).map((key) => {
-                  const colors = { strengths: "bg-success/10 text-success", weaknesses: "bg-destructive/10 text-destructive", opportunities: "bg-primary/10 text-primary", threats: "bg-warning/10 text-warning" };
-                  return (
-                    <div key={key} className={`rounded-lg p-3 ${colors[key]}`}>
-                      <p className="text-xs font-bold uppercase mb-1.5">{key}</p>
-                      <ul className="text-xs space-y-1">
-                        {(analysis.swot[key] || []).map((item: string, i: number) => (
-                          <li key={i}>• {item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Financials */}
-          {analysis.financials && (
-            <div className="rounded-xl bg-card border border-border p-5">
-              <h4 className="text-sm font-semibold text-foreground mb-3">Financial Metrics</h4>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[
-                  { label: "ROI", value: analysis.financials.estimatedROI },
-                  { label: "IRR", value: analysis.financials.estimatedIRR },
-                  { label: "Cap Rate", value: analysis.financials.capRate },
-                  { label: "DSCR", value: analysis.financials.dscr },
-                  { label: "NOI", value: `$${(analysis.financials.noi || 0).toLocaleString()}` },
-                  { label: "Cash Flow", value: `$${(analysis.financials.annualCashFlow || 0).toLocaleString()}` },
-                  { label: "GDV", value: `$${(analysis.financials.gdv || 0).toLocaleString()}` },
-                  { label: "P/E Ratio", value: analysis.financials.peRatio },
-                ].map((m) => (
-                  <div key={m.label} className="rounded-lg bg-secondary/50 p-3">
-                    <p className="text-xs text-muted-foreground">{m.label}</p>
-                    <p className="text-sm font-bold text-foreground">{m.value}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Risk Assessment */}
-          {analysis.risk && (
-            <div className="rounded-xl bg-card border border-border p-5">
-              <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                <Shield className="w-4 h-4" /> Risk Assessment
-                <span className={`ml-auto px-2 py-0.5 rounded text-xs font-medium ${riskColors[analysis.risk.level] || "bg-secondary text-muted-foreground"}`}>
-                  {analysis.risk.level} ({analysis.risk.overallScore}/100)
-                </span>
-              </h4>
-              <div className="space-y-2">
-                {(analysis.risk.factors || []).map((f: any, i: number) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <div className="flex-1">
-                      <div className="flex justify-between text-xs mb-1">
-                        <span className="text-foreground">{f.name}</span>
-                        <span className="text-muted-foreground">{f.score}/100</span>
-                      </div>
-                      <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all ${
-                            f.score > 70 ? "bg-destructive" : f.score > 40 ? "bg-warning" : "bg-success"
-                          }`}
-                          style={{ width: `${f.score}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Demographics */}
-          {analysis.demographics && (
-            <div className="rounded-xl bg-card border border-border p-5">
-              <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                <Globe className="w-4 h-4" /> Area Demographics
-              </h4>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[
-                  { label: "Population", value: analysis.demographics.population },
-                  { label: "Median Income", value: analysis.demographics.medianIncome },
-                  { label: "Employment", value: analysis.demographics.employmentRate },
-                  { label: "Growth", value: analysis.demographics.growthRate },
-                ].map((d) => (
-                  <div key={d.label} className="rounded-lg bg-secondary/50 p-3">
-                    <p className="text-xs text-muted-foreground">{d.label}</p>
-                    <p className="text-sm font-bold text-foreground">{d.value}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* ESG Score */}
-          {analysis.esg && (
-            <div className="rounded-xl bg-card border border-border p-5">
-              <h4 className="text-sm font-semibold text-foreground mb-3">ESG Score</h4>
-              <div className="grid grid-cols-4 gap-3">
-                {[
-                  { label: "Overall", value: analysis.esg.score },
-                  { label: "Environmental", value: analysis.esg.environmental },
-                  { label: "Social", value: analysis.esg.social },
-                  { label: "Governance", value: analysis.esg.governance },
-                ].map((e) => (
-                  <div key={e.label} className="text-center">
-                    <div className={`w-12 h-12 mx-auto rounded-full border-4 flex items-center justify-center mb-1 ${
-                      Number(e.value) >= 70 ? "border-success/30" : Number(e.value) >= 50 ? "border-warning/30" : "border-destructive/30"
-                    }`}>
-                      <span className="text-xs font-bold">{e.value}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{e.label}</p>
-                  </div>
-                ))}
-              </div>
-              {analysis.esg.notes && <p className="text-xs text-muted-foreground mt-2">{analysis.esg.notes}</p>}
-            </div>
-          )}
-
-          {/* Developer Reputation */}
-          {analysis.developerReputation && (
-            <div className="rounded-xl bg-card border border-border p-5">
-              <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                <Building2 className="w-4 h-4" /> Developer Reputation
-              </h4>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="rounded-lg bg-secondary/50 p-3">
-                  <p className="text-xs text-muted-foreground">Rating</p>
-                  <p className="text-sm font-bold text-primary">{"⭐".repeat(Math.round(analysis.developerReputation.rating || 0))} {analysis.developerReputation.rating}/5</p>
-                </div>
-                <div className="rounded-lg bg-secondary/50 p-3">
-                  <p className="text-xs text-muted-foreground">Completed</p>
-                  <p className="text-sm font-bold text-foreground">{analysis.developerReputation.completedProjects} projects</p>
-                </div>
-                <div className="rounded-lg bg-secondary/50 p-3">
-                  <p className="text-xs text-muted-foreground">On-Time</p>
-                  <p className="text-sm font-bold text-foreground">{analysis.developerReputation.onTimeDelivery}</p>
-                </div>
-                <div className="rounded-lg bg-secondary/50 p-3">
-                  <p className="text-xs text-muted-foreground">Quality</p>
-                  <p className="text-sm font-bold text-foreground">{analysis.developerReputation.qualityScore}/100</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        <AIAnalysisResults analysis={analysis} property={selectedProperty} />
       )}
 
       {analysis?.raw && (

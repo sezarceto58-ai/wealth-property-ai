@@ -24,13 +24,8 @@ export default function Auth() {
 
   const redirectByRole = async (userId: string) => {
     try {
-      const { data } = await (supabase as any)
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId)
-        .limit(1)
-        .single();
-      const r = (data as any)?.role ?? "buyer";
+      const { data: { user } } = await supabase.auth.getUser();
+      const r = user?.user_metadata?.role ?? "buyer";
       navigate(r === "seller" ? "/seller" : r === "admin" ? "/admin" : "/buyer");
     } catch {
       navigate("/buyer");

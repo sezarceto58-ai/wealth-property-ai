@@ -84,7 +84,8 @@ const sellerNav = [
 {
   label: "AI Tools",
   items: [
-  { path: "/seller/ai-assistant", icon: TrendingUp, label: "AI Assistant ⭐" }]
+  { path: "/seller/ai-assistant", icon: TrendingUp, label: "AI Assistant ⭐" },
+  { path: "/seller/investor", icon: TrendingUp, label: "Investor Intelligence" }]
 }];
 
 
