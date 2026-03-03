@@ -17,7 +17,7 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [role, setRole] = useState<"buyer" | "seller">("buyer");
+  const [role, setRole] = useState<"buyer" | "seller" | "developer">("buyer");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -25,7 +25,8 @@ export default function Auth() {
   const redirectByRole = async (userId: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const fallbackRole = user?.user_metadata?.role === "seller" ? "seller" : "buyer";
+      const metaRole = user?.user_metadata?.role;
+      const fallbackRole = metaRole === "seller" ? "seller" : metaRole === "developer" ? "developer" : "buyer";
 
       const { data: roleRow } = await (supabase
         .from("user_roles" as any)
@@ -33,7 +34,7 @@ export default function Auth() {
         .eq("user_id", userId)
         .maybeSingle() as any);
 
-      let resolvedRole = roleRow?.role as "buyer" | "seller" | "admin" | undefined;
+      let resolvedRole = roleRow?.role as "buyer" | "seller" | "developer" | "admin" | undefined;
 
       if (!resolvedRole) {
         const { data: insertedRole } = await (supabase
@@ -45,7 +46,11 @@ export default function Auth() {
         resolvedRole = insertedRole?.role as "buyer" | "seller" | "admin" | undefined;
       }
 
-      navigate(resolvedRole === "seller" ? "/seller" : resolvedRole === "admin" ? "/admin" : "/buyer");
+      navigate(
+        resolvedRole === "seller" ? "/seller" :
+        resolvedRole === "developer" ? "/developer" :
+        resolvedRole === "admin" ? "/admin" : "/buyer"
+      );
     } catch {
       navigate("/buyer");
     }
@@ -203,14 +208,18 @@ export default function Auth() {
 
                     <div className="space-y-3">
                       <Label>I want to</Label>
-                      <RadioGroup value={role} onValueChange={(v) => setRole(v as "buyer" | "seller")} className="flex gap-4">
-                        <label htmlFor="role-buyer" className={`flex-1 flex items-center gap-2 rounded-lg border p-3 cursor-pointer transition-colors ${role === "buyer" ? "border-primary bg-primary/5" : "border-border"}`}>
+                      <RadioGroup value={role} onValueChange={(v) => setRole(v as "buyer" | "seller" | "developer")} className="flex flex-wrap gap-3">
+                        <label htmlFor="role-buyer" className={`flex-1 min-w-[120px] flex items-center gap-2 rounded-lg border p-3 cursor-pointer transition-colors ${role === "buyer" ? "border-primary bg-primary/5" : "border-border"}`}>
                           <RadioGroupItem value="buyer" id="role-buyer" />
-                          <span className="text-sm font-medium">Buy Property</span>
+                          <span className="text-sm font-medium text-foreground">Buy Property</span>
                         </label>
-                        <label htmlFor="role-seller" className={`flex-1 flex items-center gap-2 rounded-lg border p-3 cursor-pointer transition-colors ${role === "seller" ? "border-primary bg-primary/5" : "border-border"}`}>
+                        <label htmlFor="role-seller" className={`flex-1 min-w-[120px] flex items-center gap-2 rounded-lg border p-3 cursor-pointer transition-colors ${role === "seller" ? "border-primary bg-primary/5" : "border-border"}`}>
                           <RadioGroupItem value="seller" id="role-seller" />
-                          <span className="text-sm font-medium">Sell Property</span>
+                          <span className="text-sm font-medium text-foreground">Sell Property</span>
+                        </label>
+                        <label htmlFor="role-developer" className={`flex-1 min-w-[120px] flex items-center gap-2 rounded-lg border p-3 cursor-pointer transition-colors ${role === "developer" ? "border-primary bg-primary/5" : "border-border"}`}>
+                          <RadioGroupItem value="developer" id="role-developer" />
+                          <span className="text-sm font-medium text-foreground">Develop Land</span>
                         </label>
                       </RadioGroup>
                     </div>

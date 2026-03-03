@@ -28,7 +28,12 @@ import SellerOffers from "@/pages/SellerOffers";
 import SellerAnalytics from "@/pages/SellerAnalytics";
 import CreateProperty from "@/pages/CreateProperty";
 import AgentCRM from "@/pages/AgentCRM";
-// SellerAIAssistant merged into CreateProperty
+
+// Developer pages
+import DeveloperDashboard from "@/pages/DeveloperDashboard";
+import LandInputForm from "@/pages/LandInputForm";
+import PlanResults from "@/pages/PlanResults";
+import DeveloperPlans from "@/pages/DeveloperPlans";
 
 // Shared pages
 import Messaging from "@/pages/Messaging";
@@ -86,6 +91,21 @@ const App = () => (
                   <Route path="/analytics" element={<SellerAnalytics />} />
                   <Route path="/ai-assistant" element={<CreateProperty />} />
                   <Route path="/investor" element={<InvestorTools />} />
+                </Routes>
+              </Layout>
+            }
+          />
+
+          <Route
+            path="/developer/*"
+            element={
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<DeveloperDashboard />} />
+                  <Route path="/analyze" element={<LandInputForm />} />
+                  <Route path="/plans" element={<DeveloperPlans />} />
+                  <Route path="/plan/:id" element={<PlanResults />} />
+                  <Route path="/messages" element={<Messaging />} />
                 </Routes>
               </Layout>
             }
