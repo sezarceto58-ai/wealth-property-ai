@@ -88,6 +88,24 @@ const sellerNav = [
 }];
 
 
+const developerNav = [
+{
+  label: "Home",
+  items: [
+  { path: "/developer", icon: LayoutDashboard, label: "Dashboard" }]
+},
+{
+  label: "Planning",
+  items: [
+  { path: "/developer/analyze", icon: Search, label: "Analyze Land" },
+  { path: "/developer/plans", icon: Building2, label: "All Plans" }]
+},
+{
+  label: "Tools",
+  items: [
+  { path: "/developer/messages", icon: MessageSquare, label: "Messages" }]
+}];
+
 const adminNav = [
 {
   label: "Governance",
@@ -98,6 +116,7 @@ const adminNav = [
 
 
 function getNavForPath(pathname: string) {
+  if (pathname.startsWith("/developer")) return developerNav;
   if (pathname.startsWith("/seller")) return sellerNav;
   if (pathname.startsWith("/admin")) return adminNav;
   return buyerNav;

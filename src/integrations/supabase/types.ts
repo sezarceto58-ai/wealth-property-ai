@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      project_plans: {
+        Row: {
+          created_at: string
+          id: string
+          land_area: number
+          land_location: Json
+          max_floors: number | null
+          restrictions: string[] | null
+          result: Json | null
+          shape: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          land_area: number
+          land_location: Json
+          max_floors?: number | null
+          restrictions?: string[] | null
+          result?: Json | null
+          shape?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          land_area?: number
+          land_location?: Json
+          max_floors?: number | null
+          restrictions?: string[] | null
+          result?: Json | null
+          shape?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -49,7 +91,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "buyer" | "seller" | "admin"
+      app_role: "buyer" | "seller" | "admin" | "developer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -177,7 +219,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["buyer", "seller", "admin"],
+      app_role: ["buyer", "seller", "admin", "developer"],
     },
   },
 } as const
