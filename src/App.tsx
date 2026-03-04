@@ -34,6 +34,10 @@ import DeveloperDashboard from "@/pages/DeveloperDashboard";
 import LandInputForm from "@/pages/LandInputForm";
 import PlanResults from "@/pages/PlanResults";
 import DeveloperPlans from "@/pages/DeveloperPlans";
+import OpportunityFeed from "@/pages/OpportunityFeed";
+import CreateOpportunity from "@/pages/CreateOpportunity";
+import OpportunityWorkspace from "@/pages/OpportunityWorkspace";
+import PortfolioInsights from "@/pages/PortfolioInsights";
 
 // Shared pages
 import Messaging from "@/pages/Messaging";
@@ -105,6 +109,10 @@ const App = () => (
                   <Route path="/analyze" element={<LandInputForm />} />
                   <Route path="/plans" element={<DeveloperPlans />} />
                   <Route path="/plan/:id" element={<PlanResults />} />
+                  <Route path="/opportunities" element={<OpportunityFeed />} />
+                  <Route path="/opportunities/create" element={<CreateOpportunity />} />
+                  <Route path="/opportunities/:id" element={<OpportunityWorkspace />} />
+                  <Route path="/portfolio" element={<PortfolioInsights />} />
                   <Route path="/messages" element={<Messaging />} />
                 </Routes>
               </Layout>
