@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   ArrowLeft, MapPin, Building2, DollarSign, Megaphone, TrendingUp,
-  CheckCircle2, Loader2, AlertCircle,
+  CheckCircle2, Loader2, AlertCircle, Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -16,6 +16,7 @@ import DesignTab from "@/components/plan-results/DesignTab";
 import PricingTab from "@/components/plan-results/PricingTab";
 import MarketingTab from "@/components/plan-results/MarketingTab";
 import FeasibilityTab from "@/components/plan-results/FeasibilityTab";
+import ExportReport from "@/components/plan-results/ExportReport";
 
 type Plan = {
   id: string;
@@ -101,6 +102,18 @@ export default function PlanResults() {
   const lat = plan.land_location?.lat || 0;
   const lng = plan.land_location?.lng || 0;
 
+  const handlePricingUpdate = async (updatedPricing: any) => {
+    const newResult = { ...r, pricing: updatedPricing };
+    setPlan((prev) => prev ? { ...prev, result: newResult } : prev);
+    await supabase.functions.invoke("planner-plans", {
+      body: { result: { pricing: updatedPricing } },
+      method: "PUT",
+    }).catch(() => {});
+    // Also try direct update
+    await (supabase.from("project_plans" as any).update({ result: newResult } as any).eq("id", id) as any);
+    toast({ title: "Pricing updated" });
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Header */}
@@ -114,10 +127,13 @@ export default function PlanResults() {
             {plan.land_area.toLocaleString()} m² · {plan.shape} · {lat.toFixed(4)}, {lng.toFixed(4)}
           </p>
         </div>
-        <Badge variant={plan.status === "complete" ? "default" : "destructive"} className="flex items-center gap-1">
-          {plan.status === "complete" ? <CheckCircle2 className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
-          {plan.status}
-        </Badge>
+        <div className="flex items-center gap-2">
+          {plan.status === "complete" && <ExportReport plan={plan} />}
+          <Badge variant={plan.status === "complete" ? "default" : "destructive"} className="flex items-center gap-1">
+            {plan.status === "complete" ? <CheckCircle2 className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+            {plan.status}
+          </Badge>
+        </div>
       </div>
 
       {plan.status === "error" && (
@@ -138,7 +154,7 @@ export default function PlanResults() {
 
           <TabsContent value="use" className="mt-4"><LandUseTab r={r} lat={lat} lng={lng} /></TabsContent>
           <TabsContent value="design" className="mt-4"><DesignTab r={r} /></TabsContent>
-          <TabsContent value="pricing" className="mt-4"><PricingTab r={r} /></TabsContent>
+          <TabsContent value="pricing" className="mt-4"><PricingTab r={r} onPricingUpdate={handlePricingUpdate} /></TabsContent>
           <TabsContent value="marketing" className="mt-4"><MarketingTab r={r} /></TabsContent>
           <TabsContent value="feasibility" className="mt-4"><FeasibilityTab r={r} /></TabsContent>
         </Tabs>

@@ -30,11 +30,11 @@ export default function CreateOpportunity() {
       return;
     }
     setSaving(true);
-    const { data, error } = await supabase.from("opportunities").insert({
+    const { data, error } = await (supabase.from("opportunities" as any).insert({
       ...form,
       user_id: user.id,
       location: { lat: 0, lng: 0 },
-    }).select("id").single();
+    }).select("id").single() as any);
 
     if (error) {
       toast.error("Failed to create opportunity");

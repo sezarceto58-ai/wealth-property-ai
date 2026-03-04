@@ -20,7 +20,7 @@ export default function PortfolioInsights() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data } = await supabase.from("opportunities").select("*").order("investment_score", { ascending: false });
+      const { data } = await (supabase.from("opportunities" as any).select("*").order("investment_score", { ascending: false }) as any);
       setOpportunities(data || []);
       setLoading(false);
     })();

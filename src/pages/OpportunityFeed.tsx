@@ -63,10 +63,10 @@ export default function OpportunityFeed() {
   }, [user]);
 
   const fetchOpportunities = async () => {
-    const { data, error } = await supabase
-      .from("opportunities")
+    const { data, error } = await (supabase
+      .from("opportunities" as any)
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false }) as any);
     if (error) {
       toast.error("Failed to load opportunities");
     } else {

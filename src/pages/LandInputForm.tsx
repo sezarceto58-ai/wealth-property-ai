@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { MapPin, Ruler, Building2, ShieldAlert, Sparkles, Loader2, DollarSign, School, TreePine, Landmark } from "lucide-react";
@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+
+const MapPicker = lazy(() => import("@/components/MapPicker"));
 
 const RESTRICTION_OPTIONS = [
   { id: "green_zone", label: "Green Zone" },
@@ -138,6 +140,13 @@ export default function LandInputForm() {
           <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
             <MapPin className="w-4 h-4 text-primary" /> Location
           </h3>
+          <Suspense fallback={<div className="h-[300px] rounded-xl bg-muted animate-pulse" />}>
+            <MapPicker
+              lat={parseFloat(form.lat) || 0}
+              lng={parseFloat(form.lng) || 0}
+              onLocationChange={(lat, lng) => setForm({ ...form, lat: lat.toFixed(6), lng: lng.toFixed(6) })}
+            />
+          </Suspense>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="lat">Latitude</Label>
@@ -173,7 +182,7 @@ export default function LandInputForm() {
               </Select>
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">Tip: Right-click on Google Maps and copy coordinates.</p>
+          <p className="text-xs text-muted-foreground">Click on the map or enter coordinates manually.</p>
         </div>
 
         {/* Land Details & Price */}

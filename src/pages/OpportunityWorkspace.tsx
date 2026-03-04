@@ -42,8 +42,8 @@ export default function OpportunityWorkspace() {
 
   const fetchData = async () => {
     const [{ data: oppData }, { data: phaseData }] = await Promise.all([
-      supabase.from("opportunities").select("*").eq("id", id!).single(),
-      supabase.from("development_phases").select("*").eq("opportunity_id", id!).order("phase_order"),
+      supabase.from("opportunities" as any).select("*").eq("id", id!).single() as any,
+      supabase.from("development_phases" as any).select("*").eq("opportunity_id", id!).order("phase_order") as any,
     ]);
     if (oppData) {
       setOpp(oppData);
@@ -63,10 +63,10 @@ export default function OpportunityWorkspace() {
       if (error) throw error;
       const result = data.analysis;
       setAnalysis(result);
-      await supabase.from("opportunities").update({
+      await (supabase.from("opportunities" as any).update({
         ai_analysis: result,
         investment_score: result.investmentScore?.overall || 0,
-      }).eq("id", id!);
+      } as any).eq("id", id!) as any);
       toast.success("AI analysis complete!");
     } catch (e: any) {
       toast.error(e.message || "Analysis failed");
@@ -91,20 +91,20 @@ export default function OpportunityWorkspace() {
 
   const addPhase = async () => {
     if (!newPhase.name.trim()) return;
-    const { error } = await supabase.from("development_phases").insert({
+    const { error } = await (supabase.from("development_phases" as any).insert({
       opportunity_id: id!, user_id: user!.id,
       name: newPhase.name, budget: newPhase.budget,
       start_date: newPhase.start_date || null, end_date: newPhase.end_date || null,
       phase_order: phases.length,
-    });
+    } as any) as any);
     if (error) toast.error("Failed to add phase");
     else { toast.success("Phase added"); setNewPhase({ name: "", budget: 0, start_date: "", end_date: "" }); setShowAddPhase(false); fetchData(); }
   };
 
   const updatePhaseProgress = async (phaseId: string, progress: number) => {
-    await supabase.from("development_phases").update({
+    await (supabase.from("development_phases" as any).update({
       progress, status: progress >= 100 ? "completed" : progress > 0 ? "in_progress" : "pending",
-    }).eq("id", phaseId);
+    } as any).eq("id", phaseId) as any);
     fetchData();
   };
 
