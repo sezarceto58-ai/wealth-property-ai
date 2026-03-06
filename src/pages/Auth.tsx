@@ -24,6 +24,7 @@ export default function Auth() {
 
   const redirectByRole = async (userId: string) => {
     try {
+      const redirect = searchParams.get("redirect");
       const { data: { user } } = await supabase.auth.getUser();
       const metaRole = user?.user_metadata?.role;
       const fallbackRole = metaRole === "seller" ? "seller" : metaRole === "developer" ? "developer" : "buyer";
@@ -44,6 +45,13 @@ export default function Auth() {
           .maybeSingle() as any);
 
         resolvedRole = insertedRole?.role as "buyer" | "seller" | "admin" | undefined;
+      }
+
+      // If we have an explicit redirect path, honor it.
+      // Role guards will bounce the user if they don't have access.
+      if (redirect && redirect.startsWith("/")) {
+        navigate(redirect);
+        return;
       }
 
       navigate(
