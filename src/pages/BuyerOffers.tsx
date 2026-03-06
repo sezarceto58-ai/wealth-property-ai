@@ -61,7 +61,7 @@ export default function BuyerOffers() {
             </button>
           ))}
         </div>
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="px-3 py-1.5 rounded-lg bg-secondary border border-border text-foreground text-xs">
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="px-3 py-1.5 rounded-lg bg-muted/30 border border-border text-foreground text-xs">
           <option value="date">Sort by Date</option>
           <option value="price">Sort by Price</option>
           <option value="score">Sort by Score</option>
