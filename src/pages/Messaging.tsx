@@ -184,7 +184,7 @@ export default function Messaging() {
                   className={`max-w-[70%] px-4 py-2.5 rounded-2xl text-sm ${
                     msg.sender === "me"
                       ? "bg-primary text-primary-foreground rounded-br-md"
-                      : "bg-secondary text-foreground rounded-bl-md"
+                      : "bg-muted/30 text-foreground rounded-bl-md"
                   }`}
                 >
                   <p>{msg.text}</p>
