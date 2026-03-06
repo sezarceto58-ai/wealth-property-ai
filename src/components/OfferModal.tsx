@@ -3,6 +3,8 @@ import { X, Upload, DollarSign, Check } from "lucide-react";
 import type { DbProperty } from "@/types/database";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateOffer } from "@/hooks/useOffers";
+import { supabase } from "@/integrations/supabase/client";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface OfferModalProps {
   property: DbProperty;
@@ -12,6 +14,7 @@ interface OfferModalProps {
 export default function OfferModal({ property, onClose }: OfferModalProps) {
   const { toast } = useToast();
   const createOffer = useCreateOffer();
+  const { tier } = useSubscription();
   const [offerPrice, setOfferPrice] = useState(property.price.toString());
   const [currency, setCurrency] = useState<"USD" | "IQD">("USD");
   const [offerType, setOfferType] = useState<"BUY" | "RENT">("BUY");
@@ -21,6 +24,7 @@ export default function OfferModal({ property, onClose }: OfferModalProps) {
   const [addDeposit, setAddDeposit] = useState(false);
   const [depositPercent, setDepositPercent] = useState("10");
   const [submitted, setSubmitted] = useState(false);
+  const [proofFile, setProofFile] = useState<File | null>(null);
 
   const handleSubmit = async () => {
     if (!offerPrice || Number(offerPrice) <= 0) {
@@ -28,7 +32,7 @@ export default function OfferModal({ property, onClose }: OfferModalProps) {
       return;
     }
     try {
-      await createOffer.mutateAsync({
+      const created = await createOffer.mutateAsync({
         property_id: property.id,
         seller_id: property.user_id,
         offer_price: Number(offerPrice),
@@ -39,7 +43,42 @@ export default function OfferModal({ property, onClose }: OfferModalProps) {
         closing_timeline_days: Number(timeline),
         deposit_percent: addDeposit ? Number(depositPercent) : undefined,
         message: message || undefined,
+        wants_proof_upload: !!proofFile,
       } as any);
+
+      // Proof-of-funds upload (Elite only; server enforces at create-offer)
+      if (proofFile) {
+        const fileExt = proofFile.name.split(".").pop() || "pdf";
+        const safeName = `proof.${fileExt}`;
+        const objectPath = `${created.buyer_id}/${created.id}/${safeName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("offer-documents")
+          .upload(objectPath, proofFile, { upsert: true, contentType: proofFile.type || undefined });
+
+        if (uploadError) throw uploadError;
+
+        const { data: pub } = supabase.storage.from("offer-documents").getPublicUrl(objectPath);
+        const url = pub?.publicUrl;
+
+        const { error: docError } = await supabase
+          .from("offer_documents")
+          .insert({
+            offer_id: created.id,
+            property_id: created.property_id,
+            uploader_id: created.buyer_id,
+            doc_type: "proof_of_funds",
+            storage_path: objectPath,
+            url,
+          } as any);
+
+        if (docError) throw docError;
+
+        const { error: flipError } = await supabase
+          .rpc("set_offer_proof_uploaded", { p_offer_id: created.id, p_value: true } as any);
+        if (flipError) throw flipError;
+      }
+
       setSubmitted(true);
       toast({ title: "Offer submitted!", description: `Your offer of $${Number(offerPrice).toLocaleString()} has been sent.` });
       setTimeout(onClose, 2000);
@@ -142,6 +181,22 @@ export default function OfferModal({ property, onClose }: OfferModalProps) {
               <Upload className="w-4 h-4 text-primary" />
               <span className="text-sm text-foreground">Upload Proof of Funds</span>
             </label>
+
+            <div className="mt-2">
+              <input
+                type="file"
+                accept="application/pdf,image/*"
+                disabled={tier !== "elite"}
+                onChange={(e) => setProofFile(e.target.files?.[0] ?? null)}
+                className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-lg file:border file:border-border file:bg-secondary file:px-3 file:py-2 file:text-foreground file:text-sm disabled:opacity-50"
+              />
+              {tier !== "elite" && (
+                <p className="text-xs text-muted-foreground mt-1">Upgrade to Elite to enable proof-of-funds uploads.</p>
+              )}
+              {proofFile && (
+                <p className="text-xs text-foreground mt-1">Selected: {proofFile.name}</p>
+              )}
+            </div>
           </div>
 
           <button onClick={handleSubmit} disabled={createOffer.isPending} className="w-full py-3 rounded-xl bg-gradient-gold text-primary-foreground font-semibold text-sm shadow-gold hover:opacity-90 transition-opacity disabled:opacity-50">
