@@ -84,7 +84,7 @@ export default function Alerts() {
       </div>
 
       {/* Filter tabs */}
-      <div className="flex gap-1 bg-secondary rounded-xl p-1 w-fit">
+      <div className="flex gap-1 bg-muted/30 rounded-xl p-1 w-fit">
         {(["all", "unread"] as const).map((f) => (
           <button
             key={f}
