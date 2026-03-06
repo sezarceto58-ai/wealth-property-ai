@@ -54,7 +54,7 @@ export default function BuyerOffers() {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-        <div className="flex gap-1 bg-secondary rounded-xl p-1 overflow-x-auto">
+        <div className="flex gap-1 bg-muted/30 rounded-xl p-1 overflow-x-auto">
           {statusFilters.map((s) => (
             <button key={s} onClick={() => setFilter(s)} className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all capitalize ${filter === s ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>
               {s === "all" ? "All" : s}
