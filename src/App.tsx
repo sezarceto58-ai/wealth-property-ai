@@ -47,6 +47,9 @@ import Settings from "@/pages/Settings";
 import Pricing from "@/pages/Pricing";
 import NotFound from "./pages/NotFound";
 
+import RequireAuth from "@/components/guards/RequireAuth";
+import RequireRole from "@/components/guards/RequireRole";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -64,19 +67,23 @@ const App = () => (
           <Route
             path="/buyer/*"
             element={
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<BuyerDashboard />} />
-                  <Route path="/discover" element={<Marketplace />} />
-                  <Route path="/compare" element={<CompareListings />} />
-                  <Route path="/favorites" element={<BuyerFavorites />} />
-                  <Route path="/alerts" element={<Alerts />} />
-                  <Route path="/offers" element={<BuyerOffers />} />
-                  <Route path="/messages" element={<Messaging />} />
-                  <Route path="/investor" element={<InvestorTools />} />
-                  <Route path="/analysis/:id" element={<BuyerPropertyAnalysis />} />
-                </Routes>
-              </Layout>
+              <RequireAuth>
+                <RequireRole allow={"buyer"}>
+                  <Layout>
+                    <Routes>
+                      <Route path="/" element={<BuyerDashboard />} />
+                      <Route path="/discover" element={<Marketplace />} />
+                      <Route path="/compare" element={<CompareListings />} />
+                      <Route path="/favorites" element={<BuyerFavorites />} />
+                      <Route path="/alerts" element={<Alerts />} />
+                      <Route path="/offers" element={<BuyerOffers />} />
+                      <Route path="/messages" element={<Messaging />} />
+                      <Route path="/investor" element={<InvestorTools />} />
+                      <Route path="/analysis/:id" element={<BuyerPropertyAnalysis />} />
+                    </Routes>
+                  </Layout>
+                </RequireRole>
+              </RequireAuth>
             }
           />
 
@@ -85,43 +92,62 @@ const App = () => (
           <Route
             path="/seller/*"
             element={
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<SellerDashboard />} />
-                  <Route path="/listings" element={<SellerListings />} />
-                  <Route path="/create" element={<CreateProperty />} />
-                  <Route path="/offers" element={<SellerOffers />} />
-                  <Route path="/crm" element={<AgentCRM />} />
-                  <Route path="/messages" element={<Messaging />} />
-                  <Route path="/analytics" element={<SellerAnalytics />} />
-                  <Route path="/ai-assistant" element={<SellerAIAssistant />} />
-                  <Route path="/investor" element={<InvestorTools />} />
-                </Routes>
-              </Layout>
+              <RequireAuth>
+                <RequireRole allow={"seller"}>
+                  <Layout>
+                    <Routes>
+                      <Route path="/" element={<SellerDashboard />} />
+                      <Route path="/listings" element={<SellerListings />} />
+                      <Route path="/create" element={<CreateProperty />} />
+                      <Route path="/offers" element={<SellerOffers />} />
+                      <Route path="/crm" element={<AgentCRM />} />
+                      <Route path="/messages" element={<Messaging />} />
+                      <Route path="/analytics" element={<SellerAnalytics />} />
+                      <Route path="/ai-assistant" element={<SellerAIAssistant />} />
+                      <Route path="/investor" element={<InvestorTools />} />
+                    </Routes>
+                  </Layout>
+                </RequireRole>
+              </RequireAuth>
             }
           />
 
           <Route
             path="/developer/*"
             element={
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<DeveloperDashboard />} />
-                  <Route path="/analyze" element={<LandInputForm />} />
-                  <Route path="/plans" element={<DeveloperPlans />} />
-                  <Route path="/plan/:id" element={<PlanResults />} />
-                  <Route path="/opportunities" element={<OpportunityFeed />} />
-                  <Route path="/opportunities/create" element={<CreateOpportunity />} />
-                  <Route path="/opportunities/:id" element={<OpportunityWorkspace />} />
-                  <Route path="/portfolio" element={<PortfolioInsights />} />
-                  <Route path="/messages" element={<Messaging />} />
-                </Routes>
-              </Layout>
+              <RequireAuth>
+                <RequireRole allow={"developer"}>
+                  <Layout>
+                    <Routes>
+                      <Route path="/" element={<DeveloperDashboard />} />
+                      <Route path="/analyze" element={<LandInputForm />} />
+                      <Route path="/plans" element={<DeveloperPlans />} />
+                      <Route path="/plan/:id" element={<PlanResults />} />
+                      <Route path="/opportunities" element={<OpportunityFeed />} />
+                      <Route path="/opportunities/create" element={<CreateOpportunity />} />
+                      <Route path="/opportunities/:id" element={<OpportunityWorkspace />} />
+                      <Route path="/portfolio" element={<PortfolioInsights />} />
+                      <Route path="/messages" element={<Messaging />} />
+                    </Routes>
+                  </Layout>
+                </RequireRole>
+              </RequireAuth>
             }
           />
 
-          <Route path="/admin" element={<Layout><AdminDashboard /></Layout>} />
-          <Route path="/settings" element={<Layout><Settings /></Layout>} />
+          <Route path="/admin" element={
+            <RequireAuth>
+              <RequireRole allow={"admin"}>
+                <Layout><AdminDashboard /></Layout>
+              </RequireRole>
+            </RequireAuth>
+          } />
+
+          <Route path="/settings" element={
+            <RequireAuth>
+              <Layout><Settings /></Layout>
+            </RequireAuth>
+          } />
           <Route path="/pricing" element={<Layout><Pricing /></Layout>} />
 
           <Route path="*" element={<NotFound />} />
