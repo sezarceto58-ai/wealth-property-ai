@@ -129,7 +129,7 @@ export default function Messaging() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search conversations..."
-                className="w-full pl-9 pr-3 py-2 rounded-lg bg-secondary text-foreground text-sm placeholder:text-muted-foreground outline-none"
+                className="w-full pl-9 pr-3 py-2 rounded-lg bg-muted/30 text-foreground text-sm placeholder:text-muted-foreground outline-none"
               />
             </div>
           </div>
