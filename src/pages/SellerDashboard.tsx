@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Building2, Eye, Users, TrendingUp, DollarSign, Plus, BadgeDollarSign,
   MessageSquare, BarChart3, ArrowRight, UserCheck, Loader2,
@@ -10,6 +11,7 @@ import { useSellerOffers } from "@/hooks/useOffers";
 import { useLeads } from "@/hooks/useLeads";
 
 export default function SellerDashboard() {
+  const { t } = useTranslation();
   const { data: properties = [], isLoading } = useMyProperties();
   const { data: offers = [] } = useSellerOffers();
   const { data: leads = [] } = useLeads();
@@ -21,11 +23,11 @@ export default function SellerDashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground">Seller Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">Overview of your listings, leads, and incoming offers.</p>
+          <h1 className="text-2xl font-display font-bold text-foreground">{t("seller.dashboardTitle")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("seller.dashboardSubtitle")}</p>
         </div>
         <Link to="/seller/create" className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-gold text-primary-foreground text-sm font-semibold shadow-gold hover:opacity-90 transition-opacity">
-          <Plus className="w-4 h-4" /> New Listing
+          <Plus className="w-4 h-4" /> {t("nav.newListing")}
         </Link>
       </div>
 
@@ -40,10 +42,10 @@ export default function SellerDashboard() {
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-              <DollarSign className="w-5 h-5 text-primary" /> Incoming Offers
+              <DollarSign className="w-5 h-5 text-primary" /> {t("nav.offerInbox")}
               <span className="ml-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-bold">{pendingOffers.length}</span>
             </h2>
-            <Link to="/seller/offers" className="text-xs text-primary hover:underline flex items-center gap-1">View all <ArrowRight className="w-3 h-3" /></Link>
+            <Link to="/seller/offers" className="text-xs text-primary hover:underline flex items-center gap-1">{t("common.viewAll")} <ArrowRight className="w-3 h-3" /></Link>
           </div>
           {isLoading ? (
             <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
@@ -61,24 +63,24 @@ export default function SellerDashboard() {
             <Link to="/seller/listings" className="rounded-xl bg-card border border-border p-4 flex items-center gap-3 hover:border-primary/30 transition-colors block">
               <Building2 className="w-5 h-5 text-primary" />
               <div>
-                <p className="text-sm font-medium text-foreground">My Listings</p>
+                <p className="text-sm font-medium text-foreground">{t("nav.myListings")}</p>
                 <p className="text-xs text-muted-foreground">{properties.length} active</p>
               </div>
             </Link>
             <Link to="/seller/crm" className="rounded-xl bg-card border border-border p-4 flex items-center gap-3 hover:border-primary/30 transition-colors block">
               <Users className="w-5 h-5 text-success" />
               <div>
-                <p className="text-sm font-medium text-foreground">CRM</p>
+                <p className="text-sm font-medium text-foreground">{t("nav.crmLeads")}</p>
                 <p className="text-xs text-muted-foreground">{newLeads} new leads</p>
               </div>
             </Link>
             <Link to="/seller/messages" className="rounded-xl bg-card border border-border p-4 flex items-center gap-3 hover:border-primary/30 transition-colors block">
               <MessageSquare className="w-5 h-5 text-warning" />
-              <div><p className="text-sm font-medium text-foreground">Messages</p></div>
+              <div><p className="text-sm font-medium text-foreground">{t("common.messages")}</p></div>
             </Link>
             <Link to="/seller/analytics" className="rounded-xl bg-card border border-border p-4 flex items-center gap-3 hover:border-primary/30 transition-colors block">
               <BarChart3 className="w-5 h-5 text-info" />
-              <div><p className="text-sm font-medium text-foreground">Analytics</p></div>
+              <div><p className="text-sm font-medium text-foreground">{t("nav.analytics")}</p></div>
             </Link>
           </div>
         </div>
