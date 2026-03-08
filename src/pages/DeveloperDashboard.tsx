@@ -68,10 +68,10 @@ export default function DeveloperDashboard() {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { title: "Total Plans", value: plans.length, icon: FileText, color: "text-primary" },
-          { title: "Completed", value: completedPlans.length, icon: CheckCircle2, color: "text-success" },
-          { title: "Avg ROI", value: `${avgROI}%`, icon: TrendingUp, color: "text-warning" },
-          { title: "Processing", value: plans.filter((p) => p.status === "processing").length, icon: Clock, color: "text-info" },
+          { title: t("developer.totalPlans"), value: plans.length, icon: FileText, color: "text-primary" },
+          { title: t("developer.completed"), value: completedPlans.length, icon: CheckCircle2, color: "text-success" },
+          { title: t("developer.avgROI"), value: `${avgROI}%`, icon: TrendingUp, color: "text-warning" },
+          { title: t("developer.processing"), value: plans.filter((p) => p.status === "processing").length, icon: Clock, color: "text-info" },
         ].map((stat) => (
           <div key={stat.title} className="rounded-xl bg-card border border-border p-4">
             <div className="flex items-center gap-3">
