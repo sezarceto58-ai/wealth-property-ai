@@ -152,9 +152,12 @@ export default function Auth() {
       {/* Right panel - form */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm">
-          <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to home
-          </Link>
+          <div className="flex items-center justify-between mb-8">
+            <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="w-4 h-4" /> Back to home
+            </Link>
+            <LanguageToggle />
+          </div>
 
           <h2 className="text-2xl font-display font-bold mb-1 text-foreground">
             {tab === "login" ? "Welcome back" : tab === "signup" ? "Create account" : "Reset password"}
