@@ -5,9 +5,9 @@ import { useAuth } from "./useAuth";
 export const TIERS = {
   free: {
     name: "Free",
-    price_id: "price_1T3J60RqPv86QmN4g7IkhjM7",
+    monthly: { price_id: "price_1T3J60RqPv86QmN4g7IkhjM7", price: 0 },
+    yearly: { price_id: "price_1T3J60RqPv86QmN4g7IkhjM7", price: 0 },
     product_id: "prod_U1LnxxW5quYjSn",
-    price: 0,
     features: [
       "Browse marketplace",
       "Save up to 5 favorites",
@@ -17,9 +17,11 @@ export const TIERS = {
   },
   pro: {
     name: "Pro",
-    price_id: "price_1T3J6aRqPv86QmN4R2yLkgXL",
+    monthly: { price_id: "price_1T3J6aRqPv86QmN4R2yLkgXL", price: 29 },
+    yearly: { price_id: "price_1T8nDYCfgiuhj2mtxW4tnMmL", price: 243.60 },
     product_id: "prod_U1LoY0ChJHxRfM",
-    price: 29,
+    yearly_product_id: "prod_U71G3QywWMxBVI",
+    discount: 30,
     features: [
       "Everything in Free",
       "Unlimited favorites & offers",
@@ -30,9 +32,11 @@ export const TIERS = {
   },
   elite: {
     name: "Elite",
-    price_id: "price_1T3J6qRqPv86QmN4u811AFF2",
+    monthly: { price_id: "price_1T3J6qRqPv86QmN4u811AFF2", price: 79 },
+    yearly: { price_id: "price_1T8nVdCfgiuhj2mtCPv5exkY", price: 474 },
     product_id: "prod_U1LocwDTmSN7Od",
-    price: 79,
+    yearly_product_id: "prod_U71Y9YCOPDel4X",
+    discount: 50,
     features: [
       "Everything in Pro",
       "Investor portfolio tools",
@@ -44,11 +48,13 @@ export const TIERS = {
 } as const;
 
 export type TierKey = keyof typeof TIERS;
+export type BillingInterval = "monthly" | "yearly";
 
 export function getTierByProductId(productId: string | null): TierKey {
   if (!productId) return "free";
   for (const [key, tier] of Object.entries(TIERS)) {
     if (tier.product_id === productId) return key as TierKey;
+    if ("yearly_product_id" in tier && tier.yearly_product_id === productId) return key as TierKey;
   }
   return "free";
 }

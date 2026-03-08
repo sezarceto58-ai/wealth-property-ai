@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom";
-import { useSubscription, TIERS, TierKey } from "@/hooks/useSubscription";
+import { useSubscription, TIERS, TierKey, BillingInterval } from "@/hooks/useSubscription";
 import { Button } from "@/components/ui/button";
 import { Check, Crown, ArrowRight, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -9,17 +8,28 @@ export default function Pricing() {
   const { tier, subscribed, subscribe, manageSubscription, loading } = useSubscription();
   const { toast } = useToast();
   const [subscribing, setSubscribing] = useState<string | null>(null);
+  const [billing, setBilling] = useState<BillingInterval>("monthly");
 
   const handleSubscribe = async (key: TierKey) => {
     if (key === "free") return;
     setSubscribing(key);
     try {
-      await subscribe(TIERS[key].price_id);
+      await subscribe(TIERS[key][billing].price_id);
     } catch (err: any) {
       toast({ title: "Checkout failed", description: err.message, variant: "destructive" });
     } finally {
       setSubscribing(null);
     }
+  };
+
+  const getDisplayPrice = (key: TierKey) => {
+    const plan = TIERS[key];
+    if (billing === "yearly") {
+      const yearlyPrice = plan.yearly.price;
+      const monthlyEquiv = yearlyPrice / 12;
+      return monthlyEquiv;
+    }
+    return plan.monthly.price;
   };
 
   return (
@@ -28,9 +38,38 @@ export default function Pricing() {
         <h1 className="text-4xl font-display font-bold mb-3">
           Choose Your <span className="text-gradient-gold">Plan</span>
         </h1>
-        <p className="text-muted-foreground max-w-lg mx-auto">
+        <p className="text-muted-foreground max-w-lg mx-auto mb-8">
           Unlock premium features to supercharge your real estate journey.
         </p>
+
+        {/* Billing Toggle */}
+        <div className="inline-flex items-center gap-1 rounded-full border border-border bg-muted p-1">
+          <button
+            onClick={() => setBilling("monthly")}
+            className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
+              billing === "monthly"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Monthly
+          </button>
+          <button
+            onClick={() => setBilling("yearly")}
+            className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
+              billing === "yearly"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Yearly
+          </button>
+        </div>
+        {billing === "yearly" && (
+          <p className="text-sm text-primary mt-2 font-medium">
+            Save up to 50% with yearly billing!
+          </p>
+        )}
       </div>
 
       {loading ? (
@@ -42,6 +81,8 @@ export default function Pricing() {
           {(Object.entries(TIERS) as [TierKey, typeof TIERS[TierKey]][]).map(([key, plan]) => {
             const isCurrent = key === tier;
             const isPopular = key === "pro";
+            const displayPrice = getDisplayPrice(key);
+            const discount = "discount" in plan ? plan.discount : undefined;
 
             return (
               <div
@@ -66,10 +107,29 @@ export default function Pricing() {
                 )}
 
                 <h3 className="text-xl font-display font-bold text-foreground">{plan.name}</h3>
-                <div className="mt-3 mb-6">
-                  <span className="text-4xl font-bold text-foreground">${plan.price}</span>
+                <div className="mt-3 mb-2">
+                  <span className="text-4xl font-bold text-foreground">
+                    ${displayPrice === 0 ? "0" : displayPrice.toFixed(displayPrice % 1 === 0 ? 0 : 2)}
+                  </span>
                   <span className="text-muted-foreground">/mo</span>
                 </div>
+
+                {billing === "yearly" && discount && (
+                  <div className="mb-4 flex items-center gap-2">
+                    <span className="text-sm line-through text-muted-foreground">
+                      ${plan.monthly.price}/mo
+                    </span>
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                      Save {discount}%
+                    </span>
+                  </div>
+                )}
+                {billing === "yearly" && key !== "free" && (
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Billed ${plan.yearly.price}/year
+                  </p>
+                )}
+                {(billing === "monthly" || key === "free") && !discount && <div className="mb-4" />}
 
                 <ul className="space-y-3 flex-1 mb-8">
                   {plan.features.map((f) => (
