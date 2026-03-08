@@ -55,12 +55,12 @@ export default function DeveloperDashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground">Developer Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">AI-powered land feasibility planning at a glance.</p>
+          <h1 className="text-2xl font-display font-bold text-foreground">{t("developer.dashboardTitle")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("developer.dashboardSubtitle")}</p>
         </div>
         <Link to="/developer/analyze">
           <Button className="bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-90">
-            <Plus className="w-4 h-4 mr-2" /> New Analysis
+            <Plus className="w-4 h-4 mr-2" /> {t("developer.newAnalysis")}
           </Button>
         </Link>
       </div>
