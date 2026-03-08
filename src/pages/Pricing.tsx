@@ -38,10 +38,10 @@ export default function Pricing() {
     <div className="max-w-5xl mx-auto">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-display font-bold mb-3">
-          Choose Your <span className="text-gradient-gold">Plan</span>
+          {t("pricing.title")}
         </h1>
         <p className="text-muted-foreground max-w-lg mx-auto mb-8">
-          Unlock premium features to supercharge your real estate journey.
+          {t("pricing.subtitle")}
         </p>
 
         {/* Billing Toggle */}
