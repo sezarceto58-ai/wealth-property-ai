@@ -91,9 +91,9 @@ export default function DeveloperDashboard() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-primary" /> Recent Plans
+            <Building2 className="w-5 h-5 text-primary" /> {t("developer.recentPlans")}
           </h2>
-          <Link to="/developer/plans" className="text-xs text-primary hover:underline">View all →</Link>
+          <Link to="/developer/plans" className="text-xs text-primary hover:underline">{t("common.viewAll")} →</Link>
         </div>
 
         {loading ? (
