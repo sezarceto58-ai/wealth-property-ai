@@ -68,37 +68,28 @@ const sellerNav = (t: any) => [
 ];
 
 
-const developerNav = [
-{
-  label: "Home",
-  items: [
-  { path: "/developer", icon: LayoutDashboard, label: "Dashboard" }]
-},
-{
-  label: "Opportunities",
-  items: [
-  { path: "/developer/opportunities", icon: Briefcase, label: "Opportunity Feed" },
-  { path: "/developer/portfolio", icon: TrendingUp, label: "Portfolio Insights" }]
-},
-{
-  label: "Planning",
-  items: [
-  { path: "/developer/analyze", icon: Search, label: "Analyze Land" },
-  { path: "/developer/plans", icon: Building2, label: "All Plans" }]
-},
-{
-  label: "Tools",
-  items: [
-  { path: "/developer/messages", icon: MessageSquare, label: "Messages" }]
-}];
+const developerNav = (t: any) => [
+  { label: t("nav.home"), items: [
+    { path: "/developer", icon: LayoutDashboard, label: t("nav.dashboard") },
+  ]},
+  { label: t("nav.opportunities"), items: [
+    { path: "/developer/opportunities", icon: Briefcase, label: t("nav.opportunityFeed") },
+    { path: "/developer/portfolio", icon: TrendingUp, label: t("nav.portfolioInsights") },
+  ]},
+  { label: t("nav.planning"), items: [
+    { path: "/developer/analyze", icon: Search, label: t("nav.analyzeLand") },
+    { path: "/developer/plans", icon: Building2, label: t("nav.allPlans") },
+  ]},
+  { label: t("nav.tools"), items: [
+    { path: "/developer/messages", icon: MessageSquare, label: t("common.messages") },
+  ]},
+];
 
-const adminNav = [
-{
-  label: "Governance",
-  items: [
-  { path: "/admin", icon: Shield, label: "Console" }]
-
-}];
+const adminNav = (t: any) => [
+  { label: t("nav.governance"), items: [
+    { path: "/admin", icon: Shield, label: t("nav.console") },
+  ]},
+];
 
 
 function getNavForPath(pathname: string) {
