@@ -105,11 +105,11 @@ export default function DeveloperDashboard() {
         ) : plans.length === 0 ? (
           <div className="rounded-xl bg-card border border-border p-8 text-center">
             <MapPin className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-            <p className="text-foreground font-medium">No plans yet</p>
-            <p className="text-sm text-muted-foreground mt-1">Start your first AI land analysis to see results here.</p>
+            <p className="text-foreground font-medium">{t("developer.noPlansYet")}</p>
+            <p className="text-sm text-muted-foreground mt-1">{t("developer.noPlansDesc")}</p>
             <Link to="/developer/analyze">
               <Button className="mt-4" variant="outline">
-                <Plus className="w-4 h-4 mr-2" /> Create First Plan
+                <Plus className="w-4 h-4 mr-2" /> {t("developer.createFirstPlan")}
               </Button>
             </Link>
           </div>
