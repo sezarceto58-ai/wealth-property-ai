@@ -220,7 +220,7 @@ export default function Layout({ children }: {children: React.ReactNode;}) {
           </div>
         </header>
 
-        <div className="p-4 lg:p-6">{children}</div>
+        <div className="p-4 lg:p-6"><PageTransition>{children}</PageTransition></div>
       </main>
     </div>);
 
