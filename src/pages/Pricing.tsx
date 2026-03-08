@@ -163,7 +163,7 @@ export default function Pricing() {
                     className="w-full"
                   >
                     {subscribing === key && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-                    {tier !== "free" ? "Switch Plan" : "Get Started"}
+                    {tier !== "free" ? t("pricing.switchPlan") : t("pricing.getStarted")}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 )}
