@@ -26,6 +26,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import LanguageToggle from "@/components/LanguageToggle";
 import NotificationBell from "@/components/NotificationBell";
+import PageTransition from "@/components/PageTransition";
 
 const buyerNav = (t: any) => [
   { label: t("nav.home"), items: [
@@ -219,7 +220,7 @@ export default function Layout({ children }: {children: React.ReactNode;}) {
           </div>
         </header>
 
-        <div className="p-4 lg:p-6">{children}</div>
+        <div className="p-4 lg:p-6"><PageTransition>{children}</PageTransition></div>
       </main>
     </div>);
 

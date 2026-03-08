@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -8,6 +9,8 @@ import {
   Building2, Clock, CheckCircle2, AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { StatSkeleton, ListSkeleton } from "@/components/Skeletons";
+import EmptyState from "@/components/EmptyState";
 
 type PlanRow = {
   id: string;
@@ -26,6 +29,9 @@ const statusConfig: Record<string, { icon: any; color: string; label: string }> 
   complete: { icon: CheckCircle2, color: "text-success", label: "Complete" },
   error: { icon: AlertCircle, color: "text-destructive", label: "Error" },
 };
+
+const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
+const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 
 export default function DeveloperDashboard() {
   const { t } = useTranslation();
@@ -65,29 +71,35 @@ export default function DeveloperDashboard() {
         </Link>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { title: t("developer.totalPlans"), value: plans.length, icon: FileText, color: "text-primary" },
-          { title: t("developer.completed"), value: completedPlans.length, icon: CheckCircle2, color: "text-success" },
-          { title: t("developer.avgROI"), value: `${avgROI}%`, icon: TrendingUp, color: "text-warning" },
-          { title: t("developer.processing"), value: plans.filter((p) => p.status === "processing").length, icon: Clock, color: "text-info" },
-        ].map((stat) => (
-          <div key={stat.title} className="rounded-xl bg-card border border-border p-4">
-            <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg bg-card ${stat.color}`}>
-                <stat.icon className="w-5 h-5" />
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => <StatSkeleton key={i} />)}
+        </div>
+      ) : (
+        <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { title: t("developer.totalPlans"), value: plans.length, icon: FileText, color: "text-primary" },
+            { title: t("developer.completed"), value: completedPlans.length, icon: CheckCircle2, color: "text-success" },
+            { title: t("developer.avgROI"), value: `${avgROI}%`, icon: TrendingUp, color: "text-warning" },
+            { title: t("developer.processing"), value: plans.filter((p) => p.status === "processing").length, icon: Clock, color: "text-info" },
+          ].map((stat) => (
+            <motion.div key={stat.title} variants={item}>
+              <div className="rounded-xl bg-card border border-border p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-lg bg-card ${stat.color}`}>
+                    <stat.icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">{stat.title}</p>
+                    <p className="text-xl font-bold text-foreground">{stat.value}</p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground">{stat.title}</p>
-                <p className="text-xl font-bold text-foreground">{stat.value}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
 
-      {/* Recent Plans */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
@@ -97,82 +109,72 @@ export default function DeveloperDashboard() {
         </div>
 
         {loading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-20 rounded-xl bg-muted/30 animate-pulse" />
-            ))}
-          </div>
+          <ListSkeleton rows={3} />
         ) : plans.length === 0 ? (
-          <div className="rounded-xl bg-card border border-border p-8 text-center">
-            <MapPin className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-            <p className="text-foreground font-medium">{t("developer.noPlansYet")}</p>
-            <p className="text-sm text-muted-foreground mt-1">{t("developer.noPlansDesc")}</p>
-            <Link to="/developer/analyze">
-              <Button className="mt-4" variant="outline">
-                <Plus className="w-4 h-4 mr-2" /> {t("developer.createFirstPlan")}
-              </Button>
-            </Link>
-          </div>
+          <EmptyState
+            icon={MapPin}
+            title={t("developer.noPlansYet")}
+            description={t("developer.noPlansDesc")}
+            action={
+              <Link to="/developer/analyze">
+                <Button variant="outline"><Plus className="w-4 h-4 mr-2" /> {t("developer.createFirstPlan")}</Button>
+              </Link>
+            }
+          />
         ) : (
-          <div className="space-y-3">
+          <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-3">
             {plans.map((plan) => {
               const st = statusConfig[plan.status] || statusConfig.draft;
               const StIcon = st.icon;
               return (
-                <Link
-                  key={plan.id}
-                  to={`/developer/plan/${plan.id}`}
-                  className="flex items-center gap-4 rounded-xl bg-card border border-border p-4 hover:border-primary/30 transition-colors"
-                >
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <MapPin className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground">
-                      {plan.land_area.toLocaleString()} m² — {plan.shape}
+                <motion.div key={plan.id} variants={item}>
+                  <Link
+                    to={`/developer/plan/${plan.id}`}
+                    className="flex items-center gap-4 rounded-xl bg-card border border-border p-4 hover:border-primary/30 hover:shadow-md transition-all"
+                  >
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <MapPin className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground">
+                        {plan.land_area.toLocaleString()} m² — {plan.shape}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {plan.land_location?.lat?.toFixed(4)}, {plan.land_location?.lng?.toFixed(4)} · {plan.max_floors} floors max
+                      </p>
+                    </div>
+                    <div className={`flex items-center gap-1.5 text-xs font-medium ${st.color}`}>
+                      <StIcon className="w-3.5 h-3.5" />
+                      {st.label}
+                    </div>
+                    <p className="text-xs text-muted-foreground hidden sm:block">
+                      {new Date(plan.created_at).toLocaleDateString()}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      {plan.land_location?.lat?.toFixed(4)}, {plan.land_location?.lng?.toFixed(4)} · {plan.max_floors} floors max
-                    </p>
-                  </div>
-                  <div className={`flex items-center gap-1.5 text-xs font-medium ${st.color}`}>
-                    <StIcon className="w-3.5 h-3.5" />
-                    {st.label}
-                  </div>
-                  <p className="text-xs text-muted-foreground hidden sm:block">
-                    {new Date(plan.created_at).toLocaleDateString()}
-                  </p>
-                </Link>
+                  </Link>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         )}
       </div>
 
-      {/* Quick Links */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <Link to="/developer/analyze" className="rounded-xl bg-card border border-border p-4 flex items-center gap-3 hover:border-primary/30 transition-colors">
-          <MapPin className="w-5 h-5 text-primary" />
-          <div>
-            <p className="text-sm font-medium text-foreground">{t("developer.analyzeLand")}</p>
-            <p className="text-xs text-muted-foreground">{t("developer.newFeasibility")}</p>
-          </div>
-        </Link>
-        <Link to="/developer/plans" className="rounded-xl bg-card border border-border p-4 flex items-center gap-3 hover:border-primary/30 transition-colors">
-          <FileText className="w-5 h-5 text-success" />
-          <div>
-            <p className="text-sm font-medium text-foreground">{t("developer.allPlans")}</p>
-            <p className="text-xs text-muted-foreground">{plans.length} total</p>
-          </div>
-        </Link>
-        <Link to="/developer/analyze" className="rounded-xl bg-card border border-border p-4 flex items-center gap-3 hover:border-primary/30 transition-colors">
-          <BarChart3 className="w-5 h-5 text-info" />
-          <div>
-            <p className="text-sm font-medium text-foreground">{t("developer.reports")}</p>
-            <p className="text-xs text-muted-foreground">{t("developer.exportShare")}</p>
-          </div>
-        </Link>
-      </div>
+      <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {[
+          { to: "/developer/analyze", icon: MapPin, color: "text-primary", title: t("developer.analyzeLand"), sub: t("developer.newFeasibility") },
+          { to: "/developer/plans", icon: FileText, color: "text-success", title: t("developer.allPlans"), sub: `${plans.length} total` },
+          { to: "/developer/analyze", icon: BarChart3, color: "text-info", title: t("developer.reports"), sub: t("developer.exportShare") },
+        ].map((link) => (
+          <motion.div key={link.to + link.title} variants={item}>
+            <Link to={link.to} className="rounded-xl bg-card border border-border p-4 flex items-center gap-3 hover:border-primary/30 hover:shadow-md transition-all">
+              <link.icon className={`w-5 h-5 ${link.color}`} />
+              <div>
+                <p className="text-sm font-medium text-foreground">{link.title}</p>
+                <p className="text-xs text-muted-foreground">{link.sub}</p>
+              </div>
+            </Link>
+          </motion.div>
+        ))}
+      </motion.div>
     </div>
   );
 }
