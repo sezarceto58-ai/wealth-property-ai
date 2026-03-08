@@ -212,10 +212,7 @@ export default function Layout({ children }: {children: React.ReactNode;}) {
           <div className="flex-1" />
           <div className="flex items-center gap-3">
             <LanguageToggle />
-            <button className="relative p-2 rounded-lg hover:bg-secondary text-muted-foreground transition-colors">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary animate-pulse-gold" />
-            </button>
+            <NotificationBell />
             <div className="w-8 h-8 rounded-full bg-gradient-gold flex items-center justify-center text-xs font-bold text-primary-foreground">
               {initials}
             </div>
