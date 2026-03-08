@@ -29,6 +29,7 @@ import SellerAnalytics from "@/pages/SellerAnalytics";
 import CreateProperty from "@/pages/CreateProperty";
 import AgentCRM from "@/pages/AgentCRM";
 import SellerAIAssistant from "@/pages/SellerAIAssistant";
+import SellerVerification from "@/pages/SellerVerification";
 
 // Developer pages
 import DeveloperDashboard from "@/pages/DeveloperDashboard";
