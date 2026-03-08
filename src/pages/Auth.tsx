@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { lovable } from "@/integrations/lovable/index";
 
 export default function Auth() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [tab, setTab] = useState<"login" | "signup" | "forgot">(
     searchParams.get("tab") === "signup" ? "signup" : "login"
