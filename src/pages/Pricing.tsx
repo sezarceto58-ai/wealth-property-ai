@@ -149,7 +149,7 @@ export default function Pricing() {
                 ) : key === "free" ? (
                   subscribed ? (
                     <Button variant="outline" onClick={() => manageSubscription()} className="w-full">
-                      Downgrade
+                      {t("pricing.downgrade")}
                     </Button>
                   ) : (
                     <Button variant="outline" disabled className="w-full">
