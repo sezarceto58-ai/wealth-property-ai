@@ -237,7 +237,7 @@ function BillingTab({
 
               <h3 className="text-lg font-display font-bold text-foreground">{plan.name}</h3>
               <div className="mt-2 mb-4">
-                <span className="text-3xl font-bold text-foreground">${plan.price}</span>
+                <span className="text-3xl font-bold text-foreground">${plan.monthly.price}</span>
                 <span className="text-muted-foreground text-sm">/month</span>
               </div>
 
