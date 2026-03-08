@@ -127,8 +127,8 @@ export default function Pricing() {
                   </div>
                 )}
                 {billing === "yearly" && key !== "free" && (
-                  <p className="text-xs text-muted-foreground mb-4">
-                    Billed ${plan.yearly.price}/year
+                   <p className="text-xs text-muted-foreground mb-4">
+                    {t("pricing.billed")} ${plan.yearly.price}{t("pricing.perYear")}
                   </p>
                 )}
                 {(billing === "monthly" || key === "free") && !discount && <div className="mb-4" />}
