@@ -153,7 +153,7 @@ export default function Pricing() {
                     </Button>
                   ) : (
                     <Button variant="outline" disabled className="w-full">
-                      Current Plan
+                      {t("pricing.currentPlan")}
                     </Button>
                   )
                 ) : (
