@@ -99,7 +99,7 @@ export default function Pricing() {
               >
                 {isPopular && !isCurrent && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
-                    Most Popular
+                    {t("pricing.mostPopular")}
                   </span>
                 )}
                 {isCurrent && (
