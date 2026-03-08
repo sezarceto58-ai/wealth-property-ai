@@ -155,7 +155,7 @@ function BillingTab({
     if (key === "free") return;
     setSubscribing(key);
     try {
-      await subscribe(TIERS[key].price_id);
+      await subscribe(TIERS[key].monthly.price_id);
     } catch (err: any) {
       toast({ title: "Checkout failed", description: err.message, variant: "destructive" });
     } finally {
