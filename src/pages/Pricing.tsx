@@ -54,7 +54,7 @@ export default function Pricing() {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Monthly
+            {t("pricing.monthly")}
           </button>
           <button
             onClick={() => setBilling("yearly")}
@@ -64,7 +64,7 @@ export default function Pricing() {
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Yearly
+            {t("pricing.yearly")}
           </button>
         </div>
         {billing === "yearly" && (
