@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Crown, ArrowRight, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 export default function Pricing() {
   const { tier, subscribed, subscribe, manageSubscription, loading } = useSubscription();
