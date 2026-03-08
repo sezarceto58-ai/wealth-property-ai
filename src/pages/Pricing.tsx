@@ -68,9 +68,9 @@ export default function Pricing() {
           </button>
         </div>
         {billing === "yearly" && (
-          <p className="text-sm text-primary mt-2 font-medium">
-            Save up to 50% with yearly billing!
-          </p>
+           <p className="text-sm text-primary mt-2 font-medium">
+            {t("pricing.yearlySavings")}
+           </p>
         )}
       </div>
 
