@@ -47,7 +47,8 @@
     "planning": "Planning",
     "tools": "Tools",
     "governance": "Governance",
-    "verification": "Verification"
+    "verification": "Verification",
+    "sellerVerifications": "Seller Verifications"
   },
   "landing": {
     "heroTitle": "The Future of Real Estate in Iraq",
@@ -123,10 +124,37 @@
     "aiPortfolioAnalysis": "AI Portfolio Analysis",
     "aiPortfolioInsights": "AI Portfolio Insights"
   },
+  "pricing": {
+    "title": "Choose Your Plan",
+    "subtitle": "Unlock premium features to supercharge your real estate journey.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "yearlySavings": "Save up to 50% with yearly billing!",
+    "perMonth": "/mo",
+    "perYear": "/year",
+    "billed": "Billed",
+    "save": "Save",
+    "currentPlan": "Current Plan",
+    "mostPopular": "Most Popular",
+    "yourPlan": "Your Plan",
+    "getStarted": "Get Started",
+    "switchPlan": "Switch Plan",
+    "downgrade": "Downgrade"
+  },
   "settings": {
     "title": "Settings",
     "profile": "Profile",
     "role": "Role",
     "language": "Language"
+  },
+  "admin": {
+    "sellerVerifications": "Seller Verifications",
+    "noSubmissions": "No verification submissions yet.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "viewDocument": "View Document"
   }
 }

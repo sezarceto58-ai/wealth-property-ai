@@ -44,6 +44,7 @@ import PortfolioInsights from "@/pages/PortfolioInsights";
 // Shared pages
 import Messaging from "@/pages/Messaging";
 import AdminDashboard from "@/pages/AdminDashboard";
+import AdminVerificationReview from "@/pages/AdminVerificationReview";
 import Settings from "@/pages/Settings";
 import Pricing from "@/pages/Pricing";
 import NotFound from "./pages/NotFound";
@@ -137,10 +138,15 @@ const App = () => (
             }
           />
 
-          <Route path="/admin" element={
+          <Route path="/admin/*" element={
             <RequireAuth>
               <RequireRole allow={"admin"}>
-                <Layout><AdminDashboard /></Layout>
+                <Layout>
+                  <Routes>
+                    <Route path="/" element={<AdminDashboard />} />
+                    <Route path="/verifications" element={<AdminVerificationReview />} />
+                  </Routes>
+                </Layout>
               </RequireRole>
             </RequireAuth>
           } />

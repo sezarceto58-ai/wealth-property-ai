@@ -47,7 +47,8 @@
     "planning": "التخطيط",
     "tools": "الأدوات",
     "governance": "الحوكمة",
-    "verification": "التحقق"
+    "verification": "التحقق",
+    "sellerVerifications": "تحقق البائعين"
   },
   "landing": {
     "heroTitle": "مستقبل العقارات في العراق",
@@ -123,10 +124,37 @@
     "aiPortfolioAnalysis": "تحليل المحفظة بالذكاء الاصطناعي",
     "aiPortfolioInsights": "رؤى المحفظة بالذكاء الاصطناعي"
   },
+  "pricing": {
+    "title": "اختر خطتك",
+    "subtitle": "افتح الميزات المتقدمة لتعزيز رحلتك العقارية.",
+    "monthly": "شهري",
+    "yearly": "سنوي",
+    "yearlySavings": "وفر حتى 50% مع الفوترة السنوية!",
+    "perMonth": "/شهر",
+    "perYear": "/سنة",
+    "billed": "يُفوتر",
+    "save": "وفر",
+    "currentPlan": "خطتك الحالية",
+    "mostPopular": "الأكثر شعبية",
+    "yourPlan": "خطتك",
+    "getStarted": "ابدأ الآن",
+    "switchPlan": "تغيير الخطة",
+    "downgrade": "تخفيض الخطة"
+  },
   "settings": {
     "title": "الإعدادات",
     "profile": "الملف الشخصي",
     "role": "الدور",
     "language": "اللغة"
+  },
+  "admin": {
+    "sellerVerifications": "تحقق البائعين",
+    "noSubmissions": "لا توجد طلبات تحقق بعد.",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "pending": "قيد الانتظار",
+    "approved": "مُوافق عليه",
+    "rejected": "مرفوض",
+    "viewDocument": "عرض المستند"
   }
 }
