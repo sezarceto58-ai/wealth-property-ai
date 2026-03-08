@@ -104,8 +104,9 @@ export default function Layout({ children }: {children: React.ReactNode;}) {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { t } = useTranslation();
 
-  const nav = getNavForPath(location.pathname);
+  const nav = getNavForPath(location.pathname, t);
   const initials = user?.user_metadata?.display_name ?
   user.user_metadata.display_name.slice(0, 2).toUpperCase() :
   user?.email?.slice(0, 2).toUpperCase() ?? "TV";
