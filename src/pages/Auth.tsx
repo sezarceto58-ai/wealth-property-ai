@@ -27,24 +27,24 @@ export default function Auth() {
       const redirect = searchParams.get("redirect");
       const { data: { user } } = await supabase.auth.getUser();
       const metaRole = user?.user_metadata?.role;
-      const fallbackRole = metaRole === "seller" ? "seller" : metaRole === "developer" ? "developer" : "buyer";
+      const fallbackRole: "buyer" | "seller" | "developer" = metaRole === "seller" ? "seller" : metaRole === "developer" ? "developer" : "buyer";
 
-      const { data: roleRow } = await (supabase
-        .from("user_roles" as any)
+      const { data: roleRow } = await supabase
+        .from("user_roles")
         .select("role")
         .eq("user_id", userId)
-        .maybeSingle() as any);
+        .maybeSingle();
 
       let resolvedRole = roleRow?.role as "buyer" | "seller" | "developer" | "admin" | undefined;
 
       if (!resolvedRole) {
-        const { data: insertedRole } = await (supabase
-          .from("user_roles" as any)
+        const { data: insertedRole } = await supabase
+          .from("user_roles")
           .insert({ user_id: userId, role: fallbackRole })
           .select("role")
-          .maybeSingle() as any);
+          .maybeSingle();
 
-        resolvedRole = insertedRole?.role as "buyer" | "seller" | "admin" | undefined;
+        resolvedRole = insertedRole?.role as "buyer" | "seller" | "developer" | "admin" | undefined;
       }
 
       // If we have an explicit redirect path, honor it.
