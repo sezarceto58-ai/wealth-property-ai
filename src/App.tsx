@@ -138,10 +138,15 @@ const App = () => (
             }
           />
 
-          <Route path="/admin" element={
+          <Route path="/admin/*" element={
             <RequireAuth>
               <RequireRole allow={"admin"}>
-                <Layout><AdminDashboard /></Layout>
+                <Layout>
+                  <Routes>
+                    <Route path="/" element={<AdminDashboard />} />
+                    <Route path="/verifications" element={<AdminVerificationReview />} />
+                  </Routes>
+                </Layout>
               </RequireRole>
             </RequireAuth>
           } />
