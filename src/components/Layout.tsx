@@ -24,6 +24,7 @@ import {
   Briefcase,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import LanguageToggle from "@/components/LanguageToggle";
 
 const buyerNav = [
 {
