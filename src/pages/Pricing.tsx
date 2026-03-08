@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 export default function Pricing() {
   const { tier, subscribed, subscribe, manageSubscription, loading } = useSubscription();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [subscribing, setSubscribing] = useState<string | null>(null);
   const [billing, setBilling] = useState<BillingInterval>("monthly");
 
