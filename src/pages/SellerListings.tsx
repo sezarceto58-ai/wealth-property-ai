@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import {
   Building2, Plus, Eye, Users, BadgeDollarSign, Edit, Trash2,
-  MapPin, BadgeCheck, Loader2,
-} from "lucide-react";
+  MapPin, BadgeCheck, Loader2 } from
+"lucide-react";
 import TerraScore from "@/components/TerraScore";
 import { useMyProperties, useDeleteProperty, useUpdateProperty } from "@/hooks/useProperties";
 import { useToast } from "@/hooks/use-toast";
@@ -12,7 +12,7 @@ import property1 from "@/assets/property-1.jpg";
 const statusColors: Record<string, string> = {
   active: "bg-success/10 text-success",
   pending: "bg-warning/10 text-warning",
-  sold: "bg-secondary text-muted-foreground",
+  sold: "bg-secondary text-muted-foreground"
 };
 
 export default function SellerListings() {
@@ -51,22 +51,22 @@ export default function SellerListings() {
         </Link>
       </div>
 
-      <div className="flex gap-1 bg-secondary rounded-xl p-1 w-fit">
-        {(["list", "grid"] as const).map((v) => (
-          <button key={v} onClick={() => setView(v)} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize ${view === v ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>{v}</button>
-        ))}
+      <div className="flex gap-1 rounded-xl p-1 w-fit bg-primary">
+        {(["list", "grid"] as const).map((v) =>
+        <button key={v} onClick={() => setView(v)} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize ${view === v ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>{v}</button>
+        )}
       </div>
 
-      {listings.length === 0 ? (
-        <div className="text-center py-20 rounded-xl bg-card border border-border">
+      {listings.length === 0 ?
+      <div className="text-center py-20 rounded-xl bg-card border border-border">
           <Building2 className="w-12 h-12 mx-auto text-muted-foreground/40 mb-4" />
           <p className="text-muted-foreground">No listings yet.</p>
           <Link to="/seller/create" className="text-primary text-sm mt-2 inline-block hover:underline">Create your first listing</Link>
-        </div>
-      ) : view === "list" ? (
-        <div className="space-y-3">
-          {listings.map((property) => (
-            <div key={property.id} className="rounded-xl bg-card border border-border p-4 animate-fade-in hover:border-primary/20 transition-colors">
+        </div> :
+      view === "list" ?
+      <div className="space-y-3">
+          {listings.map((property) =>
+        <div key={property.id} className="rounded-xl bg-card border border-border p-4 animate-fade-in hover:border-primary/20 transition-colors">
               <div className="flex gap-4">
                 <img src={property.property_images?.[0]?.url || property1} alt={property.title} className="w-28 h-20 rounded-lg object-cover shrink-0" />
                 <div className="flex-1 min-w-0">
@@ -96,12 +96,12 @@ export default function SellerListings() {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {listings.map((property) => (
-            <div key={property.id} className="rounded-xl bg-card border border-border overflow-hidden animate-fade-in hover:border-primary/20 transition-colors">
+        )}
+        </div> :
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {listings.map((property) =>
+        <div key={property.id} className="rounded-xl bg-card border border-border overflow-hidden animate-fade-in hover:border-primary/20 transition-colors">
               <img src={property.property_images?.[0]?.url || property1} alt={property.title} className="w-full h-40 object-cover" />
               <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
@@ -116,9 +116,9 @@ export default function SellerListings() {
                 </div>
               </div>
             </div>
-          ))}
+        )}
         </div>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }
