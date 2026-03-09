@@ -76,7 +76,7 @@ export function useProfile() {
       if (!user) throw new Error("Not authenticated");
 
       const extension = file.name.split(".").pop() || "jpg";
-      const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "-").toLowerCase();
+      const safeName = file.name.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9.-]/g, "-").toLowerCase();
       const path = `${user.id}/${Date.now()}-${safeName}.${extension}`;
 
       const { error: uploadError } = await supabase.storage

@@ -157,6 +157,11 @@ const App = () => (
               <Layout><Settings /></Layout>
             </RequireAuth>
           } />
+          <Route path="/profile" element={
+            <RequireAuth>
+              <Layout><Profile /></Layout>
+            </RequireAuth>
+          } />
           <Route path="/pricing" element={<Layout><Pricing /></Layout>} />
 
           <Route path="*" element={<NotFound />} />

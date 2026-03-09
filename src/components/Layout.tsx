@@ -189,6 +189,14 @@ export default function Layout({ children }: {children: React.ReactNode;}) {
             {t("common.pricing")}
           </Link>
           <Link
+            to="/profile"
+            onClick={() => setSidebarOpen(false)}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+          >
+            <User className="w-4 h-4" />
+            Profile
+          </Link>
+          <Link
             to="/settings"
             onClick={() => setSidebarOpen(false)}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"

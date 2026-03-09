@@ -1,13 +1,16 @@
-import { useState } from "react";
-import { Search, SlidersHorizontal, MapPin, Loader2 } from "lucide-react";
+import { Suspense, lazy, useState } from "react";
+import { Search, SlidersHorizontal, MapPin, Loader2, Map as MapIcon, LayoutGrid } from "lucide-react";
 import PropertyCard from "@/components/PropertyCard";
 import { useProperties } from "@/hooks/useProperties";
 import heroImg from "@/assets/hero-property.jpg";
+
+const MarketplaceMap = lazy(() => import("@/components/MarketplaceMap"));
 
 export default function Marketplace() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
+  const [viewMode, setViewMode] = useState<"grid" | "map">("grid");
 
   const { data: properties = [], isLoading } = useProperties({ city: selectedCity, type: selectedType, search: searchQuery });
 
@@ -41,15 +44,35 @@ export default function Marketplace() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
           <p className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">{properties.length}</span> properties found</p>
-          <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium hover:bg-secondary/80 transition-colors">
-            <SlidersHorizontal className="w-3 h-3" /> Filters
-          </button>
+          <div className="flex items-center gap-2">
+            <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium hover:bg-secondary/80 transition-colors">
+              <SlidersHorizontal className="w-3 h-3" /> Filters
+            </button>
+            <div className="rounded-lg border border-border bg-card p-1 flex">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${viewMode === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setViewMode("map")}
+                className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${viewMode === "map" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <MapIcon className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
         </div>
 
         {isLoading ? (
           <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
+        ) : viewMode === "map" ? (
+          <Suspense fallback={<div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+            <MarketplaceMap properties={properties} />
+          </Suspense>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {properties.map((property) => <PropertyCard key={property.id} property={property} />)}
