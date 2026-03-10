@@ -193,7 +193,7 @@ function ManualForm({ form, update, toggleFeature, handlePublish, handleSaveDraf
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
             <label className="text-xs text-muted-foreground mb-1 block">Title (English) *</label>
-            <input value={form.title} onChange={(e: any) => update("title", e.target.value)} placeholder="Modern Apartment - Erbil" className="w-full px-3 py-2.5 rounded-lg bg-secondary text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20 border border-border" />
+            <input value={form.title} onChange={(e: any) => update("title", e.target.value)} className="w-full px-3 py-2.5 rounded-lg bg-secondary text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20 border border-border" placeholder="" />
           </div>
           <div className="sm:col-span-2">
             <label className="text-xs text-muted-foreground mb-1 block">Title (Arabic)</label>
