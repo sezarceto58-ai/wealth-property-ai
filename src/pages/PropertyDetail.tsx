@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, Heart, Share2, MapPin, Bed, Bath, Maximize, BadgeCheck,
-  TrendingUp, MessageSquare, DollarSign, Eye, Users, Loader2,
+  ArrowLeft, Heart, Share2, MapPin, Bed, Bath, Maximize,
+  BadgeCheck, MessageSquare, DollarSign, Loader2, TrendingUp,
 } from "lucide-react";
 import TerraScore from "@/components/TerraScore";
 import InvestmentScore from "@/components/InvestmentScore";
@@ -13,7 +13,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useToggleFavorite } from "@/hooks/useFavorites";
 import { supabase } from "@/integrations/supabase/client";
 import property1 from "@/assets/property-1.jpg";
-import { trackPropertyView, trackValuationRequest } from "@/services/dataMoat";
 
 export default function PropertyDetail() {
   const { id } = useParams();
@@ -23,42 +22,27 @@ export default function PropertyDetail() {
   const [activeImage, setActiveImage] = useState(0);
   const [liked, setLiked] = useState(false);
   const toggleFav = useToggleFavorite();
-
   const { data: property, isLoading } = useProperty(id);
 
-  // Increment view counter
   useEffect(() => {
-    if (id) {
-      supabase.rpc("increment_property_views", { p_property_id: id });
-    }
+    if (id) supabase.rpc("increment_property_views", { p_property_id: id });
   }, [id]);
 
-  // Data Moat tracking — fires after property loads
-  useEffect(() => {
-    if (property) {
-      trackPropertyView(property.id, property.city ?? "Unknown", property.price);
-      trackValuationRequest(property.id, property.city ?? "Unknown", property.district ?? "Unknown", property.ai_valuation ?? property.price);
-    }
-  }, [property]);
-
   if (isLoading) {
-    return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+    return <div className="flex justify-center py-24"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
-
   if (!property) {
     return (
-      <div className="text-center py-20">
+      <div className="text-center py-24 space-y-3">
         <p className="text-muted-foreground">Property not found.</p>
-        <Link to="/buyer/discover" className="text-primary text-sm mt-2 inline-block">Back to marketplace</Link>
+        <Link to="/buyer/discover" className="text-primary text-sm underline">Back to marketplace</Link>
       </div>
     );
   }
 
-  const images = property.property_images?.map(i => i.url) ?? [property1];
-  const valuationDiff = (property.ai_valuation ?? property.price) - property.price;
-  const valuationPercent = Math.round((valuationDiff / property.price) * 100);
+  const images = property.property_images?.map((i) => i.url) ?? [property1];
 
-  // AI Valuation Engine — Module 1
+  // Module 1: AI Valuation Engine
   const valuation = calculateValuation({
     price: property.price,
     area: property.area ?? 150,
@@ -74,34 +58,55 @@ export default function PropertyDetail() {
   const handleShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      toast({ title: "Link copied!", description: "Property link has been copied to clipboard." });
+      toast({ title: "Link copied!" });
     } catch { toast({ title: "Share", description: window.location.href }); }
   };
 
+  const verdictBg =
+    valuation.verdict === "undervalued" ? "bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-700" :
+    valuation.verdict === "overvalued"  ? "bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-700" :
+    "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-700";
+  const verdictText =
+    valuation.verdict === "undervalued" ? "text-emerald-700 dark:text-emerald-400" :
+    valuation.verdict === "overvalued"  ? "text-red-700 dark:text-red-400" :
+    "text-amber-700 dark:text-amber-400";
+  const diffColor =
+    valuation.discountPercent <= -5 ? "text-emerald-600 dark:text-emerald-400" :
+    valuation.discountPercent >= 5  ? "text-red-600 dark:text-red-400" :
+    "text-amber-600 dark:text-amber-400";
+
   return (
-    <div className="max-w-5xl mx-auto">
-      <Link to="/buyer/discover" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors">
+    <div className="max-w-5xl mx-auto space-y-6 pb-10">
+      <Link to="/buyer/discover" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="w-4 h-4" /> Back to marketplace
       </Link>
 
-      <div className="rounded-xl overflow-hidden mb-6">
-        <div className="relative aspect-[16/9] lg:aspect-[2/1]">
+      {/* Gallery */}
+      <div className="rounded-2xl overflow-hidden border border-border">
+        <div className="relative aspect-[16/9] lg:aspect-[21/9]">
           <img src={images[activeImage]} alt={property.title} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
           <div className="absolute top-4 right-4 flex gap-2">
-            <button onClick={() => { setLiked(!liked); toggleFav.mutate(property.id); toast({ title: liked ? "Removed" : "Added to favorites" }); }}
-              className={`p-2.5 rounded-lg backdrop-blur-sm transition-colors ${liked ? "bg-destructive/80 text-destructive-foreground" : "bg-background/40 text-foreground hover:text-primary"}`}>
+            <button
+              onClick={() => { setLiked(!liked); toggleFav.mutate(property.id); toast({ title: liked ? "Removed" : "Added to favorites" }); }}
+              className={`p-2.5 rounded-xl backdrop-blur-sm border transition-all ${liked ? "bg-red-500/90 border-red-400 text-white" : "bg-white/20 border-white/30 text-white hover:bg-white/30"}`}
+            >
               <Heart className={`w-4 h-4 ${liked ? "fill-current" : ""}`} />
             </button>
-            <button onClick={handleShare} className="p-2.5 rounded-lg bg-background/40 backdrop-blur-sm text-foreground hover:text-primary transition-colors">
+            <button onClick={handleShare} className="p-2.5 rounded-xl bg-white/20 border border-white/30 backdrop-blur-sm text-white hover:bg-white/30 transition-all">
               <Share2 className="w-4 h-4" />
             </button>
           </div>
+          {property.verified && (
+            <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary text-white text-xs font-semibold">
+              <BadgeCheck className="w-3.5 h-3.5" /> Verified
+            </div>
+          )}
         </div>
         {images.length > 1 && (
-          <div className="flex gap-2 mt-2">
+          <div className="flex gap-2 p-2 bg-card">
             {images.map((img, i) => (
-              <button key={i} onClick={() => setActiveImage(i)} className={`w-20 h-14 rounded-lg overflow-hidden border-2 transition-colors ${i === activeImage ? "border-primary" : "border-transparent opacity-60 hover:opacity-100"}`}>
+              <button key={i} onClick={() => setActiveImage(i)} className={`w-16 h-11 rounded-lg overflow-hidden border-2 transition-all ${i === activeImage ? "border-primary" : "border-transparent opacity-50 hover:opacity-80"}`}>
                 <img src={img} alt="" className="w-full h-full object-cover" />
               </button>
             ))}
@@ -110,171 +115,173 @@ export default function PropertyDetail() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <div>
-            <div className="flex items-start justify-between">
-              <div>
-                <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">{property.title}</h1>
-                <p className="flex items-center gap-1 mt-2 text-muted-foreground"><MapPin className="w-4 h-4" /> {property.district}, {property.city}</p>
-              </div>
-              {property.verified && (
-                <span className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-semibold">
-                  <BadgeCheck className="w-4 h-4" /> Verified
-                </span>
-              )}
+        {/* Left Column */}
+        <div className="lg:col-span-2 space-y-5">
+
+          {/* Title & Description */}
+          <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
+            <div>
+              <h1 className="text-2xl font-display font-bold text-foreground">{property.title}</h1>
+              <p className="flex items-center gap-1.5 mt-1.5 text-sm text-muted-foreground">
+                <MapPin className="w-4 h-4" /> {property.district}, {property.city}
+              </p>
             </div>
-            <div className="flex items-center gap-6 mt-4 text-sm text-muted-foreground">
+            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
               {property.bedrooms > 0 && <span className="flex items-center gap-1.5"><Bed className="w-4 h-4" /> {property.bedrooms} Beds</span>}
               <span className="flex items-center gap-1.5"><Bath className="w-4 h-4" /> {property.bathrooms} Baths</span>
-              <span className="flex items-center gap-1.5"><Maximize className="w-4 h-4" /> {property.area}m²</span>
+              <span className="flex items-center gap-1.5"><Maximize className="w-4 h-4" /> {property.area} m²</span>
             </div>
+            {property.description && (
+              <p className="text-sm text-muted-foreground leading-relaxed">{property.description}</p>
+            )}
+            {property.features && property.features.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {property.features.map((f) => (
+                  <span key={f} className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-medium">{f}</span>
+                ))}
+              </div>
+            )}
           </div>
 
-          <div className="rounded-xl bg-card border border-border p-5">
-            <h3 className="font-semibold text-foreground mb-2">Description</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">{property.description}</p>
-            <div className="flex flex-wrap gap-2 mt-4">
-              {property.features?.map((f) => <span key={f} className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs">{f}</span>)}
+          {/* Module 1: AI Valuation Engine */}
+          <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold text-foreground flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-primary" /> AI Valuation Engine
+              </h2>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                {valuation.confidenceLabel} confidence
+              </span>
             </div>
-          </div>
 
-          <div className="rounded-xl bg-card border border-border p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-foreground">TerraScore™</h3>
-              <TerraScore score={property.terra_score} size="md" />
+            {/* Verdict */}
+            <div className={`rounded-xl px-4 py-3 border ${verdictBg}`}>
+              <p className={`font-semibold text-sm ${verdictText}`}>{valuation.verdictLabel}</p>
             </div>
-          </div>
 
-          {/* AI Valuation Engine — Module 1 */}
-          <div className="rounded-xl bg-card border border-border p-5 space-y-4">
-            <h3 className="font-semibold text-foreground flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-primary" /> AI Valuation Analysis
-            </h3>
-            <div className={`rounded-lg p-3 border ${
-              valuation.verdict === "undervalued" ? "bg-success/10 border-success/20" :
-              valuation.verdict === "overvalued" ? "bg-destructive/10 border-destructive/20" :
-              "bg-warning/10 border-warning/20"
-            }`}>
-              <p className={`text-sm font-bold ${
-                valuation.verdict === "undervalued" ? "text-success" :
-                valuation.verdict === "overvalued" ? "text-destructive" : "text-warning"
-              }`}>{valuation.verdictLabel}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Confidence: {valuation.confidenceLabel} ({valuation.confidenceScore}/100)</p>
+            {/* Metrics Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: "AI Est. Value",  value: `$${valuation.estimatedValue.toLocaleString()}`,       color: "text-foreground" },
+                { label: "vs Market",       value: `${valuation.discountPercent > 0 ? "+" : ""}${valuation.discountPercent}%`, color: diffColor },
+                { label: "Price / m²",      value: `$${valuation.pricePerSqm}`,                          color: "text-foreground" },
+                { label: "Market / m²",     value: `$${valuation.marketPricePerSqm}`,                    color: "text-foreground" },
+              ].map((m) => (
+                <div key={m.label} className="rounded-xl bg-secondary/40 p-3">
+                  <p className="text-[11px] text-muted-foreground">{m.label}</p>
+                  <p className={`text-sm font-bold mt-0.5 ${m.color}`}>{m.value}</p>
+                </div>
+              ))}
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-lg bg-secondary/50 p-3">
-                <p className="text-[10px] text-muted-foreground">AI Est. Value</p>
-                <p className="text-base font-bold text-foreground">${valuation.estimatedValue.toLocaleString()}</p>
-              </div>
-              <div className="rounded-lg bg-secondary/50 p-3">
-                <p className="text-[10px] text-muted-foreground">Discount vs Market</p>
-                <p className={`text-base font-bold ${valuation.discountPercent <= -5 ? "text-success" : valuation.discountPercent >= 5 ? "text-destructive" : "text-warning"}`}>
-                  {valuation.discountPercent > 0 ? "+" : ""}{valuation.discountPercent}%
-                </p>
-              </div>
-              <div className="rounded-lg bg-secondary/50 p-3">
-                <p className="text-[10px] text-muted-foreground">Price / m²</p>
-                <p className="text-sm font-bold text-foreground">${valuation.pricePerSqm}/m²</p>
-              </div>
-              <div className="rounded-lg bg-secondary/50 p-3">
-                <p className="text-[10px] text-muted-foreground">Market $/m²</p>
-                <p className="text-sm font-bold text-foreground">${valuation.marketPricePerSqm}/m²</p>
-              </div>
-            </div>
+
+            {/* Forecast */}
             <div>
-              <p className="text-xs font-semibold text-foreground mb-2">5-Year Appreciation Forecast</p>
+              <p className="text-xs font-semibold text-foreground mb-2">Price Appreciation Forecast</p>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { label: "1 Year", val: valuation.appreciation.oneYear },
+                  { label: "1 Year",  val: valuation.appreciation.oneYear },
                   { label: "3 Years", val: valuation.appreciation.threeYear },
                   { label: "5 Years", val: valuation.appreciation.fiveYear },
-                ].map(f => (
-                  <div key={f.label} className="rounded-lg bg-primary/5 border border-primary/10 p-2 text-center">
-                    <p className="text-[10px] text-muted-foreground">{f.label}</p>
-                    <p className="text-xs font-bold text-primary">${(f.val / 1000).toFixed(0)}K</p>
+                ].map((f) => (
+                  <div key={f.label} className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-center">
+                    <p className="text-[11px] text-muted-foreground">{f.label}</p>
+                    <p className="text-sm font-bold text-primary mt-0.5">${(f.val / 1000).toFixed(0)}K</p>
                   </div>
                 ))}
               </div>
             </div>
+
+            {/* Key Factor bullets */}
+            <div className="space-y-1.5 pt-1 border-t border-border">
+              {valuation.factors.slice(0, 3).map((f) => (
+                <div key={f.name} className="flex items-start gap-2 text-xs text-muted-foreground">
+                  <span className={`mt-1 w-1.5 h-1.5 rounded-full shrink-0 ${f.impact === "positive" ? "bg-emerald-500" : f.impact === "negative" ? "bg-red-500" : "bg-amber-500"}`} />
+                  {f.description}
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Investment Score Engine — Module 2 */}
-          <InvestmentScore input={{
-            price: property.price,
-            aiValuation: property.ai_valuation ?? valuation.estimatedValue,
-            rentalYield: 7.5,
-            city: property.city ?? "Erbil",
-            district: property.district ?? "Ankawa",
-            propertyType: property.property_type ?? "Apartment",
-            developerRating: property.agent_verified ? 4.2 : 3.5,
-            verified: property.verified ?? false,
-          }} />
+          {/* Module 2: Investment Score Engine */}
+          <InvestmentScore
+            input={{
+              price: property.price,
+              aiValuation: property.ai_valuation ?? valuation.estimatedValue,
+              rentalYield: 7.5,
+              city: property.city ?? "Erbil",
+              district: property.district ?? "Ankawa",
+              propertyType: property.property_type ?? "Apartment",
+              developerRating: property.agent_verified ? 4.2 : 3.5,
+              verified: property.verified ?? false,
+            }}
+          />
 
-          <div className="grid grid-cols-3 gap-4">
-            <div className="rounded-xl bg-card border border-border p-4 text-center">
-              <Eye className="w-5 h-5 mx-auto text-muted-foreground mb-1" />
-              <p className="text-lg font-bold text-foreground">{property.views.toLocaleString()}</p>
-              <p className="text-xs text-muted-foreground">Views</p>
+          {/* TerraScore */}
+          <div className="rounded-2xl bg-card border border-border p-5 flex items-center justify-between">
+            <div>
+              <p className="font-semibold text-foreground">TerraScore™</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Overall platform deal quality</p>
             </div>
-            <div className="rounded-xl bg-card border border-border p-4 text-center">
-              <Users className="w-5 h-5 mx-auto text-muted-foreground mb-1" />
-              <p className="text-lg font-bold text-foreground">—</p>
-              <p className="text-xs text-muted-foreground">Leads</p>
-            </div>
-            <div className="rounded-xl bg-card border border-border p-4 text-center">
-              <TrendingUp className="w-5 h-5 mx-auto text-muted-foreground mb-1" />
-              <p className="text-lg font-bold text-foreground">{property.ai_confidence || "—"}</p>
-              <p className="text-xs text-muted-foreground">AI Confidence</p>
-            </div>
+            <TerraScore score={property.terra_score} size="lg" />
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="rounded-xl bg-card border border-border p-5 shadow-card sticky top-20">
-            <p className="text-3xl font-bold text-foreground">${property.price.toLocaleString()}</p>
-            {property.price_iqd && <p className="text-sm text-muted-foreground mt-1">IQD {property.price_iqd.toLocaleString()}</p>}
+        {/* Right Column */}
+        <div>
+          <div className="rounded-2xl bg-card border border-border p-5 space-y-5 lg:sticky lg:top-20">
+            <div>
+              <p className="text-3xl font-bold text-foreground">${property.price.toLocaleString()}</p>
+              {property.price_iqd && (
+                <p className="text-sm text-muted-foreground mt-1">IQD {property.price_iqd.toLocaleString()}</p>
+              )}
+              {property.ai_valuation && (
+                <div className="mt-3 p-3 rounded-xl bg-secondary/40">
+                  <p className="text-xs text-muted-foreground">AI Valuation</p>
+                  <p className="text-lg font-bold text-foreground">${property.ai_valuation.toLocaleString()}</p>
+                  <p className={`text-xs font-medium mt-0.5 ${property.ai_valuation > property.price ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+                    {property.ai_valuation > property.price ? "▲" : "▼"}{" "}
+                    {Math.abs(Math.round(((property.ai_valuation - property.price) / property.price) * 100))}% vs asking
+                  </p>
+                </div>
+              )}
+            </div>
 
-            {property.ai_valuation && (
-              <div className="mt-4 p-3 rounded-lg bg-secondary">
-                <p className="text-xs text-muted-foreground">AI Valuation</p>
-                <p className="text-lg font-bold text-foreground">${property.ai_valuation.toLocaleString()}</p>
-                <p className={`text-xs font-medium ${valuationDiff >= 0 ? "text-success" : "text-destructive"}`}>
-                  {valuationDiff >= 0 ? "+" : ""}${valuationDiff.toLocaleString()} ({valuationPercent > 0 ? "+" : ""}{valuationPercent}%)
-                </p>
-              </div>
-            )}
-
-            <div className="mt-5 space-y-3">
-              <button onClick={() => setShowOffer(true)} className="w-full py-3 rounded-xl bg-gradient-gold text-primary-foreground font-semibold text-sm shadow-gold hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-                <DollarSign className="w-4 h-4" /> Send Offer (Pro+)
+            <div className="space-y-2.5">
+              <button
+                onClick={() => setShowOffer(true)}
+                className="w-full py-3 rounded-xl bg-gradient-gold font-semibold text-sm text-white shadow-gold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+              >
+                <DollarSign className="w-4 h-4" /> Send Offer
               </button>
-              <button onClick={() => navigate("/buyer/messages")} className="w-full py-3 rounded-xl bg-secondary text-secondary-foreground font-medium text-sm hover:bg-secondary/80 transition-colors flex items-center justify-center gap-2">
+              <button
+                onClick={() => navigate("/buyer/messages")}
+                className="w-full py-3 rounded-xl border border-border bg-card text-foreground font-medium text-sm hover:bg-secondary/40 transition-colors flex items-center justify-center gap-2"
+              >
                 <MessageSquare className="w-4 h-4" /> Message Seller
+              </button>
+              <button
+                onClick={() => navigate(`/buyer/analysis/${property.id}`)}
+                className="w-full py-3 rounded-xl border border-primary/30 bg-primary/5 text-primary font-medium text-sm hover:bg-primary/10 transition-colors"
+              >
+                Full AI Analysis →
               </button>
             </div>
 
-            <div className="mt-5 pt-4 border-t border-border">
-              <p className="text-xs text-muted-foreground">Listed by</p>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="w-8 h-8 rounded-full bg-gradient-gold flex items-center justify-center text-xs font-bold text-primary-foreground">
+            <div className="pt-4 border-t border-border">
+              <p className="text-xs text-muted-foreground mb-2">Listed by</p>
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-full bg-gradient-gold flex items-center justify-center text-xs font-bold text-white shrink-0">
                   {(property.agent_name || "?").charAt(0)}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-foreground flex items-center gap-1">
                     {property.agent_name || "Unknown"}
-                    {property.agent_verified && <BadgeCheck className="w-3 h-3 text-primary" />}
+                    {property.agent_verified && <BadgeCheck className="w-3.5 h-3.5 text-primary" />}
                   </p>
+                  <p className="text-xs text-muted-foreground">Verified Agent</p>
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="rounded-xl bg-card border border-border p-5">
-            <h3 className="font-semibold text-foreground mb-2">AI Analysis Results</h3>
-            <p className="text-sm text-muted-foreground mb-4">Open full AI investment analysis.</p>
-            <button onClick={() => navigate(`/buyer/analysis/${property.id}`)} className="w-full py-3 rounded-xl bg-gradient-gold text-primary-foreground font-semibold text-sm shadow-gold hover:opacity-90 transition-opacity">
-              Open AI Analysis Page
-            </button>
           </div>
         </div>
       </div>
