@@ -45,6 +45,8 @@ const buyerNav = (t: any) => [
   ]},
   { label: t("nav.investorTools"), items: [
     { path: "/buyer/investor", icon: TrendingUp, label: t("nav.aiIntelligence") },
+    { path: "/buyer/market-intelligence", icon: BarChart3, label: "Market Intelligence" },
+    { path: "/buyer/syndication", icon: Users, label: "Syndication Deals" },
   ]},
 ];
 
@@ -68,6 +70,7 @@ const sellerNav = (t: any) => [
   ]},
   { label: t("nav.aiTools"), items: [
     { path: "/seller/investor", icon: TrendingUp, label: t("nav.investorIntelligence") },
+    { path: "/buyer/market-intelligence", icon: BarChart3, label: "Market Intelligence" },
   ]},
 ];
 
@@ -86,6 +89,8 @@ const developerNav = (t: any) => [
   ]},
   { label: t("nav.tools"), items: [
     { path: "/developer/messages", icon: MessageSquare, label: t("common.messages") },
+    { path: "/buyer/market-intelligence", icon: BarChart3, label: "Market Intelligence" },
+    { path: "/buyer/syndication", icon: Users, label: "Syndication Deals" },
   ]},
 ];
 
