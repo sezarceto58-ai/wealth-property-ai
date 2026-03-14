@@ -20,6 +20,9 @@ import CompareListings from "@/pages/CompareListings";
 import Alerts from "@/pages/Alerts";
 import InvestorTools from "@/pages/InvestorTools";
 import BuyerPropertyAnalysis from "@/pages/BuyerPropertyAnalysis";
+import MarketIntelligence from "@/pages/MarketIntelligence";
+import SyndicationDeals from "@/pages/SyndicationDeals";
+import SyndicationDealDetail from "@/pages/SyndicationDealDetail";
 
 // Seller pages
 import SellerDashboard from "@/pages/SellerDashboard";
@@ -83,6 +86,9 @@ const App = () => (
                       <Route path="/messages" element={<Messaging />} />
                       <Route path="/investor" element={<InvestorTools />} />
                       <Route path="/analysis/:id" element={<BuyerPropertyAnalysis />} />
+                      <Route path="/market-intelligence" element={<MarketIntelligence />} />
+                      <Route path="/syndication" element={<SyndicationDeals />} />
+                      <Route path="/syndication/:id" element={<SyndicationDealDetail />} />
                     </Routes>
                   </Layout>
                 </RequireRole>
