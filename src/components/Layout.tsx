@@ -23,6 +23,8 @@ import {
   CreditCard,
   Briefcase,
   User,
+  LifeBuoy,
+  Headphones,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -48,6 +50,9 @@ const buyerNav = (t: any) => [
     { path: "/buyer/market-intelligence", icon: BarChart3, label: "Market Intelligence" },
     { path: "/buyer/syndication", icon: Users, label: "Syndication Deals" },
   ]},
+  { label: "Help", items: [
+    { path: "/support", icon: LifeBuoy, label: "Support Center" },
+  ]},
 ];
 
 
@@ -72,6 +77,9 @@ const sellerNav = (t: any) => [
     { path: "/seller/investor", icon: TrendingUp, label: t("nav.investorIntelligence") },
     { path: "/buyer/market-intelligence", icon: BarChart3, label: "Market Intelligence" },
   ]},
+  { label: "Help", items: [
+    { path: "/support", icon: LifeBuoy, label: "Support Center" },
+  ]},
 ];
 
 
@@ -92,12 +100,16 @@ const developerNav = (t: any) => [
     { path: "/buyer/market-intelligence", icon: BarChart3, label: "Market Intelligence" },
     { path: "/buyer/syndication", icon: Users, label: "Syndication Deals" },
   ]},
+  { label: "Help", items: [
+    { path: "/support", icon: LifeBuoy, label: "Support Center" },
+  ]},
 ];
 
 const adminNav = (t: any) => [
   { label: t("nav.governance"), items: [
     { path: "/admin", icon: Shield, label: t("nav.console") },
     { path: "/admin/verifications", icon: Shield, label: t("nav.sellerVerifications") },
+    { path: "/admin/support", icon: Headphones, label: "Support Console" },
   ]},
 ];
 
