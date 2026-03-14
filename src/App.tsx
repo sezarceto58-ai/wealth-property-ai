@@ -47,6 +47,7 @@ import PortfolioInsights from "@/pages/PortfolioInsights";
 // Shared pages
 import Messaging from "@/pages/Messaging";
 import AdminDashboard from "@/pages/AdminDashboard";
+import AIValuation from "@/pages/AIValuation";
 import AdminVerificationReview from "@/pages/AdminVerificationReview";
 import AdminSupport from "@/pages/AdminSupport";
 import Support from "@/pages/Support";
@@ -91,6 +92,7 @@ const App = () => (
                       <Route path="/market-intelligence" element={<MarketIntelligence />} />
                       <Route path="/syndication" element={<SyndicationDeals />} />
                       <Route path="/syndication/:id" element={<SyndicationDealDetail />} />
+                      <Route path="/valuation" element={<AIValuation />} />
                     </Routes>
                   </Layout>
                 </RequireRole>
@@ -120,6 +122,7 @@ const App = () => (
                       <Route path="/market-intelligence" element={<MarketIntelligence />} />
                       <Route path="/syndication" element={<SyndicationDeals />} />
                       <Route path="/syndication/:id" element={<SyndicationDealDetail />} />
+                      <Route path="/valuation" element={<AIValuation />} />
                     </Routes>
                   </Layout>
                 </RequireRole>
@@ -146,6 +149,7 @@ const App = () => (
                       <Route path="/market-intelligence" element={<MarketIntelligence />} />
                       <Route path="/syndication" element={<SyndicationDeals />} />
                       <Route path="/syndication/:id" element={<SyndicationDealDetail />} />
+                      <Route path="/valuation" element={<AIValuation />} />
                     </Routes>
                   </Layout>
                 </RequireRole>
