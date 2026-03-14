@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import TerraScore from "@/components/TerraScore";
 import InvestmentScore from "@/components/InvestmentScore";
-import { calculateValuation } from "@/services/valuationEngine";
+import AIValuationWidget from "@/components/AIValuationWidget";
 import OfferModal from "@/components/OfferModal";
 import { useProperty } from "@/hooks/useProperties";
 import { useToast } from "@/hooks/use-toast";
@@ -42,18 +42,7 @@ export default function PropertyDetail() {
 
   const images = property.property_images?.map((i) => i.url) ?? [property1];
 
-  // Module 1: AI Valuation Engine
-  const valuation = calculateValuation({
-    price: property.price,
-    area: property.area ?? 150,
-    bedrooms: property.bedrooms ?? 3,
-    bathrooms: property.bathrooms ?? 2,
-    city: property.city ?? "Erbil",
-    district: property.district ?? "Ankawa",
-    propertyType: property.property_type ?? "Apartment",
-    verified: property.verified ?? false,
-    features: property.features ?? [],
-  });
+
 
   const handleShare = async () => {
     try {
@@ -62,18 +51,6 @@ export default function PropertyDetail() {
     } catch { toast({ title: "Share", description: window.location.href }); }
   };
 
-  const verdictBg =
-    valuation.verdict === "undervalued" ? "bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-700" :
-    valuation.verdict === "overvalued"  ? "bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-700" :
-    "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-700";
-  const verdictText =
-    valuation.verdict === "undervalued" ? "text-emerald-700 dark:text-emerald-400" :
-    valuation.verdict === "overvalued"  ? "text-red-700 dark:text-red-400" :
-    "text-amber-700 dark:text-amber-400";
-  const diffColor =
-    valuation.discountPercent <= -5 ? "text-emerald-600 dark:text-emerald-400" :
-    valuation.discountPercent >= 5  ? "text-red-600 dark:text-red-400" :
-    "text-amber-600 dark:text-amber-400";
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-10">
@@ -143,70 +120,26 @@ export default function PropertyDetail() {
             )}
           </div>
 
-          {/* Module 1: AI Valuation Engine */}
-          <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-foreground flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-primary" /> AI Valuation Engine
-              </h2>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
-                {valuation.confidenceLabel} confidence
-              </span>
-            </div>
-
-            {/* Verdict */}
-            <div className={`rounded-xl px-4 py-3 border ${verdictBg}`}>
-              <p className={`font-semibold text-sm ${verdictText}`}>{valuation.verdictLabel}</p>
-            </div>
-
-            {/* Metrics Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {[
-                { label: "AI Est. Value",  value: `$${valuation.estimatedValue.toLocaleString()}`,       color: "text-foreground" },
-                { label: "vs Market",       value: `${valuation.discountPercent > 0 ? "+" : ""}${valuation.discountPercent}%`, color: diffColor },
-                { label: "Price / m²",      value: `$${valuation.pricePerSqm}`,                          color: "text-foreground" },
-                { label: "Market / m²",     value: `$${valuation.marketPricePerSqm}`,                    color: "text-foreground" },
-              ].map((m) => (
-                <div key={m.label} className="rounded-xl bg-secondary/40 p-3">
-                  <p className="text-[11px] text-muted-foreground">{m.label}</p>
-                  <p className={`text-sm font-bold mt-0.5 ${m.color}`}>{m.value}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Forecast */}
-            <div>
-              <p className="text-xs font-semibold text-foreground mb-2">Price Appreciation Forecast</p>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { label: "1 Year",  val: valuation.appreciation.oneYear },
-                  { label: "3 Years", val: valuation.appreciation.threeYear },
-                  { label: "5 Years", val: valuation.appreciation.fiveYear },
-                ].map((f) => (
-                  <div key={f.label} className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-center">
-                    <p className="text-[11px] text-muted-foreground">{f.label}</p>
-                    <p className="text-sm font-bold text-primary mt-0.5">${(f.val / 1000).toFixed(0)}K</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Key Factor bullets */}
-            <div className="space-y-1.5 pt-1 border-t border-border">
-              {valuation.factors.slice(0, 3).map((f) => (
-                <div key={f.name} className="flex items-start gap-2 text-xs text-muted-foreground">
-                  <span className={`mt-1 w-1.5 h-1.5 rounded-full shrink-0 ${f.impact === "positive" ? "bg-emerald-500" : f.impact === "negative" ? "bg-red-500" : "bg-amber-500"}`} />
-                  {f.description}
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Module 1: AI Valuation Engine — free 2 uses for all roles */}
+          <AIValuationWidget
+            input={{
+              price: property.price,
+              area: property.area ?? 150,
+              bedrooms: property.bedrooms ?? 3,
+              bathrooms: property.bathrooms ?? 2,
+              city: property.city ?? "Erbil",
+              district: property.district ?? "Ankawa",
+              propertyType: property.property_type ?? "Apartment",
+              verified: property.verified ?? false,
+              features: property.features ?? [],
+            }}
+          />
 
           {/* Module 2: Investment Score Engine */}
           <InvestmentScore
             input={{
               price: property.price,
-              aiValuation: property.ai_valuation ?? valuation.estimatedValue,
+              aiValuation: property.ai_valuation ?? property.price,
               rentalYield: 7.5,
               city: property.city ?? "Erbil",
               district: property.district ?? "Ankawa",

@@ -155,7 +155,7 @@ function PlanCard({
 
 export default function Pricing() {
   const navigate = useNavigate();
-  const { tier, subscribed, subscribe, manageSubscription, loading } = useSubscription();
+  const { tier, subscribed, subscribe, manageSubscription, loading, stripeAvailable } = useSubscription();
   const { toast } = useToast();
   const { t } = useTranslation();
   const [subscribing, setSubscribing] = useState<string | null>(null);
@@ -163,6 +163,11 @@ export default function Pricing() {
 
   const handleSubscribe = async (key: TierKey) => {
     if (key === "free") { navigate("/buyer"); return; }
+    // If Stripe is not configured, open email instead
+    if (!stripeAvailable) {
+      window.location.href = `mailto:support@terravista.iq?subject=Upgrade to ${TIERS[key].name}&body=Hello, I would like to upgrade my TerraVista account to the ${TIERS[key].name} plan.`;
+      return;
+    }
     setSubscribing(key);
     try {
       await subscribe(TIERS[key][billing].price_id);
@@ -175,6 +180,26 @@ export default function Pricing() {
 
   return (
     <div className="max-w-5xl mx-auto pb-10">
+
+      {/* Stripe not configured — show contact banner instead of crashing */}
+      {!stripeAvailable && (
+        <div className="mx-4 mb-8 rounded-2xl border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <AlertCircle className="w-6 h-6 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-semibold text-amber-800 dark:text-amber-300">Online payment is coming soon</p>
+            <p className="text-sm text-amber-700 dark:text-amber-400 mt-0.5">
+              To upgrade your plan, please contact us directly and our team will assist you.
+            </p>
+          </div>
+          <a
+            href="mailto:support@terravista.iq"
+            className="px-4 py-2.5 rounded-xl bg-amber-600 text-white text-sm font-semibold hover:bg-amber-700 transition-colors shrink-0 flex items-center gap-2"
+          >
+            <Mail className="w-4 h-4" /> Contact Support
+          </a>
+        </div>
+      )}
+
       {/* Header */}
       <div className="text-center mb-10 px-4">
         <h1 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">

@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import {
   MapPin, Plus, BarChart3, FileText, TrendingUp,
-  Building2, Clock, CheckCircle2, AlertCircle,
+  Building2, Clock, CheckCircle2, AlertCircle, Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatSkeleton, ListSkeleton } from "@/components/Skeletons";
@@ -99,6 +99,26 @@ export default function DeveloperDashboard() {
           ))}
         </motion.div>
       )}
+
+      {/* ── AI Valuation Banner ── */}
+      <div className="rounded-2xl border border-amber-200 dark:border-amber-800 bg-gradient-to-r from-amber-50 dark:from-amber-900/20 via-transparent to-transparent p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0">
+          <TrendingUp className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-foreground">AI Property Valuation Engine</p>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Instantly assess land and property values before acquiring or developing.
+            <span className="ml-1 text-amber-600 dark:text-amber-400 font-medium">Free — 2 uses included.</span>
+          </p>
+        </div>
+        <Link
+          to="/developer/valuation"
+          className="px-5 py-2.5 rounded-xl bg-amber-600 text-white font-semibold text-sm hover:bg-amber-700 transition-colors shrink-0 flex items-center gap-2"
+        >
+          <Sparkles className="w-4 h-4" /> Value a Property
+        </Link>
+      </div>
 
       <div>
         <div className="flex items-center justify-between mb-4">
