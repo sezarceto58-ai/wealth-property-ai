@@ -2,26 +2,81 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- TODO: Set the document title to the name of your application -->
-    <title>Lovable App</title>
-    <meta name="description" content="Lovable Generated Project">
-    <meta name="author" content="Lovable" />
 
-    <!-- TODO: Update og:title to match your application name -->
-    
-    
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ccf6cf99-81a0-4e76-bcdf-79b36724bf37/id-preview-38276708--dbf27acc-5f34-47ee-9733-213c672d87d3.lovable.app-1772585322338.png">
+    <!-- ── Viewport / Mobile ── -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="TerraVista" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ccf6cf99-81a0-4e76-bcdf-79b36724bf37/id-preview-38276708--dbf27acc-5f34-47ee-9733-213c672d87d3.lovable.app-1772585322338.png">
-    <meta property="og:title" content="Lovable App">
-  <meta name="twitter:title" content="Lovable App">
-  <meta property="og:description" content="Lovable Generated Project">
-  <meta name="twitter:description" content="Lovable Generated Project">
-</head>
+    <!-- ── Theme & Colors ── -->
+    <meta name="theme-color" content="#0099CC" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a2540" media="(prefers-color-scheme: dark)" />
+    <meta name="msapplication-navbutton-color" content="#0099CC" />
+    <meta name="msapplication-TileColor" content="#0099CC" />
+
+    <!-- ── App Identity ── -->
+    <title>TerraVista AI — Iraq Real Estate Intelligence</title>
+    <meta name="description" content="Iraq's most advanced real estate intelligence platform. AI-powered valuations, investment scores, market analytics and co-investment syndication." />
+    <meta name="author" content="TerraVista" />
+    <meta name="application-name" content="TerraVista AI" />
+
+    <!-- ── PWA Manifest ── -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- ── Icons ── -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144.png" />
+    <link rel="apple-touch-icon" sizes="128x128" href="/icons/icon-128.png" />
+    <link rel="apple-touch-icon" sizes="96x96"   href="/icons/icon-96.png" />
+
+    <!-- ── Apple Splash Screens ── -->
+    <link rel="apple-touch-startup-image" href="/splash/splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" />
+    <link rel="apple-touch-startup-image" href="/splash/splash-1668x2224.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)" />
+    <link rel="apple-touch-startup-image" href="/splash/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" />
+    <link rel="apple-touch-startup-image" href="/splash/splash-750x1334.png"  media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" />
+
+    <!-- ── Open Graph ── -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:site_name"   content="TerraVista AI" />
+    <meta property="og:title"       content="TerraVista AI — Iraq Real Estate Intelligence" />
+    <meta property="og:description" content="AI-powered property valuations, investment scores, market analytics and co-investment syndication for Iraq." />
+    <meta property="og:image"       content="/og-image.png" />
+    <meta property="og:url"         content="https://terravista.iq" />
+
+    <!-- ── Twitter Card ── -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:site"        content="@TerraVistaIQ" />
+    <meta name="twitter:title"       content="TerraVista AI" />
+    <meta name="twitter:description" content="Iraq's AI-powered real estate intelligence platform." />
+    <meta name="twitter:image"       content="/og-image.png" />
+
+    <!-- ── Preconnect for performance ── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- ── iOS safe-area handling ── -->
+    <style>
+      :root {
+        --safe-top:    env(safe-area-inset-top);
+        --safe-bottom: env(safe-area-inset-bottom);
+        --safe-left:   env(safe-area-inset-left);
+        --safe-right:  env(safe-area-inset-right);
+      }
+      /* Prevent content hidden under notch/home indicator on iOS */
+      body {
+        padding-top:    env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left:   env(safe-area-inset-left);
+        padding-right:  env(safe-area-inset-right);
+      }
+      /* Prevent pull-to-refresh / overscroll on mobile */
+      html { overscroll-behavior: none; }
+    </style>
+  </head>
 
   <body>
     <div id="root"></div>
