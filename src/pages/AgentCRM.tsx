@@ -118,5 +118,6 @@ export default function AgentCRM() {
         {leads.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No leads yet. Add your first lead above.</p>}
       </div>
     </div>
+    </PlanGate>
   );
 }
