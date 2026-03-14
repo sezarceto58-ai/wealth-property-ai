@@ -49,6 +49,7 @@ export interface DealInput {
   // Additional context
   nearbyFacilities?: string[];
   terraScore?: number;
+  developerRating?: number;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
