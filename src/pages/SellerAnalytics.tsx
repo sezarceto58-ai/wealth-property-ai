@@ -1,54 +1,72 @@
 import { BarChart3, Eye, Users, TrendingUp, DollarSign, Loader2 } from "lucide-react";
 import StatsCard from "@/components/StatsCard";
+import PlanGate from "@/components/PlanGate";
 import { useMyProperties } from "@/hooks/useProperties";
 import { useSellerOffers } from "@/hooks/useOffers";
 import property1 from "@/assets/property-1.jpg";
 
-export default function SellerAnalytics() {
+function AnalyticsContent() {
   const { data: properties = [], isLoading } = useMyProperties();
   const { data: offers = [] } = useSellerOffers();
 
   const totalViews = properties.reduce((s, p) => s + p.views, 0);
   const totalOfferValue = offers.reduce((s, o) => s + o.offer_price, 0);
-
   const topListings = [...properties].sort((a, b) => b.views - a.views);
 
   if (isLoading) return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-          <BarChart3 className="w-6 h-6 text-primary" /> Analytics
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">Performance analytics for your listings.</p>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <StatsCard title="Total Views"   value={totalViews.toLocaleString()} icon={Eye}       trend="up" change="+12% this month" />
+        <StatsCard title="Total Offers"  value={offers.length}               icon={DollarSign} />
+        <StatsCard title="Total Offer Value" value={`$${(totalOfferValue / 1000).toFixed(0)}K`} icon={TrendingUp} trend="up" />
+        <StatsCard title="Active Listings" value={properties.filter(p => p.status === "active").length} icon={BarChart3} />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard title="Total Views" value={totalViews.toLocaleString()} icon={Eye} trend="up" />
-        <StatsCard title="Total Listings" value={properties.length} icon={Users} trend="up" />
-        <StatsCard title="Total Offers" value={offers.length} icon={TrendingUp} trend="up" />
-        <StatsCard title="Offer Value" value={`$${(totalOfferValue / 1000).toFixed(0)}K`} icon={DollarSign} />
-      </div>
-
-      <div className="rounded-xl bg-card border border-border p-5">
-        <h2 className="font-semibold text-foreground mb-4">Top Performing Listings</h2>
-        <div className="space-y-3">
-          {topListings.map((listing, i) => (
-            <div key={listing.id} className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50">
-              <span className="text-xs font-bold text-muted-foreground w-6">#{i + 1}</span>
-              <img src={listing.property_images?.[0]?.url || property1} alt="" className="w-12 h-9 rounded-md object-cover" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">{listing.title}</p>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
-                  <span>{listing.views.toLocaleString()} views</span>
+      <div className="rounded-2xl bg-card border border-border overflow-hidden">
+        <div className="px-5 py-4 border-b border-border">
+          <h2 className="font-semibold text-foreground">Top Performing Listings</h2>
+        </div>
+        {topListings.length === 0 ? (
+          <div className="py-12 text-center text-muted-foreground">
+            <p>No listings yet.</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {topListings.map((p) => (
+              <div key={p.id} className="flex items-center gap-4 px-5 py-4 hover:bg-secondary/20 transition-colors">
+                <img src={p.property_images?.[0]?.url ?? property1} alt={p.title} className="w-14 h-10 rounded-lg object-cover shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{p.title}</p>
+                  <p className="text-xs text-muted-foreground">{p.city} · ${p.price.toLocaleString()}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-semibold text-foreground flex items-center gap-1 justify-end"><Eye className="w-3.5 h-3.5 text-muted-foreground" />{p.views}</p>
+                  <p className="text-xs text-muted-foreground">{offers.filter(o => o.property_id === p.id).length} offers</p>
                 </div>
               </div>
-            </div>
-          ))}
-          {topListings.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No listings yet</p>}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
+    </div>
+  );
+}
+
+export default function SellerAnalytics() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
+          <BarChart3 className="w-6 h-6 text-primary" /> Analytics Dashboard
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">Track listing performance and offer activity.</p>
+      </div>
+
+      <PlanGate requiredTier="pro" featureLabel="Analytics Dashboard">
+        <AnalyticsContent />
+      </PlanGate>
     </div>
   );
 }

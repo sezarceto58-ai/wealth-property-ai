@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Users, Phone, Mail, Plus, X, Loader2 } from "lucide-react";
 import { useLeads, useUpdateLead, useCreateLead } from "@/hooks/useLeads";
 import { useToast } from "@/hooks/use-toast";
+import PlanGate from "@/components/PlanGate";
 
 const stageColors: Record<string, string> = {
   new: "bg-info/10 text-info",
@@ -50,6 +51,7 @@ export default function AgentCRM() {
   if (isLoading) return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
 
   return (
+    <PlanGate requiredTier="pro" featureLabel="CRM & Lead Management">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>

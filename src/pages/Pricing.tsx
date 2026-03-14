@@ -1,11 +1,160 @@
-import { useSubscription, TIERS, TierKey, BillingInterval } from "@/hooks/useSubscription";
-import { Button } from "@/components/ui/button";
-import { Check, Crown, ArrowRight, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Check, Crown, Zap, Sparkles, Loader2, ArrowRight } from "lucide-react";
+import { useSubscription, TIERS, TierKey, BillingInterval } from "@/hooks/useSubscription";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 
+// ── Plan config with exact features from spec ──
+const PLAN_CONFIG: Record<TierKey, {
+  icon: React.ElementType;
+  color: string;
+  ringColor: string;
+  badgeBg: string;
+  badgeText: string;
+  ctaClass: string;
+  highlighted: boolean;
+}> = {
+  free: {
+    icon: Zap,
+    color: "text-muted-foreground",
+    ringColor: "border-border",
+    badgeBg: "bg-secondary",
+    badgeText: "text-secondary-foreground",
+    ctaClass: "border border-border bg-card text-foreground hover:bg-secondary/60",
+    highlighted: false,
+  },
+  pro: {
+    icon: Sparkles,
+    color: "text-primary",
+    ringColor: "border-primary",
+    badgeBg: "bg-primary/10",
+    badgeText: "text-primary",
+    ctaClass: "bg-primary text-white hover:bg-primary/90 shadow-sm",
+    highlighted: true,
+  },
+  elite: {
+    icon: Crown,
+    color: "text-yellow-600 dark:text-yellow-400",
+    ringColor: "border-yellow-400",
+    badgeBg: "bg-yellow-50 dark:bg-yellow-900/20",
+    badgeText: "text-yellow-700 dark:text-yellow-400",
+    ctaClass: "bg-gradient-gold text-white hover:opacity-90 shadow-gold",
+    highlighted: false,
+  },
+};
+
+function PlanCard({
+  planKey, billing, onSubscribe, subscribing, currentTier,
+}: {
+  planKey: TierKey;
+  billing: BillingInterval;
+  onSubscribe: (key: TierKey) => void;
+  subscribing: string | null;
+  currentTier: TierKey;
+}) {
+  const plan   = TIERS[planKey];
+  const config = PLAN_CONFIG[planKey];
+  const Icon   = config.icon;
+
+  const isCurrent  = currentTier === planKey;
+  const isLoading  = subscribing === planKey;
+
+  const displayPrice = billing === "yearly"
+    ? (plan.yearly.price / 12)
+    : plan.monthly.price;
+
+  const yearlyTotal = plan.yearly.price;
+  const discount    = "discount" in plan ? plan.discount : 0;
+
+  return (
+    <div className={`relative rounded-2xl border-2 p-6 flex flex-col transition-all ${
+      config.highlighted
+        ? `${config.ringColor} shadow-lg`
+        : `border-border hover:${config.ringColor} hover:shadow-md`
+    }`}>
+      {/* Most popular badge */}
+      {config.highlighted && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+          <span className="px-4 py-1 rounded-full bg-primary text-white text-xs font-bold shadow-sm">
+            Most Popular
+          </span>
+        </div>
+      )}
+
+      {/* Plan header */}
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl mb-3 ${config.badgeBg}`}>
+            <Icon className={`w-4 h-4 ${config.color}`} />
+            <span className={`text-sm font-bold ${config.badgeText}`}>{plan.name}</span>
+          </div>
+          <div className="flex items-end gap-1">
+            <span className="text-4xl font-black text-foreground">
+              {displayPrice === 0 ? "Free" : `$${displayPrice % 1 === 0 ? displayPrice : displayPrice.toFixed(2)}`}
+            </span>
+            {displayPrice > 0 && (
+              <span className="text-sm text-muted-foreground mb-1">/mo</span>
+            )}
+          </div>
+          {billing === "yearly" && yearlyTotal > 0 && (
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Billed ${yearlyTotal}/year
+              {discount > 0 && (
+                <span className="ml-1.5 text-emerald-600 dark:text-emerald-400 font-semibold">
+                  Save {discount}%
+                </span>
+              )}
+            </p>
+          )}
+          {billing === "monthly" && displayPrice === 0 && (
+            <p className="text-xs text-muted-foreground mt-0.5">Always free</p>
+          )}
+        </div>
+      </div>
+
+      {/* Features */}
+      <ul className="space-y-3 mb-6 flex-1">
+        {plan.features.map((feature) => (
+          <li key={feature} className="flex items-start gap-2.5">
+            <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${config.badgeBg}`}>
+              <Check className={`w-3 h-3 ${config.color}`} />
+            </div>
+            <span className="text-sm text-foreground">{feature}</span>
+          </li>
+        ))}
+      </ul>
+
+      {/* CTA */}
+      {isCurrent ? (
+        <div className="py-2.5 rounded-xl bg-secondary text-secondary-foreground text-sm font-semibold text-center">
+          ✓ Current Plan
+        </div>
+      ) : planKey === "free" && currentTier !== "free" ? (
+        <div className="py-2.5 rounded-xl border border-border text-muted-foreground text-sm font-medium text-center opacity-60">
+          Downgrade
+        </div>
+      ) : (
+        <button
+          onClick={() => onSubscribe(planKey)}
+          disabled={isLoading}
+          className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 ${config.ctaClass} disabled:opacity-60`}
+        >
+          {isLoading ? (
+            <><Loader2 className="w-4 h-4 animate-spin" /> Processing…</>
+          ) : planKey === "free" ? (
+            <>Get Started Free</>
+          ) : (
+            <>Upgrade to {plan.name} <ArrowRight className="w-4 h-4" /></>
+          )}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function Pricing() {
+  const navigate = useNavigate();
   const { tier, subscribed, subscribe, manageSubscription, loading } = useSubscription();
   const { toast } = useToast();
   const { t } = useTranslation();
@@ -13,7 +162,7 @@ export default function Pricing() {
   const [billing, setBilling] = useState<BillingInterval>("monthly");
 
   const handleSubscribe = async (key: TierKey) => {
-    if (key === "free") return;
+    if (key === "free") { navigate("/buyer"); return; }
     setSubscribing(key);
     try {
       await subscribe(TIERS[key][billing].price_id);
@@ -24,53 +173,38 @@ export default function Pricing() {
     }
   };
 
-  const getDisplayPrice = (key: TierKey) => {
-    const plan = TIERS[key];
-    if (billing === "yearly") {
-      const yearlyPrice = plan.yearly.price;
-      const monthlyEquiv = yearlyPrice / 12;
-      return monthlyEquiv;
-    }
-    return plan.monthly.price;
-  };
-
   return (
-    <div className="max-w-5xl mx-auto">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-display font-bold mb-3">
+    <div className="max-w-5xl mx-auto pb-10">
+      {/* Header */}
+      <div className="text-center mb-10 px-4">
+        <h1 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">
           {t("pricing.title")}
         </h1>
-        <p className="text-muted-foreground max-w-lg mx-auto mb-8">
+        <p className="text-muted-foreground max-w-lg mx-auto mb-8 text-sm sm:text-base">
           {t("pricing.subtitle")}
         </p>
 
-        {/* Billing Toggle */}
-        <div className="inline-flex items-center gap-1 rounded-full border border-border bg-muted p-1">
-          <button
-            onClick={() => setBilling("monthly")}
-            className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
-              billing === "monthly"
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {t("pricing.monthly")}
-          </button>
-          <button
-            onClick={() => setBilling("yearly")}
-            className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
-              billing === "yearly"
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {t("pricing.yearly")}
-          </button>
+        {/* Billing toggle */}
+        <div className="inline-flex items-center gap-1 rounded-full border border-border bg-secondary p-1">
+          {(["monthly", "yearly"] as BillingInterval[]).map((b) => (
+            <button
+              key={b}
+              onClick={() => setBilling(b)}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
+                billing === b
+                  ? "bg-primary text-white shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {b === "monthly" ? t("pricing.monthly") : t("pricing.yearly")}
+            </button>
+          ))}
         </div>
+
         {billing === "yearly" && (
-           <p className="text-sm text-primary mt-2 font-medium">
+          <p className="text-sm text-emerald-600 dark:text-emerald-400 font-semibold mt-2">
             {t("pricing.yearlySavings")}
-           </p>
+          </p>
         )}
       </div>
 
@@ -79,99 +213,123 @@ export default function Pricing() {
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
         </div>
       ) : (
-        <div className="grid md:grid-cols-3 gap-8">
-          {(Object.entries(TIERS) as [TierKey, typeof TIERS[TierKey]][]).map(([key, plan]) => {
-            const isCurrent = key === tier;
-            const isPopular = key === "pro";
-            const displayPrice = getDisplayPrice(key);
-            const discount = "discount" in plan ? plan.discount : undefined;
-
-            return (
-              <div
-                key={key}
-                className={`relative rounded-2xl border p-8 flex flex-col ${
-                  isCurrent
-                    ? "border-primary bg-primary/5 shadow-lg"
-                    : isPopular
-                    ? "border-primary/40 shadow-md"
-                    : "border-border bg-card"
-                }`}
-              >
-                {isPopular && !isCurrent && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
-                    {t("pricing.mostPopular")}
-                  </span>
-                )}
-                {isCurrent && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-gold text-primary-foreground text-xs font-semibold flex items-center gap-1">
-                    <Crown className="w-3 h-3" /> {t("pricing.yourPlan")}
-                  </span>
-                )}
-
-                <h3 className="text-xl font-display font-bold text-foreground">{plan.name}</h3>
-                <div className="mt-3 mb-2">
-                  <span className="text-4xl font-bold text-foreground">
-                    ${displayPrice === 0 ? "0" : displayPrice.toFixed(displayPrice % 1 === 0 ? 0 : 2)}
-                  </span>
-                  <span className="text-muted-foreground">{t("pricing.perMonth")}</span>
-                </div>
-
-                {billing === "yearly" && discount && (
-                  <div className="mb-4 flex items-center gap-2">
-                    <span className="text-sm line-through text-muted-foreground">
-                      ${plan.monthly.price}/mo
-                    </span>
-                     <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                      {t("pricing.save")} {discount}%
-                     </span>
-                  </div>
-                )}
-                {billing === "yearly" && key !== "free" && (
-                   <p className="text-xs text-muted-foreground mb-4">
-                    {t("pricing.billed")} ${plan.yearly.price}{t("pricing.perYear")}
-                  </p>
-                )}
-                {(billing === "monthly" || key === "free") && !discount && <div className="mb-4" />}
-
-                <ul className="space-y-3 flex-1 mb-8">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-foreground">
-                      <Check className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                {isCurrent ? (
-                  <Button variant="outline" disabled className="w-full">
-                    {t("pricing.currentPlan")}
-                  </Button>
-                ) : key === "free" ? (
-                  subscribed ? (
-                    <Button variant="outline" onClick={() => manageSubscription()} className="w-full">
-                      {t("pricing.downgrade")}
-                    </Button>
-                  ) : (
-                    <Button variant="outline" disabled className="w-full">
-                      {t("pricing.currentPlan")}
-                    </Button>
-                  )
-                ) : (
-                  <Button
-                    onClick={() => handleSubscribe(key)}
-                    disabled={subscribing !== null}
-                    className="w-full"
-                  >
-                    {subscribing === key && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-                    {tier !== "free" ? t("pricing.switchPlan") : t("pricing.getStarted")}
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                )}
-              </div>
-            );
-          })}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 px-4">
+          {(Object.keys(TIERS) as TierKey[]).map((key) => (
+            <PlanCard
+              key={key}
+              planKey={key}
+              billing={billing}
+              onSubscribe={handleSubscribe}
+              subscribing={subscribing}
+              currentTier={tier}
+            />
+          ))}
         </div>
       )}
+
+      {/* Manage subscription */}
+      {subscribed && (
+        <div className="mt-8 text-center">
+          <button
+            onClick={manageSubscription}
+            className="text-sm text-primary hover:underline font-medium"
+          >
+            Manage or cancel subscription →
+          </button>
+        </div>
+      )}
+
+      {/* Feature comparison table (mobile: hidden, desktop: shown) */}
+      <div className="mt-12 px-4 hidden sm:block">
+        <h2 className="text-lg font-display font-bold text-foreground text-center mb-6">
+          Full Feature Comparison
+        </h2>
+        <div className="rounded-2xl border border-border overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border bg-secondary/30">
+                <th className="text-left px-5 py-3 font-semibold text-foreground w-1/2">Feature</th>
+                {(Object.keys(TIERS) as TierKey[]).map((k) => (
+                  <th key={k} className={`text-center px-4 py-3 font-bold ${PLAN_CONFIG[k].color}`}>
+                    {TIERS[k].name}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { feature: "Browse marketplace",          free: true,   pro: true,   elite: true  },
+                { feature: "Basic property search",       free: true,   pro: true,   elite: true  },
+                { feature: "Save favorites",              free: "5 max", pro: "∞",   elite: "∞"  },
+                { feature: "Send offers",                 free: "3/mo",  pro: "∞",   elite: "∞"  },
+                { feature: "Analytics dashboard",         free: false,  pro: true,   elite: true  },
+                { feature: "Priority alerts",             free: false,  pro: true,   elite: true  },
+                { feature: "CRM tools",                   free: false,  pro: true,   elite: true  },
+                { feature: "Investor portfolio tools",    free: false,  pro: false,  elite: true  },
+                { feature: "Deposit verification",        free: false,  pro: false,  elite: true  },
+                { feature: "Proof-of-funds uploads",      free: false,  pro: false,  elite: true  },
+                { feature: "Dedicated support",           free: false,  pro: false,  elite: true  },
+                { feature: "Mortgage calculator",         free: true,   pro: true,   elite: true  },
+              ].map(({ feature, ...vals }) => (
+                <tr key={feature} className="border-b border-border last:border-0 hover:bg-secondary/10">
+                  <td className="px-5 py-3 text-foreground">{feature}</td>
+                  {(["free", "pro", "elite"] as TierKey[]).map((k) => {
+                    const val = vals[k as keyof typeof vals];
+                    return (
+                      <td key={k} className="px-4 py-3 text-center">
+                        {val === true ? (
+                          <span className={`text-lg ${PLAN_CONFIG[k].color}`}>✓</span>
+                        ) : val === false ? (
+                          <span className="text-muted-foreground/40 text-lg">—</span>
+                        ) : (
+                          <span className="text-xs font-semibold text-foreground">{val as string}</span>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* FAQ */}
+      <div className="mt-10 px-4">
+        <h2 className="text-lg font-display font-bold text-foreground text-center mb-5">
+          Common Questions
+        </h2>
+        <div className="rounded-2xl border border-border overflow-hidden divide-y divide-border">
+          {[
+            { q: "Can I switch plans at any time?", a: "Yes — upgrades take effect immediately. Downgrades apply at the end of your current billing period." },
+            { q: "What happens to my data if I downgrade?", a: "All your data is preserved. Gated features become inaccessible but nothing is deleted." },
+            { q: "Is there a free trial for Pro or Elite?", a: "We offer a 7-day trial for Pro. Contact support@terravista.iq for an Elite trial." },
+            { q: "Are the prices in USD?", a: "Yes, all prices are in US Dollars. IQD payments can be arranged through our support team." },
+          ].map((item) => (
+            <details key={item.q} className="group">
+              <summary className="flex items-center justify-between px-5 py-4 cursor-pointer list-none hover:bg-secondary/20 transition-colors">
+                <span className="text-sm font-medium text-foreground">{item.q}</span>
+                <ChevronDownIcon />
+              </summary>
+              <div className="px-5 pb-4">
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.a}</p>
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
     </div>
+  );
+}
+
+// Tiny inline chevron for FAQ (avoids extra import)
+function ChevronDownIcon() {
+  return (
+    <svg
+      className="w-4 h-4 text-muted-foreground transition-transform group-open:rotate-180 shrink-0 ml-3"
+      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+    </svg>
   );
 }
