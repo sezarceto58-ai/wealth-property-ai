@@ -6,7 +6,7 @@
  *   - Images: Cache-first with stale-while-revalidate
  */
 
-const CACHE_VERSION = "terravista-v1";
+const CACHE_VERSION = "terravista-v2";
 const STATIC_CACHE  = `${CACHE_VERSION}-static`;
 const IMAGE_CACHE   = `${CACHE_VERSION}-images`;
 const API_CACHE     = `${CACHE_VERSION}-api`;
@@ -18,6 +18,7 @@ const STATIC_ASSETS = [
 ];
 
 const API_DOMAINS = ["supabase.co", "supabase.in", "functions.supabase.co"];
+const VITE_CHUNK_PATH = "/node_modules/.vite/";
 
 // ── Install: pre-cache shell ──
 self.addEventListener("install", (event) => {
