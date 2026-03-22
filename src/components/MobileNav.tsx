@@ -1,42 +1,43 @@
 /**
  * MobileNav — fixed bottom navigation bar shown on small screens only.
- * Mirrors the most important sidebar items for thumb-friendly mobile access.
  */
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard, Search, Heart, BadgeDollarSign,
   BarChart3, Building2, Briefcase, TrendingUp,
 } from "lucide-react";
 import { useUserRoles, getBestHomeRoute } from "@/hooks/useUserRoles";
 
-interface NavItem { path: string; icon: React.ElementType; label: string; }
+interface NavItem { path: string; icon: React.ElementType; labelKey: string; }
 
 const buyerItems: NavItem[] = [
-  { path: "/buyer",          icon: LayoutDashboard, label: "Home"      },
-  { path: "/buyer/discover", icon: Search,           label: "Discover"  },
-  { path: "/buyer/favorites",icon: Heart,            label: "Saved"     },
-  { path: "/buyer/offers",   icon: BadgeDollarSign,  label: "Offers"    },
-  { path: "/buyer/market-intelligence", icon: BarChart3, label: "Market" },
+  { path: "/buyer",          icon: LayoutDashboard, labelKey: "nav.home"      },
+  { path: "/buyer/discover", icon: Search,           labelKey: "nav.discover"  },
+  { path: "/buyer/favorites",icon: Heart,            labelKey: "nav.favorites" },
+  { path: "/buyer/offers",   icon: BadgeDollarSign,  labelKey: "nav.myOffers"  },
+  { path: "/buyer/market-intelligence", icon: BarChart3, labelKey: "nav.marketIntelligence" },
 ];
 
 const sellerItems: NavItem[] = [
-  { path: "/seller",          icon: LayoutDashboard, label: "Home"     },
-  { path: "/seller/listings", icon: Building2,       label: "Listings" },
-  { path: "/seller/offers",   icon: BadgeDollarSign, label: "Offers"   },
-  { path: "/seller/analytics",icon: BarChart3,       label: "Analytics"},
-  { path: "/seller/crm",      icon: BadgeDollarSign, label: "CRM"      },
+  { path: "/seller",          icon: LayoutDashboard, labelKey: "nav.home"     },
+  { path: "/seller/listings", icon: Building2,       labelKey: "nav.listings" },
+  { path: "/seller/offers",   icon: BadgeDollarSign, labelKey: "nav.offerInbox" },
+  { path: "/seller/analytics",icon: BarChart3,       labelKey: "nav.analytics"},
+  { path: "/seller/crm",      icon: BadgeDollarSign, labelKey: "nav.crmLeads" },
 ];
 
 const developerItems: NavItem[] = [
-  { path: "/developer",              icon: LayoutDashboard, label: "Home"     },
-  { path: "/developer/opportunities",icon: Briefcase,       label: "Deals"    },
-  { path: "/developer/analyze",      icon: Search,          label: "Analyze"  },
-  { path: "/developer/portfolio",    icon: TrendingUp,      label: "Portfolio"},
-  { path: "/developer/market-intelligence", icon: BarChart3, label: "Market"  },
+  { path: "/developer",              icon: LayoutDashboard, labelKey: "nav.home"     },
+  { path: "/developer/opportunities",icon: Briefcase,       labelKey: "nav.opportunities" },
+  { path: "/developer/analyze",      icon: Search,          labelKey: "nav.analyzeLand"  },
+  { path: "/developer/portfolio",    icon: TrendingUp,      labelKey: "nav.portfolioInsights"},
+  { path: "/developer/market-intelligence", icon: BarChart3, labelKey: "nav.marketIntelligence" },
 ];
 
 export default function MobileNav() {
   const location = useLocation();
+  const { t } = useTranslation();
   const { data: roles = [] } = useUserRoles();
 
   let items = buyerItems;
@@ -61,7 +62,7 @@ export default function MobileNav() {
             >
               <Icon className={`w-5 h-5 transition-transform ${isActive ? "scale-110" : ""}`} />
               <span className={`text-[10px] font-medium leading-none ${isActive ? "text-primary" : ""}`}>
-                {item.label}
+                {t(item.labelKey)}
               </span>
               {isActive && (
                 <div className="w-1 h-1 rounded-full bg-primary mt-0.5" />
