@@ -168,6 +168,13 @@
     "pending": "Pending",
     "approved": "Approved",
     "rejected": "Rejected",
-    "viewDocument": "View Document"
+    "viewDocument": "View Document",
+    "supportConsole": "Support Console"
+  },
+  "support": {
+    "title": "Support Center"
+  },
+  "property": {
+    "beds": "Bedrooms"
   }
 }
