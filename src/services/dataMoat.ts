@@ -138,7 +138,7 @@ export interface DataAssetSummary {
 export function getDataAssetSummary(): DataAssetSummary {
   const cities: Record<string, number> = {};
   const neighborhoods: Record<string, number> = {};
-  let offerDiscounts: number[] = [];
+  const offerDiscounts: number[] = [];
   let syndicationInterest = 0;
   let valuationCount = 0;
 
