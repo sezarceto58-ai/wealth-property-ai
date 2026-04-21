@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import type { Property } from "@/data/mockData";
+import type { DbProperty } from "@/types/database";
 import {
   Brain, TrendingUp, Shield, Users, Leaf, AlertTriangle, CheckCircle,
   XCircle, Loader2, ChevronDown, ChevronUp, Target, DollarSign, BarChart3 } from
@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 interface Props {
-  property: Property;
+  property: DbProperty;
 }
 
 export default function PropertyAIAnalysis({ property }: Props) {
@@ -29,12 +29,12 @@ export default function PropertyAIAnalysis({ property }: Props) {
             price: property.price,
             city: property.city,
             district: property.district,
-            type: property.propertyType,
+            type: property.property_type ?? property.type,
             bedrooms: property.bedrooms,
             bathrooms: property.bathrooms,
             area: property.area,
-            features: property.features,
-            description: property.description
+            features: property.features ?? [],
+            description: property.description ?? ""
           }
         }
       });
@@ -209,7 +209,7 @@ function Section({ title, icon, id, expanded, toggle, children
   const isOpen = expanded === id;
   return (
     <div>
-      <button onClick={() => toggle(id)} className="w-full flex items-center justify-between p-4 transition-colors bg-[#b2cbf0] rounded opacity-80 shadow-md border-solid">
+      <button onClick={() => toggle(id)} className="w-full flex items-center justify-between p-4 hover:bg-secondary/40 transition-colors">
         <span className="flex items-center gap-2 text-sm font-medium text-foreground">{icon} {title}</span>
         {isOpen ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
       </button>

@@ -1,10 +1,10 @@
-interface TerraScoreProps {
+interface AqarScoreProps {
   score: number;
   size?: "sm" | "md" | "lg";
   showLabel?: boolean;
 }
 
-export default function TerraScore({ score, size = "md", showLabel = true }: TerraScoreProps) {
+export default function AqarScore({ score, size = "md", showLabel = true }: AqarScoreProps) {
   const getColor = () => {
     if (score >= 80) return "text-success";
     if (score >= 50) return "text-warning";
@@ -37,7 +37,7 @@ export default function TerraScore({ score, size = "md", showLabel = true }: Ter
       {showLabel && (
         <div>
           <p className={`text-xs font-semibold ${getColor()}`}>
-            {getEmoji()} TerraScore
+            {getEmoji()} AqarScore
           </p>
           <p className="text-xs text-muted-foreground">{getLabel()}</p>
         </div>

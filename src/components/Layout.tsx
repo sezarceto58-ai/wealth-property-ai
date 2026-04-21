@@ -201,7 +201,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="w-8 h-8 rounded-lg bg-gradient-gold flex items-center justify-center">
               <Building2 className="w-4 h-4 text-white" />
             </div>
-            <span className="text-lg font-display font-bold text-gradient-gold">TerraVista</span>
+            <span className="text-lg font-display font-bold text-gradient-gold">AqarAI</span>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
