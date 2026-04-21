@@ -13,6 +13,7 @@ import NotificationBell from "@/components/NotificationBell";
 import PageTransition from "@/components/PageTransition";
 import MobileNav from "@/components/MobileNav";
 import InstallBanner from "@/components/InstallBanner";
+import GitHubSyncBanner from "@/components/GitHubSyncBanner";
 
 // ─────────────────────────────────────────────────────────────
 // Nav definitions — all shared pages use role-prefixed paths
@@ -308,6 +309,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </header>
+
+        <GitHubSyncBanner />
 
         {/* Page content — extra bottom padding on mobile so content isn't hidden behind MobileNav */}
         <div className="flex-1 p-4 lg:p-6 pb-24 lg:pb-6 overflow-x-hidden">
