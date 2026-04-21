@@ -65,15 +65,16 @@
     "secureTransactionsDesc": "End-to-end encrypted offers with real-time status tracking and document management.",
     "featuredProperties": "Featured Properties",
     "exploreMarketplace": "Explore Marketplace",
-    "whyTerraVista": "Why",
+    "whyAqarAI": "Why",
     "whySubtitle": "Everything you need to navigate the real estate market with confidence.",
     "ctaTitle": "Ready to Get Started?",
-    "ctaSubtitle": "Join thousands of buyers and sellers on TerraVista today.",
+    "ctaSubtitle": "Join thousands of buyers and sellers on AqarAI today.",
     "ctaButton": "Create Free Account",
-    "copyright": "© 2026 TerraVista. All rights reserved.",
+    "copyright": "© 2026 AqarAI. All rights reserved.",
     "villa": "Luxury Villa in Erbil",
     "apartment": "Modern Apartment Downtown",
-    "commercial": "Commercial Space Sulaymaniyah"
+    "commercial": "Commercial Space Sulaymaniyah",
+    "trustedBy": "Trusted by 5,000+ investors across Iraq"
   },
   "auth": {
     "email": "Email",
@@ -85,7 +86,20 @@
     "developer": "Developer",
     "forgotPassword": "Forgot password?",
     "noAccount": "Don't have an account?",
-    "hasAccount": "Already have an account?"
+    "hasAccount": "Already have an account?",
+    "enterEmail": "Please enter your email.",
+    "enterPassword": "Please enter your password.",
+    "enterName": "Please enter your name.",
+    "passwordTooShort": "Password must be at least 6 characters.",
+    "passwordMismatch": "Passwords do not match.",
+    "checkEmail": "Check your email to verify your account, then sign in.",
+    "resetEmailSent": "Reset link sent",
+    "checkEmailReset": "Check your inbox for the password reset link.",
+    "buyerDesc": "Browse properties, make offers, track portfolio",
+    "sellerDesc": "List properties, manage leads, track performance",
+    "developerDesc": "Analyze land, run AI plans, manage projects",
+    "noAccountYet": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?"
   },
   "buyer": {
     "dashboardTitle": "Buyer Dashboard",
