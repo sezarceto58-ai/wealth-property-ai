@@ -282,6 +282,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
+        <GitHubSyncBanner />
+
         {/* Page content — extra bottom padding on mobile so content isn't hidden behind MobileNav */}
         <div className="flex-1 p-4 lg:p-6 pb-24 lg:pb-6">
           <PageTransition>{children}</PageTransition>
