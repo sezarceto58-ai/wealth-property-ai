@@ -116,7 +116,7 @@ export function useSubscription() {
     if (data?.code === "STRIPE_NOT_CONFIGURED") {
       setStripeAvailable(false);
       throw new Error(
-        "Payment processing is not yet available. Please contact support@terravista.iq to upgrade your plan."
+        "Payment processing is not yet available. Please contact support@aqarai.iq to upgrade your plan."
       );
     }
 
@@ -129,7 +129,7 @@ export function useSubscription() {
     if (error) throw error;
     if (data?.code === "STRIPE_NOT_CONFIGURED") {
       throw new Error(
-        "Billing portal is not yet available. Please contact support@terravista.iq."
+        "Billing portal is not yet available. Please contact support@aqarai.iq."
       );
     }
     if (data?.error) throw new Error(data.error);
