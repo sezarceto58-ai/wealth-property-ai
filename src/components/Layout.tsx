@@ -13,6 +13,7 @@ import NotificationBell from "@/components/NotificationBell";
 import PageTransition from "@/components/PageTransition";
 import MobileNav from "@/components/MobileNav";
 import InstallBanner from "@/components/InstallBanner";
+import GitHubSyncBanner from "@/components/GitHubSyncBanner";
 
 // ─────────────────────────────────────────────────────────────
 // Nav definitions — all shared pages use role-prefixed paths
