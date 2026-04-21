@@ -93,6 +93,7 @@ const App = () => (
                       <Route path="/syndication" element={<SyndicationDeals />} />
                       <Route path="/syndication/:id" element={<SyndicationDealDetail />} />
                       <Route path="/valuation" element={<AIValuation />} />
+                      <Route path="/valuation/:id" element={<AIValuation />} />
                     </Routes>
                   </Layout>
                 </RequireRole>
@@ -123,6 +124,7 @@ const App = () => (
                       <Route path="/syndication" element={<SyndicationDeals />} />
                       <Route path="/syndication/:id" element={<SyndicationDealDetail />} />
                       <Route path="/valuation" element={<AIValuation />} />
+                      <Route path="/valuation/:id" element={<AIValuation />} />
                     </Routes>
                   </Layout>
                 </RequireRole>
@@ -150,6 +152,7 @@ const App = () => (
                       <Route path="/syndication" element={<SyndicationDeals />} />
                       <Route path="/syndication/:id" element={<SyndicationDealDetail />} />
                       <Route path="/valuation" element={<AIValuation />} />
+                      <Route path="/valuation/:id" element={<AIValuation />} />
                     </Routes>
                   </Layout>
                 </RequireRole>

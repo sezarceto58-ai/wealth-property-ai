@@ -198,6 +198,12 @@ export default function PropertyDetail() {
               >
                 Full AI Analysis →
               </button>
+              <button
+                onClick={() => navigate(`/buyer/valuation/${property.id}`)}
+                className="w-full py-3 rounded-xl border border-amber-300/60 bg-amber-50/60 dark:bg-amber-900/20 dark:border-amber-700/50 text-amber-700 dark:text-amber-400 font-medium text-sm hover:bg-amber-100/80 dark:hover:bg-amber-900/30 transition-colors flex items-center justify-center gap-2"
+              >
+                <TrendingUp className="w-4 h-4" /> Deep AI Valuation
+              </button>
             </div>
 
             <div className="pt-4 border-t border-border">

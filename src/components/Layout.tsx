@@ -132,7 +132,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const location  = useLocation();
   const navigate  = useNavigate();
   const { user, signOut } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  // Reactive RTL detection — re-renders when language changes
+  const isRTL = i18n.dir() === "rtl";
+
+  // Close sidebar on route change
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Prevent body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [sidebarOpen]);
 
   // Remember last role-prefixed path so shared pages keep the correct nav
   const lastRoleRef = useRef<NavRole>("buyer");
@@ -156,21 +174,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     navigate("/");
   };
 
+  // Sidebar translate classes — must be reactive to RTL
+  const sidebarHiddenClass = isRTL ? "translate-x-full" : "-translate-x-full";
+  const sidebarSideClass   = isRTL ? "right-0 border-l border-sidebar-border" : "left-0 border-r border-sidebar-border";
+
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Sidebar backdrop */}
+      {/* Sidebar backdrop — full screen, high z-index, closes on tap */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
         />
       )}
 
       {/* ── Sidebar ── */}
       <aside
-        className={`fixed inset-y-0 z-50 w-64 bg-sidebar border-sidebar-border flex flex-col transform transition-transform duration-200 lg:translate-x-0 lg:static
-          ${document.documentElement.dir === "rtl" ? "right-0 border-l" : "left-0 border-r"}
-          ${sidebarOpen ? "translate-x-0" : document.documentElement.dir === "rtl" ? "translate-x-full" : "-translate-x-full"}
+        className={`fixed inset-y-0 z-50 w-72 bg-sidebar flex flex-col transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:w-64 lg:z-auto
+          ${sidebarSideClass}
+          ${sidebarOpen ? "translate-x-0 shadow-2xl" : sidebarHiddenClass}
         `}
       >
         {/* Logo */}
@@ -179,9 +202,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="w-8 h-8 rounded-lg bg-gradient-gold flex items-center justify-center">
               <Building2 className="w-4 h-4 text-white" />
             </div>
-            <span className="text-lg font-display font-bold text-gradient-gold">TerraVista</span>
+            <span className="text-lg font-display font-bold text-gradient-gold">AqarAI</span>
           </Link>
-          <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-muted-foreground hover:text-foreground">
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors"
+            aria-label="Close sidebar"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -209,7 +236,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     >
                       <item.icon className="w-4 h-4 shrink-0" />
                       <span className="truncate">{item.label}</span>
-                      {isActive && <ChevronRight className="w-3 h-3 ml-auto shrink-0 opacity-60 rtl-flip" />}
+                      {isActive && <ChevronRight className={`w-3 h-3 ms-auto shrink-0 opacity-60 ${isRTL ? "rotate-180" : ""}`} />}
                     </Link>
                   );
                 })}
@@ -263,20 +290,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* ── Main content ── */}
-      <main className="flex-1 min-w-0 flex flex-col">
+      <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
         {/* Top header */}
-        <header className="sticky top-0 z-30 flex items-center gap-4 px-4 py-3 border-b border-border bg-background/80 backdrop-blur-md lg:px-6 shrink-0">
+        <header className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3 border-b border-border bg-background/90 backdrop-blur-md lg:px-6 shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden text-muted-foreground hover:text-foreground transition-colors"
+            className="lg:hidden p-2 -ml-1 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+            aria-label="Open menu"
           >
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex-1" />
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <LanguageToggle />
             <NotificationBell />
-            <div className="w-8 h-8 rounded-full bg-gradient-gold flex items-center justify-center text-xs font-bold text-white shrink-0">
+            <div className="w-8 h-8 rounded-full bg-gradient-gold flex items-center justify-center text-xs font-bold text-white shrink-0 cursor-pointer">
               {initials}
             </div>
           </div>
@@ -285,7 +313,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <GitHubSyncBanner />
 
         {/* Page content — extra bottom padding on mobile so content isn't hidden behind MobileNav */}
-        <div className="flex-1 p-4 lg:p-6 pb-24 lg:pb-6">
+        <div className="flex-1 p-4 lg:p-6 pb-24 lg:pb-6 overflow-x-hidden">
           <PageTransition>{children}</PageTransition>
         </div>
       </main>

@@ -47,7 +47,7 @@ export default function InstallBanner() {
           <Download className="w-5 h-5 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-foreground">Install TerraVista</p>
+          <p className="text-sm font-semibold text-foreground">Install AqarAI</p>
           <p className="text-xs text-muted-foreground">Add to home screen for the best experience.</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
