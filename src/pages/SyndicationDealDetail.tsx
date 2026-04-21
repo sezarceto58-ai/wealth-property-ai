@@ -57,6 +57,7 @@ export default function SyndicationDealDetail() {
   // Data Moat tracking
   useEffect(() => {
     if (deal) trackSyndicationView(deal.id, deal.title, deal.targetRaise);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deal?.id]);
 
   if (!deal) {

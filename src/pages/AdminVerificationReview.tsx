@@ -45,6 +45,7 @@ export default function AdminVerificationReview() {
 
   useEffect(() => {
     fetchVerifications();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateStatus = async (id: string, newStatus: string) => {
