@@ -55,8 +55,8 @@ export default function Landing() {
         <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/80 to-background" />
         <div className="relative max-w-7xl mx-auto px-6 pt-20 pb-10 text-center">
           <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 leading-tight">
-            {t("landing.heroTitle").split(",")[0]}
-            <span className="text-gradient-gold">{t("landing.heroTitle").split(",")[1] || ""}</span>
+            <span>{t("landing.heroTitle").split(",")[0]}</span>
+            <span className="text-gradient-gold">{t("landing.heroTitle").split(",")[1] ?? ""}</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
             {t("landing.heroSubtitle")}
