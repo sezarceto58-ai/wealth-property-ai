@@ -24,7 +24,7 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     if (isPreviewHost || !import.meta.env.PROD) {
       unregisterServiceWorkers().catch((err) =>
-        console.warn("[TerraVista] SW unregister failed:", err),
+        console.warn("[AqarAI] SW unregister failed:", err),
       );
       return;
     }
@@ -32,7 +32,7 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker
       .register("/sw.js", { scope: "/" })
       .then((registration) => {
-        console.log("[TerraVista] SW registered:", registration.scope);
+        console.log("[AqarAI] SW registered:", registration.scope);
 
         setInterval(() => registration.update(), 60_000);
 
@@ -40,12 +40,12 @@ if ("serviceWorker" in navigator) {
           const newWorker = registration.installing;
           newWorker?.addEventListener("statechange", () => {
             if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-              console.log("[TerraVista] New version available. Refresh to update.");
+              console.log("[AqarAI] New version available. Refresh to update.");
             }
           });
         });
       })
-      .catch((err) => console.warn("[TerraVista] SW registration failed:", err));
+      .catch((err) => console.warn("[AqarAI] SW registration failed:", err));
   });
 }
 
