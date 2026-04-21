@@ -34,7 +34,7 @@ export default function Landing() {
             <div className="w-9 h-9 rounded-xl bg-gradient-gold flex items-center justify-center shadow-gold">
               <Building2 className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-display font-bold text-gradient-gold">TerraVista</span>
+            <span className="text-xl font-display font-bold text-gradient-gold">AqarAI</span>
           </Link>
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageToggle />
@@ -104,7 +104,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold mb-4">
-              {t("landing.whyTerraVista", "Why")} <span className="text-gradient-gold">TerraVista</span>?
+              {t("landing.whyAqarAI", "Why")} <span className="text-gradient-gold">AqarAI</span>?
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto text-sm sm:text-base">
               {t("landing.whySubtitle", "Everything you need to navigate the real estate market with confidence.")}
@@ -190,7 +190,7 @@ export default function Landing() {
             {t("landing.ctaTitle", "Ready to Get Started?")}
           </h2>
           <p className="text-muted-foreground mb-8 text-sm sm:text-base">
-            {t("landing.ctaSubtitle", "Join thousands of buyers and sellers on TerraVista today.")}
+            {t("landing.ctaSubtitle", "Join thousands of buyers and sellers on AqarAI today.")}
           </p>
           <Button size="lg" asChild className="text-base px-10 shadow-gold">
             <Link to="/auth?tab=signup">{t("landing.ctaButton", "Create Free Account")}</Link>
@@ -205,9 +205,9 @@ export default function Landing() {
             <div className="w-7 h-7 rounded-lg bg-gradient-gold flex items-center justify-center">
               <Building2 className="w-3.5 h-3.5 text-white" />
             </div>
-            <span className="font-display font-bold text-gradient-gold">TerraVista</span>
+            <span className="font-display font-bold text-gradient-gold">AqarAI</span>
           </Link>
-          <p className="text-xs text-muted-foreground">{t("landing.copyright", "© 2026 TerraVista. All rights reserved.")}</p>
+          <p className="text-xs text-muted-foreground">{t("landing.copyright", "© 2026 AqarAI. All rights reserved.")}</p>
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <Link to="/pricing" className="hover:text-foreground transition-colors">{t("common.pricing")}</Link>
             <Link to="/support" className="hover:text-foreground transition-colors">{t("support.title")}</Link>

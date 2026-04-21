@@ -267,7 +267,7 @@ export default function SyndicationDeals() {
       <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <div className="flex-1">
           <p className="font-semibold text-foreground">Are you a developer with a deal?</p>
-          <p className="text-sm text-muted-foreground mt-0.5">Reach 500+ verified investors on TerraVista Syndication.</p>
+          <p className="text-sm text-muted-foreground mt-0.5">Reach 500+ verified investors on AqarAI Syndication.</p>
         </div>
         <button className="px-5 py-2.5 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors shrink-0">
           Submit a Deal

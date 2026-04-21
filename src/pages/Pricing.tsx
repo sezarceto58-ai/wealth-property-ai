@@ -165,7 +165,7 @@ export default function Pricing() {
     if (key === "free") { navigate("/buyer"); return; }
     // If Stripe is not configured, open email instead
     if (!stripeAvailable) {
-      window.location.href = `mailto:support@terravista.iq?subject=Upgrade to ${TIERS[key].name}&body=Hello, I would like to upgrade my TerraVista account to the ${TIERS[key].name} plan.`;
+      window.location.href = `mailto:support@aqarai.iq?subject=Upgrade to ${TIERS[key].name}&body=Hello, I would like to upgrade my AqarAI account to the ${TIERS[key].name} plan.`;
       return;
     }
     setSubscribing(key);
@@ -192,7 +192,7 @@ export default function Pricing() {
             </p>
           </div>
           <a
-            href="mailto:support@terravista.iq"
+            href="mailto:support@aqarai.iq"
             className="px-4 py-2.5 rounded-xl bg-amber-600 text-white text-sm font-semibold hover:bg-amber-700 transition-colors shrink-0 flex items-center gap-2"
           >
             <Mail className="w-4 h-4" /> Contact Support
@@ -328,7 +328,7 @@ export default function Pricing() {
           {[
             { q: "Can I switch plans at any time?", a: "Yes — upgrades take effect immediately. Downgrades apply at the end of your current billing period." },
             { q: "What happens to my data if I downgrade?", a: "All your data is preserved. Gated features become inaccessible but nothing is deleted." },
-            { q: "Is there a free trial for Pro or Elite?", a: "We offer a 7-day trial for Pro. Contact support@terravista.iq for an Elite trial." },
+            { q: "Is there a free trial for Pro or Elite?", a: "We offer a 7-day trial for Pro. Contact support@aqarai.iq for an Elite trial." },
             { q: "Are the prices in USD?", a: "Yes, all prices are in US Dollars. IQD payments can be arranged through our support team." },
           ].map((item) => (
             <details key={item.q} className="group">

@@ -60,7 +60,7 @@ export default function ResetPassword() {
           <div className="w-9 h-9 rounded-lg bg-gradient-gold flex items-center justify-center">
             <Building2 className="w-5 h-5 text-primary-foreground" />
           </div>
-          <span className="text-xl font-display font-bold text-gradient-gold">TerraVista</span>
+          <span className="text-xl font-display font-bold text-gradient-gold">AqarAI</span>
         </div>
 
         <h2 className="text-2xl font-display font-bold mb-1 text-foreground text-center">Set New Password</h2>

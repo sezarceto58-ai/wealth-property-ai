@@ -444,7 +444,7 @@ export default function Support() {
             <div className="flex-1">
               <p className="font-semibold text-foreground">Need urgent help?</p>
               <p className="text-sm text-muted-foreground mt-0.5">
-                Email us at <span className="text-primary font-medium">support@terravista.iq</span> or call{" "}
+                Email us at <span className="text-primary font-medium">support@aqarai.iq</span> or call{" "}
                 <span className="text-primary font-medium">+964 750 000 0000</span>
               </p>
             </div>

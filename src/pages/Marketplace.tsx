@@ -20,11 +20,11 @@ export default function Marketplace() {
   return (
     <div className="-m-4 lg:-m-6">
       <div className="relative h-64 lg:h-80 overflow-hidden">
-        <img src={heroImg} alt="TerraVista Hero" className="w-full h-full object-cover" />
+        <img src={heroImg} alt="AqarAI Hero" className="w-full h-full object-cover" />
         <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
         <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-10">
           <h1 className="text-3xl lg:text-4xl font-display font-bold text-gradient-gold mb-2">Discover Premium Properties</h1>
-          <p className="text-sm text-muted-foreground max-w-lg">Iraq's trusted real estate marketplace — powered by TerraScore™ AI valuation and TerraOffer™ serious buyer engine.</p>
+          <p className="text-sm text-muted-foreground max-w-lg">Iraq's trusted real estate marketplace — powered by AqarScore™ AI valuation and AqarOffer™ serious buyer engine.</p>
         </div>
       </div>
 

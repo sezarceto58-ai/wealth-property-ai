@@ -82,7 +82,7 @@ export default function BuyerFavorites() {
           </p>
         </div>
         <div className="rounded-xl bg-card border border-border p-4">
-          <p className="text-xs text-muted-foreground">Avg TerraScore</p>
+          <p className="text-xs text-muted-foreground">Avg AqarScore</p>
           <p className="text-xl font-bold text-success mt-1">
             {favorites.length ? Math.round(favorites.reduce((s, p) => s + p.terra_score, 0) / favorites.length) : 0}
           </p>

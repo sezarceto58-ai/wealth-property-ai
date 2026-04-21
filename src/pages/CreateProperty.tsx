@@ -4,6 +4,7 @@ import { Building2, Plus, ImagePlus, DollarSign, MapPin, Maximize, Tag, Brain, L
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
 
 const propertyTypes = ["Apartment", "Villa", "Penthouse", "Commercial", "Land", "Townhouse"];
 const cities = ["Erbil", "Baghdad", "Basra", "Sulaymaniyah", "Duhok", "Kirkuk"];
@@ -19,7 +20,9 @@ type TabKey = "manual" | "ai";
 export default function CreateProperty() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const qc = useQueryClient();
   const [activeTab, setActiveTab] = useState<TabKey>("manual");
+  const [publishing, setPublishing] = useState(false);
 
   // Manual form state
   const [form, setForm] = useState({
@@ -43,17 +46,75 @@ export default function CreateProperty() {
 
   const update = (key: string, value: string) => setForm((prev) => ({ ...prev, [key]: value }));
 
-  const handlePublish = () => {
-    if (!form.title || !form.price || !form.district || !form.area) {
+  // ── Save to Supabase ──────────────────────────────────────────────────────
+  const saveToSupabase = async (status: "active" | "draft") => {
+    if (!form.title.trim() || !form.price || !form.district.trim() || !form.area) {
       toast({ title: "Missing fields", description: "Please fill in title, price, district, and area.", variant: "destructive" });
-      return;
+      return false;
     }
-    toast({ title: "Listing published! 🎉", description: `${form.title} is now live on the marketplace.` });
-    setTimeout(() => navigate("/seller/listings"), 1500);
+    if (isNaN(Number(form.price)) || Number(form.price) <= 0) {
+      toast({ title: "Invalid price", description: "Please enter a valid price.", variant: "destructive" });
+      return false;
+    }
+    if (isNaN(Number(form.area)) || Number(form.area) <= 0) {
+      toast({ title: "Invalid area", description: "Please enter a valid area in m².", variant: "destructive" });
+      return false;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({ title: "Not authenticated", description: "Please sign in again.", variant: "destructive" });
+      return false;
+    }
+
+    const payload = {
+      user_id: user.id,
+      title: form.title.trim(),
+      title_ar: form.titleAr.trim() || null,
+      description: form.description.trim() || null,
+      price: Number(form.price),
+      currency: form.currency,
+      type: form.type,
+      property_type: form.propertyType,
+      city: form.city,
+      district: form.district.trim(),
+      bedrooms: Number(form.bedrooms) || 0,
+      bathrooms: Number(form.bathrooms) || 0,
+      area: Number(form.area),
+      features: form.features,
+      status,
+      terra_score: 70,   // default — recalculated server-side later
+      verified: false,
+    };
+
+    const { error } = await supabase.from("properties").insert(payload as any);
+    if (error) {
+      toast({ title: "Save failed", description: error.message, variant: "destructive" });
+      return false;
+    }
+    // Invalidate listing caches
+    qc.invalidateQueries({ queryKey: ["properties"] });
+    qc.invalidateQueries({ queryKey: ["my-properties"] });
+    return true;
   };
 
-  const handleSaveDraft = () => {
-    toast({ title: "Draft saved", description: "Your listing has been saved as a draft." });
+  const handlePublish = async () => {
+    setPublishing(true);
+    const ok = await saveToSupabase("active");
+    setPublishing(false);
+    if (ok) {
+      toast({ title: "Listing published! 🎉", description: `${form.title} is now live on the marketplace.` });
+      setTimeout(() => navigate("/seller/listings"), 1200);
+    }
+  };
+
+  const handleSaveDraft = async () => {
+    setPublishing(true);
+    const ok = await saveToSupabase("draft");
+    setPublishing(false);
+    if (ok) {
+      toast({ title: "Draft saved", description: "Your listing has been saved as a draft." });
+    }
   };
 
   const handleAIGenerate = async () => {
@@ -157,7 +218,7 @@ export default function CreateProperty() {
       {activeTab === "manual" ?
       <ManualForm
         form={form} update={update} toggleFeature={toggleFeature}
-        handlePublish={handlePublish} handleSaveDraft={handleSaveDraft} toast={toast} /> :
+        handlePublish={handlePublish} handleSaveDraft={handleSaveDraft} toast={toast} publishing={publishing} /> :
 
 
       <AIResultsPanel result={aiResult} loading={aiLoading} expanded={expanded} toggle={toggle} applyAIToForm={applyAIToForm} />
@@ -167,7 +228,7 @@ export default function CreateProperty() {
 }
 
 /* ─── Manual Form ─── */
-function ManualForm({ form, update, toggleFeature, handlePublish, handleSaveDraft, toast }: any) {
+function ManualForm({ form, update, toggleFeature, handlePublish, handleSaveDraft, toast, publishing }: any) {
   return (
     <div className="space-y-5">
       {/* Images */}
@@ -297,10 +358,18 @@ function ManualForm({ form, update, toggleFeature, handlePublish, handleSaveDraf
 
       {/* Submit */}
       <div className="flex gap-3">
-        <button onClick={handlePublish} className="flex-1 py-3 rounded-xl bg-gradient-gold text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity">
-          Publish Listing
+        <button
+          onClick={handlePublish}
+          disabled={publishing}
+          className="flex-1 py-3 rounded-xl bg-gradient-gold text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          {publishing ? <><Loader2 className="w-4 h-4 animate-spin" /> Publishing...</> : "Publish Listing"}
         </button>
-        <button onClick={handleSaveDraft} className="px-6 py-3 rounded-xl border border-border text-foreground font-medium text-sm hover:bg-secondary/50 transition-colors">
+        <button
+          onClick={handleSaveDraft}
+          disabled={publishing}
+          className="px-6 py-3 rounded-xl border border-border text-foreground font-medium text-sm hover:bg-secondary/50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        >
           Save Draft
         </button>
       </div>

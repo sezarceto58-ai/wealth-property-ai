@@ -14,7 +14,7 @@ const adminStats = {
   totalUsers: 14320,
   monthlyRevenue: 48500,
   conversionRate: 3.2,
-  avgTerraScore: 71,
+  avgAqarScore: 71,
 };
 
 const tabs = [
@@ -130,7 +130,7 @@ export default function AdminDashboard() {
             <StatsCard title="Total Users" value={adminStats.totalUsers.toLocaleString()} change="+420 this month" icon={Users} trend="up" />
             <StatsCard title="Monthly Revenue" value={`$${adminStats.monthlyRevenue.toLocaleString()}`} change="+12%" icon={BadgeDollarSign} trend="up" />
             <StatsCard title="Conversion Rate" value={`${adminStats.conversionRate}%`} icon={Activity} />
-            <StatsCard title="Avg TerraScore" value={adminStats.avgTerraScore} icon={Eye} />
+            <StatsCard title="Avg AqarScore" value={adminStats.avgAqarScore} icon={Eye} />
           </div>
         </>
       )}

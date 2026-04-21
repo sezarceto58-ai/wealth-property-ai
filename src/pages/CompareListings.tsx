@@ -14,7 +14,7 @@ const compareFields: { label: string; key: keyof DbProperty; format?: (v: DbProp
   { label: "Bedrooms", key: "bedrooms" },
   { label: "Bathrooms", key: "bathrooms" },
   { label: "Area (m²)", key: "area" },
-  { label: "TerraScore", key: "terra_score" },
+  { label: "AqarScore", key: "terra_score" },
   { label: "AI Valuation", key: "ai_valuation", format: (p) => p.ai_valuation ? `$${p.ai_valuation.toLocaleString()}` : "—" },
   { label: "Verified", key: "verified", format: (p) => p.verified ? "✅ Yes" : "❌ No" },
   { label: "Agent", key: "agent_name" },

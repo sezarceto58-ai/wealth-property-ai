@@ -11,6 +11,7 @@ import OfferModal from "@/components/OfferModal";
 import { useProperty } from "@/hooks/useProperties";
 import { useToast } from "@/hooks/use-toast";
 import { useToggleFavorite } from "@/hooks/useFavorites";
+import { useUserRoles, getBestHomeRoute } from "@/hooks/useUserRoles";
 import { supabase } from "@/integrations/supabase/client";
 import property1 from "@/assets/property-1.jpg";
 
@@ -18,6 +19,8 @@ export default function PropertyDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { data: userRoles = [] } = useUserRoles();
+  const rolePrefix = getBestHomeRoute(userRoles).replace("/", ""); // "buyer" | "seller" | "developer" | "admin"
   const [showOffer, setShowOffer] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [liked, setLiked] = useState(false);
@@ -149,10 +152,10 @@ export default function PropertyDetail() {
             }}
           />
 
-          {/* TerraScore */}
+          {/* AqarScore */}
           <div className="rounded-2xl bg-card border border-border p-5 flex items-center justify-between">
             <div>
-              <p className="font-semibold text-foreground">TerraScore™</p>
+              <p className="font-semibold text-foreground">AqarScore™</p>
               <p className="text-xs text-muted-foreground mt-0.5">Overall platform deal quality</p>
             </div>
             <TerraScore score={property.terra_score} size="lg" />
@@ -187,19 +190,19 @@ export default function PropertyDetail() {
                 <DollarSign className="w-4 h-4" /> Send Offer
               </button>
               <button
-                onClick={() => navigate("/buyer/messages")}
+                onClick={() => navigate(`/${rolePrefix}/messages`)}
                 className="w-full py-3 rounded-xl border border-border bg-card text-foreground font-medium text-sm hover:bg-secondary/40 transition-colors flex items-center justify-center gap-2"
               >
                 <MessageSquare className="w-4 h-4" /> Message Seller
               </button>
               <button
-                onClick={() => navigate(`/buyer/analysis/${property.id}`)}
+                onClick={() => navigate(`/${rolePrefix}/analysis/${property.id}`)}
                 className="w-full py-3 rounded-xl border border-primary/30 bg-primary/5 text-primary font-medium text-sm hover:bg-primary/10 transition-colors"
               >
                 Full AI Analysis →
               </button>
               <button
-                onClick={() => navigate(`/buyer/valuation/${property.id}`)}
+                onClick={() => navigate(`/${rolePrefix}/valuation/${property.id}`)}
                 className="w-full py-3 rounded-xl border border-amber-300/60 bg-amber-50/60 dark:bg-amber-900/20 dark:border-amber-700/50 text-amber-700 dark:text-amber-400 font-medium text-sm hover:bg-amber-100/80 dark:hover:bg-amber-900/30 transition-colors flex items-center justify-center gap-2"
               >
                 <TrendingUp className="w-4 h-4" /> Deep AI Valuation

@@ -10,7 +10,7 @@
  */
 
 import { useState, lazy, Suspense, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   TrendingUp, MapPin, Building2, Layers, Eye, Sun, Settings2,
@@ -309,15 +309,18 @@ function PropertyHeader({ property, backPath }: { property: DbProperty; backPath
 export default function AIValuationPage() {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
 
   // Load specific property if ID provided
   const { data: property, isLoading: propLoading } = useProperty(id);
 
-  // Determine where "back" goes based on the URL
-  const backPath = id
-    ? (window.location.pathname.startsWith("/seller") ? `/seller` : `/property/${id}`)
-    : undefined;
+  // Determine role prefix from current path for back navigation
+  const rolePrefix = location.pathname.startsWith("/seller") ? "seller"
+    : location.pathname.startsWith("/developer") ? "developer"
+    : "buyer";
+
+  const backPath = id ? `/property/${id}` : undefined;
 
   // Valuation state — starts with property data when available
   const [d, setD] = useState<ValuationInput>(() => ({
