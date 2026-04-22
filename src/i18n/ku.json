@@ -67,7 +67,10 @@
     "unverified": "پشتڕاستنەکراو",
     "new": "نوێ",
     "updated": "نوێکراوەتەوە",
-    "profile": "پرۆفایل"
+    "profile": "پرۆفایل",
+    "notifications": "ئاگادارکردنهوهکان",
+    "noNotifications": "هیچ ئاگادارکردنهوهیهک نییه",
+    "markAllRead": "هه‌موو وانهکراو دیاری بکه"
   },
   "nav": {
     "dashboard": "داشبۆرد",
