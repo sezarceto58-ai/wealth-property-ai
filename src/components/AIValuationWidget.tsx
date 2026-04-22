@@ -1,75 +1,62 @@
 /**
- * AIValuationWidget
- * ─────────────────
- * Module 1: AI Valuation Engine — free for ALL users (all roles).
- * Each user gets 2 free valuations. Usage is tracked in localStorage
- * (keyed to the user's auth id so it's per-account on the device).
+ * AIValuationWidget — Confirmation-Gated Valuation
  *
- * Shows:
- *  • Verdict banner (Undervalued / Fair / Overvalued)
- *  • AI estimated value vs asking price
- *  • Discount vs market %
- *  • Price per m² vs market rate
- *  • 3-year appreciation forecast
- *  • Top 3 valuation factors
- *  • Comparables
- *
- * After 2 uses → upgrade prompt (Pro unlocks unlimited valuations).
+ * Enforces strict rules:
+ * 1. Valuation only activates when BOTH conditions are met:
+ *    - A specific property has been identified (passed in via `property` prop)
+ *    - The user has explicitly confirmed they want a valuation for THAT property
+ * 2. Never auto-runs — always requires explicit user confirmation
+ * 3. Confirmation screen names the exact property before proceeding
+ * 4. Each widget instance is fully isolated — no cross-property data bleed
+ * 5. Switching properties (different `property.id`) resets all state
+ * 6. If no property is provided, blocks the valuation and explains why
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   TrendingUp, Sparkles, Lock, RefreshCw,
   ArrowUpRight, ArrowDownRight, CheckCircle2,
+  Building2, AlertCircle, MapPin, Bed, Bath, Maximize,
 } from "lucide-react";
-import { calculateValuation, ValuationInput, ValuationResult } from "@/services/valuationEngine";
+import { calculateValuation, type ValuationInput, type ValuationResult } from "@/services/valuationEngine";
 import { useAuth } from "@/hooks/useAuth";
+import type { DbProperty } from "@/types/database";
 
-// ── Usage tracking ────────────────────────────────────────────────────────────
+// ── Usage tracking (per user, per device) ─────────────────────────────────────
 
 const FREE_USES = 2;
 
-function getUsageKey(userId: string) {
-  return `tv_valuation_uses_${userId}`;
-}
-
+function getUsageKey(userId: string) { return `aqar_valuation_uses_${userId}`; }
 function getUsageCount(userId: string): number {
-  try {
-    return parseInt(localStorage.getItem(getUsageKey(userId)) ?? "0", 10);
-  } catch {
-    return 0;
-  }
+  try { return parseInt(localStorage.getItem(getUsageKey(userId)) ?? "0", 10); } catch { return 0; }
 }
-
 function incrementUsage(userId: string): number {
   try {
     const next = getUsageCount(userId) + 1;
     localStorage.setItem(getUsageKey(userId), String(next));
     return next;
-  } catch {
-    return 1;
-  }
+  } catch { return 1; }
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ── Sub-components ─────────────────────────────────────────────────────────────
 
 function VerdictBadge({ verdict }: { verdict: ValuationResult["verdict"] }) {
   const cfg = {
     undervalued: {
-      bg:   "bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-700",
+      bg: "bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-700",
       text: "text-emerald-700 dark:text-emerald-400",
       icon: <ArrowDownRight className="w-4 h-4" />,
       label: "🟢 Undervalued — Strong Buy Signal",
     },
     overvalued: {
-      bg:   "bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-700",
+      bg: "bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-700",
       text: "text-red-700 dark:text-red-400",
       icon: <ArrowUpRight className="w-4 h-4" />,
       label: "🔴 Overvalued — Exercise Caution",
     },
     fair: {
-      bg:   "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-700",
+      bg: "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-700",
       text: "text-amber-700 dark:text-amber-400",
       icon: <CheckCircle2 className="w-4 h-4" />,
       label: "🟡 Fair Market Value",
@@ -84,13 +71,13 @@ function VerdictBadge({ verdict }: { verdict: ValuationResult["verdict"] }) {
   );
 }
 
-function MetricTile({
-  label, value, sub, highlight,
-}: { label: string; value: string; sub?: string; highlight?: "positive" | "negative" | "neutral" }) {
+function MetricTile({ label, value, sub, highlight }: {
+  label: string; value: string; sub?: string;
+  highlight?: "positive" | "negative" | "neutral";
+}) {
   const color =
     highlight === "positive" ? "text-emerald-600 dark:text-emerald-400" :
-    highlight === "negative" ? "text-red-600 dark:text-red-400" :
-    "text-foreground";
+    highlight === "negative" ? "text-red-600 dark:text-red-400" : "text-foreground";
   return (
     <div className="rounded-xl bg-secondary/40 p-3">
       <p className="text-[11px] text-muted-foreground">{label}</p>
@@ -100,44 +87,160 @@ function MetricTile({
   );
 }
 
-// ── Main Widget ───────────────────────────────────────────────────────────────
+// ── Stage types ────────────────────────────────────────────────────────────────
+
+type Stage =
+  | "no_property"   // Rule 1: no property identified — block
+  | "idle"          // Property identified, awaiting explicit user request
+  | "confirm"       // Rule 3: show confirmation screen naming the exact property
+  | "exhausted"     // Usage limit reached
+  | "result";       // Valuation completed and shown
+
+// ── Props ──────────────────────────────────────────────────────────────────────
 
 interface Props {
-  input: ValuationInput;
-  /** Compact = show just verdict + key numbers (for property cards / list items) */
+  /**
+   * The specific property this widget is scoped to.
+   * REQUIRED for valuation — if undefined, widget enters "no_property" stage.
+   */
+  property?: DbProperty;
+  /**
+   * Derived input already mapped from the property.
+   * Still requires `property` to be set for identity checks.
+   */
+  input?: ValuationInput;
+  /** Compact display mode for embedding in cards */
   compact?: boolean;
 }
 
-export default function AIValuationWidget({ input, compact = false }: Props) {
+// ── Main Widget ────────────────────────────────────────────────────────────────
+
+export default function AIValuationWidget({ property, input, compact = false }: Props) {
   const { user } = useAuth();
   const navigate = useNavigate();
 
   const userId = user?.id ?? "anonymous";
-  const [usedCount, setUsedCount] = useState(() => getUsageCount(userId));
-  const [result,    setResult]    = useState<ValuationResult | null>(null);
-  const [revealed,  setReveal]    = useState(false);
+  const [usedCount, setUsedCount]   = useState(() => getUsageCount(userId));
+  const [result, setResult]         = useState<ValuationResult | null>(null);
+  const [stage, setStage]           = useState<Stage>(() => {
+    if (!property) return "no_property";
+    if (getUsageCount(userId) >= FREE_USES) return "exhausted";
+    return "idle";
+  });
 
-  const remaining = Math.max(0, FREE_USES - usedCount);
-  const isExhausted = usedCount >= FREE_USES && !revealed;
+  // ── Rule 5: switching properties resets ALL state ──────────────────────────
+  const lastPropertyId = useRef<string | undefined>(property?.id);
+  useEffect(() => {
+    if (property?.id !== lastPropertyId.current) {
+      lastPropertyId.current = property?.id;
+      setResult(null);
+      setUsedCount(getUsageCount(userId));
+      if (!property) {
+        setStage("no_property");
+      } else if (getUsageCount(userId) >= FREE_USES) {
+        setStage("exhausted");
+      } else {
+        setStage("idle");    // reset to idle — must re-confirm for new property
+      }
+    }
+  }, [property?.id, userId]);
 
-  const runValuation = useCallback(() => {
-    if (usedCount >= FREE_USES) return; // guard — button shouldn't be visible
+  // ── Rule 2+3: user clicks "Request Valuation" → go to confirm screen ───────
+  const handleRequestValuation = () => {
+    if (!property) { setStage("no_property"); return; }
+    if (usedCount >= FREE_USES) { setStage("exhausted"); return; }
+    setStage("confirm");   // show confirmation screen naming the property
+  };
+
+  // ── Rule 3: user confirms the exact property → run valuation ───────────────
+  const handleConfirm = useCallback(() => {
+    if (!property || !input) return;
     const valuation = calculateValuation(input);
     const newCount = incrementUsage(userId);
     setUsedCount(newCount);
     setResult(valuation);
-    setReveal(true);
-  }, [input, userId, usedCount]);
+    setStage("result");
+  }, [property, input, userId]);
 
-  const reset = () => {
+  // ── Rule 3: user denies → back to idle ─────────────────────────────────────
+  const handleDeny = () => setStage("idle");
+
+  // ── Reset within same property ─────────────────────────────────────────────
+  const handleReset = () => {
+    if (usedCount >= FREE_USES) { setStage("exhausted"); return; }
     setResult(null);
-    setReveal(false);
+    setStage("idle");
   };
 
-  // ── Not yet run ──────────────────────────────────────────────────────────
-  if (!revealed && !isExhausted) {
+  const remaining = Math.max(0, FREE_USES - usedCount);
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // STAGE: no_property — Rule 1 & 4: no property = no valuation
+  // ────────────────────────────────────────────────────────────────────────────
+  if (stage === "no_property") {
     return (
       <div className="rounded-2xl bg-card border border-border p-5 space-y-3">
+        <div className="flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-muted-foreground" />
+          <h3 className="font-semibold text-foreground text-sm">AI Property Valuation</h3>
+        </div>
+        <div className="rounded-xl bg-secondary/40 border border-border px-4 py-3">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Valuation is available on a per-property basis. To use this feature,
+            first select a specific property from the marketplace, then request
+            a valuation from its listing page.
+          </p>
+        </div>
+        <button
+          onClick={() => navigate("/buyer/discover")}
+          className="w-full py-2.5 rounded-xl border border-primary/30 text-primary text-sm font-medium hover:bg-primary/5 transition-colors"
+        >
+          Browse Properties →
+        </button>
+      </div>
+    );
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // STAGE: exhausted — usage limit reached
+  // ────────────────────────────────────────────────────────────────────────────
+  if (stage === "exhausted") {
+    return (
+      <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
+        <div className="flex items-center gap-2">
+          <Lock className="w-4 h-4 text-muted-foreground" />
+          <h3 className="font-semibold text-foreground text-sm">AI Valuation</h3>
+        </div>
+        <div className="rounded-xl border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 p-4 text-center space-y-2">
+          <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+            You've used your {FREE_USES} free valuations
+          </p>
+          <p className="text-xs text-amber-700 dark:text-amber-400">
+            Upgrade to Pro for unlimited AI valuations on any property.
+          </p>
+        </div>
+        {["Unlimited AI valuations", "Discount vs market analysis", "5-year appreciation forecast", "Comparable sales data"].map(f => (
+          <div key={f} className="flex items-center gap-2 text-xs text-foreground">
+            <div className="w-1.5 h-1.5 rounded-full bg-primary" />{f}
+          </div>
+        ))}
+        <button
+          onClick={() => navigate("/pricing")}
+          className="w-full py-2.5 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+        >
+          <Sparkles className="w-4 h-4" /> Upgrade to Pro
+        </button>
+      </div>
+    );
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // STAGE: idle — property identified, awaiting explicit user request
+  // Rule 2: never auto-run; Rule 4: no demo or simulation
+  // ────────────────────────────────────────────────────────────────────────────
+  if (stage === "idle") {
+    return (
+      <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-primary" />
@@ -148,75 +251,113 @@ export default function AIValuationWidget({ input, compact = false }: Props) {
           </span>
         </div>
 
-        <p className="text-xs text-muted-foreground">
-          Run the AI valuation engine to see estimated market value, discount vs market,
-          and a 3-year appreciation forecast for this property.
+        {/* Show the property this will be scoped to */}
+        {property && (
+          <div className="rounded-xl bg-secondary/30 border border-border px-4 py-3 flex items-start gap-3">
+            <Building2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground">This valuation is scoped to:</p>
+              <p className="text-sm font-semibold text-foreground truncate mt-0.5">{property.title}</p>
+              <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                <MapPin className="w-3 h-3 shrink-0" />{property.district}, {property.city}
+              </p>
+            </div>
+          </div>
+        )}
+
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Run the AI engine to see estimated market value, discount analysis,
+          and a 3-year appreciation forecast for this specific property.
         </p>
 
         <button
-          onClick={runValuation}
+          onClick={handleRequestValuation}
           className="w-full py-2.5 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
         >
           <Sparkles className="w-4 h-4" />
-          Run Free Valuation
+          Request Valuation for This Property
         </button>
       </div>
     );
   }
 
-  // ── Uses exhausted, not yet run this session ──────────────────────────────
-  if (isExhausted) {
+  // ────────────────────────────────────────────────────────────────────────────
+  // STAGE: confirm — Rule 3: name the exact property before proceeding
+  // ────────────────────────────────────────────────────────────────────────────
+  if (stage === "confirm" && property) {
+    const image = property.property_images?.[0]?.url;
     return (
       <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
-        <div className="flex items-center gap-2 mb-1">
-          <Lock className="w-4 h-4 text-muted-foreground" />
-          <h3 className="font-semibold text-foreground text-sm">AI Valuation</h3>
+        <div className="flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 text-primary" />
+          <h3 className="font-semibold text-foreground text-sm">Confirm Valuation Request</h3>
         </div>
 
-        <div className="rounded-xl border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 p-4 text-center space-y-2">
-          <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-            You've used your 2 free valuations
+        {/* Rule 3: explicitly name the property */}
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-3">
+          <p className="text-sm text-foreground font-medium">
+            You're requesting a valuation for:
           </p>
-          <p className="text-xs text-amber-700 dark:text-amber-400">
-            Upgrade to Pro for unlimited AI valuations on every property.
-          </p>
-        </div>
-
-        <div className="rounded-xl bg-secondary/40 p-3 space-y-1.5">
-          {["Unlimited AI valuations", "Discount vs market analysis", "5-year appreciation forecast", "Comparable sales data"].map(f => (
-            <div key={f} className="flex items-center gap-2 text-xs text-foreground">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-              {f}
+          <div className="flex items-start gap-3">
+            {image && (
+              <img src={image} alt={property.title} className="w-16 h-16 rounded-xl object-cover shrink-0 border border-border" />
+            )}
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-foreground leading-snug">{property.title}</p>
+              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                <MapPin className="w-3 h-3 shrink-0" />{property.district}, {property.city}
+              </p>
+              <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+                {property.bedrooms > 0 && <span className="flex items-center gap-1"><Bed className="w-3 h-3" />{property.bedrooms}</span>}
+                <span className="flex items-center gap-1"><Bath className="w-3 h-3" />{property.bathrooms}</span>
+                <span className="flex items-center gap-1"><Maximize className="w-3 h-3" />{property.area}m²</span>
+              </div>
+              <p className="text-sm font-bold text-primary mt-1.5">${property.price.toLocaleString()}</p>
             </div>
-          ))}
+          </div>
+          <p className="text-sm text-muted-foreground font-medium pt-1 border-t border-primary/20">
+            Is that correct?
+          </p>
         </div>
 
-        <button
-          onClick={() => navigate("/pricing")}
-          className="w-full py-2.5 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
-        >
-          <Sparkles className="w-4 h-4" />
-          Upgrade to Pro — Unlock Unlimited
-        </button>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={handleDeny}
+            className="py-2.5 rounded-xl border border-border text-foreground text-sm font-medium hover:bg-secondary/40 transition-colors"
+          >
+            No, go back
+          </button>
+          <button
+            onClick={handleConfirm}
+            className="py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+          >
+            <CheckCircle2 className="w-4 h-4" /> Yes, proceed
+          </button>
+        </div>
+
+        <p className="text-[10px] text-muted-foreground text-center">
+          This will use 1 of your {remaining} remaining free valuations.
+        </p>
       </div>
     );
   }
 
+  // ────────────────────────────────────────────────────────────────────────────
+  // STAGE: result — show valuation output
+  // ────────────────────────────────────────────────────────────────────────────
   if (!result) return null;
 
-  // ── Compact mode: just the headline numbers ───────────────────────────────
   if (compact) {
     const diffColor =
       result.discountPercent <= -5 ? "text-emerald-600 dark:text-emerald-400" :
       result.discountPercent >= 5  ? "text-red-600 dark:text-red-400" :
       "text-amber-600 dark:text-amber-400";
-
     return (
       <div className="rounded-xl border border-border p-3 bg-card space-y-2">
         <div className="flex items-center gap-2">
           <TrendingUp className="w-3.5 h-3.5 text-primary" />
           <span className="text-xs font-semibold text-foreground">AI Valuation</span>
-          <span className="text-[10px] text-muted-foreground ml-auto">{result.confidenceLabel} confidence</span>
+          <span className="text-[10px] text-muted-foreground ms-auto">{result.confidenceLabel} confidence</span>
         </div>
         <VerdictBadge verdict={result.verdict} />
         <div className="grid grid-cols-2 gap-2">
@@ -231,27 +372,31 @@ export default function AIValuationWidget({ input, compact = false }: Props) {
     );
   }
 
-  // ── Full result ───────────────────────────────────────────────────────────
   const diffHighlight: "positive" | "negative" | "neutral" =
     result.discountPercent <= -5 ? "positive" :
     result.discountPercent >= 5  ? "negative" : "neutral";
 
   return (
     <div className="rounded-2xl bg-card border border-border p-5 space-y-5">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-foreground flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-primary" /> AI Valuation Engine
-        </h3>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">
-            {result.confidenceLabel} confidence
-          </span>
+      {/* Header — always names the property */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="font-semibold text-foreground flex items-center gap-2 text-sm">
+            <TrendingUp className="w-4 h-4 text-primary shrink-0" /> AI Valuation Engine
+          </h3>
+          {property && (
+            <p className="text-xs text-muted-foreground mt-0.5 truncate">
+              {property.title} · {property.city}
+            </p>
+          )}
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-xs text-muted-foreground">{result.confidenceLabel} confidence</span>
           {remaining > 0 && (
             <button
-              onClick={reset}
+              onClick={handleReset}
               className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground transition-colors"
-              title="Run again"
+              title="Reset"
             >
               <RefreshCw className="w-3.5 h-3.5" />
             </button>
@@ -259,23 +404,20 @@ export default function AIValuationWidget({ input, compact = false }: Props) {
         </div>
       </div>
 
-      {/* Verdict */}
       <VerdictBadge verdict={result.verdict} />
 
-      {/* Key Metrics */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <MetricTile label="AI Est. Value"  value={`$${result.estimatedValue.toLocaleString()}`} />
         <MetricTile
           label="vs Market"
           value={`${result.discountPercent > 0 ? "+" : ""}${result.discountPercent}%`}
-          sub={result.discountPercent <= -5 ? "Below market — good buy" : result.discountPercent >= 5 ? "Above market" : "Fair value"}
+          sub={result.discountPercent <= -5 ? "Below market" : result.discountPercent >= 5 ? "Above market" : "Fair value"}
           highlight={diffHighlight}
         />
         <MetricTile label="Price / m²"   value={`$${result.pricePerSqm}`} />
         <MetricTile label="Market / m²"  value={`$${result.marketPricePerSqm}`} />
       </div>
 
-      {/* Appreciation Forecast */}
       <div>
         <p className="text-xs font-semibold text-foreground mb-2">Price Appreciation Forecast</p>
         <div className="grid grid-cols-3 gap-2">
@@ -292,7 +434,6 @@ export default function AIValuationWidget({ input, compact = false }: Props) {
         </div>
       </div>
 
-      {/* Valuation Factors */}
       <div className="space-y-2 pt-1 border-t border-border">
         <p className="text-xs font-semibold text-foreground">Key Valuation Factors</p>
         {result.factors.slice(0, 3).map(f => (
@@ -306,7 +447,6 @@ export default function AIValuationWidget({ input, compact = false }: Props) {
         ))}
       </div>
 
-      {/* Comparables */}
       <div className="space-y-2">
         <p className="text-xs font-semibold text-foreground">Comparable Properties</p>
         <div className="space-y-1.5">
@@ -316,7 +456,7 @@ export default function AIValuationWidget({ input, compact = false }: Props) {
                 <p className="text-xs font-medium text-foreground">{c.title}</p>
                 <p className="text-[10px] text-muted-foreground">{c.distance} · {c.similarity}% similar</p>
               </div>
-              <div className="text-right">
+              <div className="text-end">
                 <p className="text-xs font-semibold text-foreground">${c.price.toLocaleString()}</p>
                 <p className="text-[10px] text-muted-foreground">${c.pricePerSqm}/m²</p>
               </div>
@@ -325,8 +465,7 @@ export default function AIValuationWidget({ input, compact = false }: Props) {
         </div>
       </div>
 
-      {/* Score breakdown by category */}
-      {result.scoreBreakdown && result.scoreBreakdown.length > 0 && (
+      {result.scoreBreakdown?.length > 0 && (
         <div className="space-y-2 pt-1 border-t border-border">
           <p className="text-xs font-semibold text-foreground">Property Score Breakdown</p>
           <div className="grid grid-cols-2 gap-2">
@@ -348,18 +487,16 @@ export default function AIValuationWidget({ input, compact = false }: Props) {
         </div>
       )}
 
-      {/* Free uses reminder */}
       {remaining === 0 ? (
         <div className="rounded-xl border border-amber-200 dark:border-amber-700 bg-amber-50/50 dark:bg-amber-900/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-400 text-center">
           This was your last free valuation.{" "}
-          <button onClick={() => navigate("/pricing")} className="underline font-semibold">
-            Upgrade to Pro
-          </button>{" "}
+          <button onClick={() => navigate("/pricing")} className="underline font-semibold">Upgrade to Pro</button>{" "}
           for unlimited.
         </div>
       ) : (
         <p className="text-[10px] text-muted-foreground text-center">
-          {remaining} free valuation{remaining === 1 ? "" : "s"} remaining on this device.
+          {remaining} free valuation{remaining === 1 ? "" : "s"} remaining.
+          Each valuation is scoped to one specific property.
         </p>
       )}
     </div>
