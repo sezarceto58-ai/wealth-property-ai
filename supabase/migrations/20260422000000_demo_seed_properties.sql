@@ -3,7 +3,6 @@
 -- 12 realistic Iraqi properties across Erbil, Baghdad, Mosul, Sulaymaniyah
 -- Uses a fixed demo user UUID so properties show up without real auth
 -- ─────────────────────────────────────────────────────────────────────────────
-
 -- Create a demo seller profile (used as owner for all seed listings)
 -- This is a service-role insert bypassing RLS — only runs at migration time
 DO $$
@@ -33,13 +32,22 @@ BEGIN
   ON CONFLICT (user_id) DO NOTHING;
 
   -- Role
+  -- Ensure unique constraint exists before using ON CONFLICT
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'user_roles_user_id_role_key'
+      AND conrelid = 'public.user_roles'::regclass
+  ) THEN
+    ALTER TABLE public.user_roles
+      ADD CONSTRAINT user_roles_user_id_role_key UNIQUE (user_id, role);
+  END IF;
+
   INSERT INTO public.user_roles (user_id, role)
   VALUES (demo_user_id, 'seller')
   ON CONFLICT (user_id, role) DO NOTHING;
 END $$;
 
 -- ─── Seed properties ──────────────────────────────────────────────────────────
-
 INSERT INTO public.properties (
   id, user_id, title, title_ar, description, description_ar,
   price, price_iqd, currency, type, property_type,
@@ -47,7 +55,6 @@ INSERT INTO public.properties (
   latitude, longitude, terra_score, ai_valuation, ai_confidence,
   verified, agent_name, agent_verified, features, status, views
 ) VALUES
-
 -- 1. Erbil — Luxury Villa, Ankawa
 (
   'a1000000-0000-0000-0000-000000000001',
@@ -63,7 +70,6 @@ INSERT INTO public.properties (
   ARRAY['Swimming Pool','Garden','Smart Home','Security System','Garage','Elevator','24/7 Security','Premium Finishes','Central AC','Generator'],
   'active', 342
 ),
-
 -- 2. Erbil — Modern Apartment, Gulan
 (
   'a1000000-0000-0000-0000-000000000002',
@@ -79,7 +85,6 @@ INSERT INTO public.properties (
   ARRAY['Balcony','Parking','Elevator','Security System','Fiber Internet','Central AC'],
   'active', 218
 ),
-
 -- 3. Erbil — Penthouse, Ainkawa
 (
   'a1000000-0000-0000-0000-000000000003',
@@ -95,7 +100,6 @@ INSERT INTO public.properties (
   ARRAY['Private Elevator','360° Virtual Tour','Concierge Service','Smart Home','Generator','Premium Finishes','Terrace','Central AC','Security System'],
   'active', 487
 ),
-
 -- 4. Baghdad — Karrada Apartment
 (
   'a1000000-0000-0000-0000-000000000004',
@@ -111,7 +115,6 @@ INSERT INTO public.properties (
   ARRAY['Balcony','Parking','Elevator','Central AC','Security System'],
   'active', 156
 ),
-
 -- 5. Baghdad — Mansour Villa
 (
   'a1000000-0000-0000-0000-000000000005',
@@ -127,7 +130,6 @@ INSERT INTO public.properties (
   ARRAY['Garden','Garage','Security System','Generator','Parking'],
   'active', 203
 ),
-
 -- 6. Baghdad — Jadriya Townhouse
 (
   'a1000000-0000-0000-0000-000000000006',
@@ -143,7 +145,6 @@ INSERT INTO public.properties (
   ARRAY['Terrace','Parking','Generator','Central AC'],
   'active', 98
 ),
-
 -- 7. Sulaymaniyah — Bakhtiari Apartment
 (
   'a1000000-0000-0000-0000-000000000007',
@@ -159,7 +160,6 @@ INSERT INTO public.properties (
   ARRAY['Balcony','Elevator','Central AC','Security System','Parking','Fiber Internet'],
   'active', 267
 ),
-
 -- 8. Sulaymaniyah — Qadisiyah Villa
 (
   'a1000000-0000-0000-0000-000000000008',
@@ -175,7 +175,6 @@ INSERT INTO public.properties (
   ARRAY['Garden','Garage','Solar Panels','Generator','Security System','Parking'],
   'active', 134
 ),
-
 -- 9. Mosul — Al-Dawasa Commercial
 (
   'a1000000-0000-0000-0000-000000000009',
@@ -191,7 +190,6 @@ INSERT INTO public.properties (
   ARRAY['Parking','Security System','Fiber Internet'],
   'active', 89
 ),
-
 -- 10. Erbil — Land Plot, Shorsh
 (
   'a1000000-0000-0000-0000-000000000010',
@@ -207,7 +205,6 @@ INSERT INTO public.properties (
   ARRAY[],
   'active', 145
 ),
-
 -- 11. Erbil — Apartment for Rent, Gulan
 (
   'a1000000-0000-0000-0000-000000000011',
@@ -223,7 +220,6 @@ INSERT INTO public.properties (
   ARRAY['Elevator','Security System','Central AC','Parking','Fiber Internet'],
   'active', 312
 ),
-
 -- 12. Baghdad — Zayouna Office
 (
   'a1000000-0000-0000-0000-000000000012',
@@ -239,5 +235,4 @@ INSERT INTO public.properties (
   ARRAY['Elevator','Security System','Fiber Internet','Conference Room','Central AC','Parking'],
   'active', 76
 )
-
 ON CONFLICT (id) DO NOTHING;
