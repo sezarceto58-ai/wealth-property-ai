@@ -189,6 +189,11 @@
     "title": "Support Center"
   },
   "property": {
-    "beds": "Bedrooms"
+    "beds": "Bedrooms",
+    "aiAnalysis": "AI Property Analysis",
+    "aiAnalysisLoading": "Analyzing property…",
+    "aiAnalysisError": "Analysis failed. Please try again.",
+    "requestAnalysis": "Request AI Analysis",
+    "analysisDisclaimer": "AI-generated analysis. Not financial advice."
   }
 }
