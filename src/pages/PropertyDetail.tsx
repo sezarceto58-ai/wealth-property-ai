@@ -123,8 +123,9 @@ export default function PropertyDetail() {
             )}
           </div>
 
-          {/* Module 1: AI Valuation Engine — free 2 uses for all roles */}
+          {/* Module 1: AI Valuation Engine — confirmation-gated, property-specific */}
           <AIValuationWidget
+            property={property}
             input={{
               price: property.price,
               area: property.area ?? 150,

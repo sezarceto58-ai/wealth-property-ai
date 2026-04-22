@@ -339,8 +339,7 @@ export default function AIValuationPage() {
     parkingSpaces: 1, hasPool: false, hasGym: false, hasSmartHome: false, hasConcierge: false,
   }));
 
-  const [ready, setReady] = useState(false);
-  const [key, setKey] = useState(0);
+  const [ready, setReady] = useState(false); // kept for form change tracking only
   const [prefilled, setPrefilled] = useState(false);
 
   // Once property loads, merge its data into the form
@@ -354,7 +353,7 @@ export default function AIValuationPage() {
 
   const set = (field: Partial<ValuationInput>) => {
     setD(prev => ({ ...prev, ...field }));
-    setReady(false);
+    setReady(false); // mark details as changed (informational only)
   };
 
   const toggleArr = (arr: string[], item: string) =>
@@ -683,22 +682,13 @@ export default function AIValuationPage() {
         </div>
       </Section>
 
-      {/* ── Run Button ── */}
-      <button
-        type="button"
-        onClick={() => {
-          setKey(k => k + 1);
-          setReady(true);
-          setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }), 100);
-        }}
-        className="w-full py-4 rounded-2xl bg-primary text-white font-bold text-base hover:bg-primary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-sm"
-      >
-        <TrendingUp className="w-5 h-5" />
-        {property ? `Calculate Valuation for ${property.title.slice(0, 30)}…` : "Calculate AI Valuation"}
-      </button>
-
-      {/* ── Result ── */}
-      {ready && <AIValuationWidget key={key} input={d} />}
+      {/* ── AIValuationWidget — handles all stages: no_property, idle, confirm, result ── */}
+      {/* When property is loaded, passes both property identity and refined input */}
+      {/* When no property (generic page visit), widget shows "no_property" block */}
+      <AIValuationWidget
+        property={property ?? undefined}
+        input={property ? d : undefined}
+      />
     </div>
   );
 }
