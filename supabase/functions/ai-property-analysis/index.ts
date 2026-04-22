@@ -3,56 +3,83 @@ import { corsHeaders } from "../_shared/cors.ts";
 import { requireUser } from "../_shared/auth.ts";
 import { consumeUsage } from "../_shared/usage.ts";
 
+// ── Language config ────────────────────────────────────────────────────────────
+
+type Lang = "en" | "ar" | "ku";
+
+const LANG_INSTRUCTIONS: Record<Lang, string> = {
+  en: "Respond entirely in English.",
+  ar: "أجب بالكامل باللغة العربية الفصحى. يجب أن تكون جميع النصوص والتحليلات والتفسيرات باللغة العربية.",
+  ku: "بۆ کوردی سۆرانی وەڵام بدەرەوە. هەموو دەقەکان و شیکارییەکان و ڕوونکردنەوەکان دەبێت بە کوردی بن.",
+};
+
+const LANG_RECOMMENDATION_LABELS: Record<Lang, Record<string, string>> = {
+  en: { BUY: "BUY", HOLD: "HOLD", SELL: "SELL", AVOID: "AVOID" },
+  ar: { BUY: "شراء", HOLD: "احتفاظ", SELL: "بيع", AVOID: "تجنب" },
+  ku: { BUY: "بکڕە", HOLD: "هەڵگرە", SELL: "بفرۆشە", AVOID: "دووری لێ بگرەوە" },
+};
+
+function getLangInstruction(lang: string): string {
+  return LANG_INSTRUCTIONS[(lang as Lang)] ?? LANG_INSTRUCTIONS.en;
+}
+
+// ── Main handler ───────────────────────────────────────────────────────────────
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    // Require auth + enforce monthly AI credits server-side
     const { token } = await requireUser(req);
     await consumeUsage(token, "ai_property_analysis", 1);
 
-    const { type, property, criteria, language } = await req.json();
+    const { type, property, criteria, language = "en" } = await req.json();
+    const langInstruction = getLangInstruction(language);
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
-
-    const langMap: Record<string, string> = {
-      en: "English",
-      ar: "Arabic (اللغة العربية)",
-      ku: "Kurdish Sorani (کوردی سۆرانی)",
-    };
-    const lang = langMap[language as string] ?? "English";
-    const langInstruction = `IMPORTANT: All textual values in the JSON response (summary, descriptions, SWOT items, factor names/impact, notes, reasoning, tips, market commentary, demographic descriptors, recommendation rationale, etc.) MUST be written in ${lang}. Keep JSON keys in English. Keep numeric values as numbers. Keep enum values like "BUY|HOLD|SELL|AVOID", "low|medium|high", "above|at|below market" in English.`;
 
     let systemPrompt = "";
     let userPrompt = "";
 
+    // ── Language-aware base instruction appended to every system prompt ────────
+    const langSuffix = `\n\nLANGUAGE INSTRUCTION (MANDATORY): ${langInstruction} All string values in the JSON response (summaries, descriptions, factor names, notes, tips, insights, labels, recommendations text) MUST be written in the specified language. Only numeric values, JSON keys, and fixed enum tokens (like "BUY", "low", "high") stay in English.`;
+
     switch (type) {
+
       case "full_analysis":
-        systemPrompt = `You are TerraVista AI, an expert real estate investment analyst for the Iraqi market (Baghdad, Erbil, Basra, Sulaymaniyah). Provide comprehensive property analysis in JSON format. Be specific with numbers and realistic for the Iraqi market. Return ONLY valid JSON.`;
+        systemPrompt = `You are AqarAI, an expert real estate investment analyst for the Iraqi market (Baghdad, Erbil, Basra, Sulaymaniyah, Mosul). Provide comprehensive property analysis in JSON format. Be specific with numbers and realistic for the Iraqi market. Return ONLY valid JSON.${langSuffix}`;
         userPrompt = `Analyze this property and return a JSON object with these exact keys:
 Property: ${JSON.stringify(property)}
 
 Return JSON with:
 {
-  "swot": { "strengths": ["..."], "weaknesses": ["..."], "opportunities": ["..."], "threats": ["..."] },
+  "swot": {
+    "strengths": ["..."],
+    "weaknesses": ["..."],
+    "opportunities": ["..."],
+    "threats": ["..."]
+  },
   "investmentScore": { "overall": 0-100, "location": 0-100, "value": 0-100, "growth": 0-100, "risk": 0-100, "liquidity": 0-100 },
   "financials": {
     "estimatedROI": "X%", "estimatedIRR": "X%", "capRate": "X%", "cashOnCash": "X%",
     "noi": 0, "annualCashFlow": 0, "gdv": 0, "dscr": 0,
     "peRatio": 0, "volatility": "low|medium|high", "breakEvenYears": 0
   },
-  "risk": { "overallScore": 0-100, "level": "low|medium|high", "factors": [{ "name": "...", "score": 0-100, "impact": "..." }] },
+  "risk": {
+    "overallScore": 0-100, "level": "low|medium|high",
+    "factors": [{ "name": "...", "score": 0-100, "impact": "..." }]
+  },
   "demographics": { "population": "...", "medianIncome": "...", "employmentRate": "...", "growthRate": "..." },
   "marketInsights": { "trend": "...", "pricePerSqm": 0, "areaGrowth": "...", "supplyDemand": "...", "forecast": "..." },
   "esg": { "score": 0-100, "environmental": 0-100, "social": 0-100, "governance": 0-100, "notes": "..." },
   "recommendation": "BUY|HOLD|SELL|AVOID",
-  "summary": "2-3 sentence executive summary",
+  "summary": "2-3 sentence executive summary in the specified language",
   "developerReputation": { "rating": 0-5, "completedProjects": 0, "onTimeDelivery": "X%", "qualityScore": 0-100, "notes": "..." }
 }`;
         break;
 
       case "listing_assist":
-        systemPrompt = `You are TerraVista AI, a premium real estate listing assistant for the Iraqi market. Help sellers create compelling, professional property listings with AI-powered insights. Return ONLY valid JSON.`;
+        systemPrompt = `You are AqarAI, a premium real estate listing assistant for the Iraqi market. Help sellers create compelling, professional property listings with AI-powered insights. Return ONLY valid JSON.${langSuffix}`;
         userPrompt = `Create a professional listing and analysis for this property:
 ${JSON.stringify(property)}
 
@@ -61,7 +88,7 @@ Return JSON:
   "listing": {
     "title": "compelling property title",
     "titleAr": "Arabic title",
-    "description": "detailed 3-4 paragraph description highlighting key features, location benefits, investment potential",
+    "description": "detailed 3-4 paragraph description",
     "descriptionAr": "Arabic description",
     "highlights": ["5-7 key selling points"],
     "targetBuyer": "description of ideal buyer profile"
@@ -74,10 +101,8 @@ Return JSON:
     "reasoning": "why this price range"
   },
   "marketTrends": {
-    "areaGrowth": "X%",
-    "demandLevel": "high|medium|low",
-    "avgDaysOnMarket": 0,
-    "forecast": "6-12 month prediction",
+    "areaGrowth": "X%", "demandLevel": "high|medium|low",
+    "avgDaysOnMarket": 0, "forecast": "6-12 month prediction",
     "comparables": "summary of comparable properties"
   },
   "swot": { "strengths": ["..."], "weaknesses": ["..."], "opportunities": ["..."], "threats": ["..."] },
@@ -94,7 +119,7 @@ Return JSON:
         break;
 
       case "smart_search":
-        systemPrompt = `You are TerraVista AI, a smart property search assistant for the Iraqi real estate market. Help users find properties matching their criteria. Return structured recommendations in JSON format. Return ONLY valid JSON.`;
+        systemPrompt = `You are AqarAI, a smart property search assistant for the Iraqi real estate market. Help users find properties matching their criteria. Return structured recommendations in JSON format. Return ONLY valid JSON.${langSuffix}`;
         userPrompt = `User investment criteria: ${JSON.stringify(criteria)}
 Available properties: ${JSON.stringify(property)}
 
@@ -107,7 +132,7 @@ Return JSON:
         break;
 
       case "mortgage_calc":
-        systemPrompt = `You are a mortgage calculator AI for Iraqi real estate. Provide detailed mortgage analysis in JSON. Return ONLY valid JSON.`;
+        systemPrompt = `You are a mortgage calculator AI for Iraqi real estate. Provide detailed mortgage analysis in JSON. Return ONLY valid JSON.${langSuffix}`;
         userPrompt = `Calculate mortgage for: ${JSON.stringify(property)}
 Return JSON:
 {
@@ -134,8 +159,8 @@ Return JSON:
       body: JSON.stringify({
         model: "google/gemini-3-flash-preview",
         messages: [
-          { role: "system", content: `${systemPrompt}\n\n${langInstruction}` },
-          { role: "user", content: userPrompt },
+          { role: "system", content: systemPrompt },
+          { role: "user",   content: userPrompt   },
         ],
       }),
     });
@@ -160,7 +185,7 @@ Return JSON:
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || "";
-    
+
     let parsed;
     try {
       const jsonMatch = content.match(/\{[\s\S]*\}/);
@@ -169,9 +194,10 @@ Return JSON:
       parsed = { raw: content };
     }
 
-    return new Response(JSON.stringify({ analysis: parsed }), {
+    return new Response(JSON.stringify({ analysis: parsed, language }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+
   } catch (e) {
     console.error("Analysis error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
