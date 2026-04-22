@@ -11,9 +11,17 @@ serve(async (req) => {
     const { token } = await requireUser(req);
     await consumeUsage(token, "ai_property_analysis", 1);
 
-    const { type, property, criteria } = await req.json();
+    const { type, property, criteria, language } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    const langMap: Record<string, string> = {
+      en: "English",
+      ar: "Arabic (اللغة العربية)",
+      ku: "Kurdish Sorani (کوردی سۆرانی)",
+    };
+    const lang = langMap[language as string] ?? "English";
+    const langInstruction = `IMPORTANT: All textual values in the JSON response (summary, descriptions, SWOT items, factor names/impact, notes, reasoning, tips, market commentary, demographic descriptors, recommendation rationale, etc.) MUST be written in ${lang}. Keep JSON keys in English. Keep numeric values as numbers. Keep enum values like "BUY|HOLD|SELL|AVOID", "low|medium|high", "above|at|below market" in English.`;
 
     let systemPrompt = "";
     let userPrompt = "";
