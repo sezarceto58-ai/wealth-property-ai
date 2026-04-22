@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { DbProperty } from "@/types/database";
@@ -17,6 +18,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const { toast } = useToast();
+  const { i18n } = useTranslation();
 
   const runAnalysis = async () => {
     setLoading(true);
