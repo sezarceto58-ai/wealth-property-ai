@@ -26,6 +26,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
       const { data, error } = await supabase.functions.invoke("ai-property-analysis", {
         body: {
           type: "full_analysis",
+          language: i18n.language?.split("-")[0] ?? "en",
           property: {
             title: property.title,
             price: property.price,
