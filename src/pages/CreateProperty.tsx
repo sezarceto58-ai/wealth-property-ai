@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Building2, Plus, ImagePlus, DollarSign, MapPin, Maximize, Tag, Brain, Loader2, Sparkles, TrendingUp, Shield, Users, Leaf, CheckCircle, XCircle, AlertTriangle, Target, BarChart3, ChevronDown, ChevronUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -18,6 +19,8 @@ const featureOptions = [
 type TabKey = "manual" | "ai";
 
 export default function CreateProperty() {
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.split("-")[0] ?? "en";
   const navigate = useNavigate();
   const { toast } = useToast();
   const qc = useQueryClient();
@@ -127,6 +130,7 @@ export default function CreateProperty() {
       const { data, error } = await supabase.functions.invoke("ai-property-analysis", {
         body: {
           type: "listing_assist",
+          language: lang,
           property: {
             type: form.propertyType, city: form.city, district: form.district,
             bedrooms: parseInt(form.bedrooms) || 0, bathrooms: parseInt(form.bathrooms) || 0,
