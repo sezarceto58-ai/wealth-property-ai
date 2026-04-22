@@ -67,7 +67,10 @@
     "unverified": "غير موثّق",
     "new": "جديد",
     "updated": "محدّث",
-    "profile": "الملف الشخصي"
+    "profile": "الملف الشخصي",
+    "notifications": "الإشعارات",
+    "noNotifications": "لا توجد إشعارات بعد",
+    "markAllRead": "تعليم الكل كمقروء"
   },
   "nav": {
     "dashboard": "لوحة التحكم",
