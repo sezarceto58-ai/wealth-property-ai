@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,8 @@ const CITIES = ["Baghdad", "Erbil", "Basra", "Sulaymaniyah", "Duhok", "Najaf", "
 const TYPES = ["Villa", "Apartment", "Penthouse", "Commercial", "Land", "Townhouse"];
 
 export default function SellerAIAssistant() {
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.split("-")[0] ?? "en";
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -43,6 +46,7 @@ export default function SellerAIAssistant() {
       const { data, error } = await supabase.functions.invoke("ai-property-analysis", {
         body: {
           type: "listing_assist",
+          language: lang,
           property: {
             type: form.propertyType,
             city: form.city,
