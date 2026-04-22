@@ -9,14 +9,14 @@ type Lang = "en" | "ar" | "ku";
 
 const LANG_INSTRUCTIONS: Record<Lang, string> = {
   en: "Respond entirely in English.",
-  ar: "أجب بالكامل باللغة العربية الفصحى. يجب أن تكون جميع النصوص والتحليلات والتفسيرات باللغة العربية.",
-  ku: "بۆ کوردی سۆرانی وەڵام بدەرەوە. هەموو دەقەکان و شیکارییەکان و ڕوونکردنەوەکان دەبێت بە کوردی بن.",
+  ar: "أجب بالكامل باللغة العربية الفصحى المعاصرة. يجب أن تكون جميع النصوص والتحليلات والتوضيحات باللغة العربية الواضحة المناسبة لتطبيقات الأعمال.",
+  ku: "بۆ کوردی سۆرانی وەڵام بدەرەوە. هەموو دەقەکان، شیکارییەکان و ڕوونکردنەوەکان دەبێت بە کوردیی سۆرانیی ستانداردی کاروباری نووسرابن.",
 };
 
 const LANG_RECOMMENDATION_LABELS: Record<Lang, Record<string, string>> = {
   en: { BUY: "BUY", HOLD: "HOLD", SELL: "SELL", AVOID: "AVOID" },
   ar: { BUY: "شراء", HOLD: "احتفاظ", SELL: "بيع", AVOID: "تجنب" },
-  ku: { BUY: "بکڕە", HOLD: "هەڵگرە", SELL: "بفرۆشە", AVOID: "دووری لێ بگرەوە" },
+  ku: { BUY: "بکڕە", HOLD: "هەڵگرە", SELL: "بیفرۆشە", AVOID: "دووری لێبگرەوە" },
 };
 
 function getLangInstruction(lang: string): string {
