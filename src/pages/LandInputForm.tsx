@@ -50,7 +50,7 @@ const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
 const fadeItem = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.3 } } };
 
 export default function LandInputForm() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -115,8 +115,10 @@ export default function LandInputForm() {
 
     setLoading(true);
     try {
+      const lang = i18n.language?.split("-")[0] ?? "en";
       const { data, error } = await supabase.functions.invoke("planner-analyze", {
         body: {
+          language: lang,
           lat: parseFloat(form.lat),
           lng: parseFloat(form.lng),
           area_sqm: parseFloat(form.area_sqm),
