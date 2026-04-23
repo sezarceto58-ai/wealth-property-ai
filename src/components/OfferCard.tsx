@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { BadgeCheck, Clock, FileText } from "lucide-react";
 import type { DbOffer } from "@/types/database";
 import { useToast } from "@/hooks/use-toast";
@@ -29,6 +30,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function OfferCard({ offer, showActions = false }: { offer: DbOffer; showActions?: boolean }) {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const updateStatus = useUpdateOfferStatus();
   const [localStatus, setLocalStatus] = useState(offer.status);

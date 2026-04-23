@@ -3,9 +3,11 @@
  * fires beforeinstallprompt. Dismissible and remembered in sessionStorage.
  */
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Download, X } from "lucide-react";
 
 export default function InstallBanner() {
+  const { t } = useTranslation();
   const [show, setShow] = useState(false);
   const [prompt, setPrompt] = useState<any>(null);
 

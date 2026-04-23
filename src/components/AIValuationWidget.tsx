@@ -13,6 +13,7 @@
  */
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   TrendingUp, Sparkles, Lock, RefreshCw,
@@ -116,6 +117,7 @@ interface Props {
 // ── Main Widget ────────────────────────────────────────────────────────────────
 
 export default function AIValuationWidget({ property, input, compact = false }: Props) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
 

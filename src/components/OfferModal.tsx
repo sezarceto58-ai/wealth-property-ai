@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { X, Upload, DollarSign, Check, Lock, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { DbProperty } from "@/types/database";
@@ -11,6 +12,7 @@ import { usePlanLimits } from "@/hooks/usePlanLimits";
 interface OfferModalProps { property: DbProperty; onClose: () => void; }
 
 export default function OfferModal({ property, onClose }: OfferModalProps) {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const createOffer = useCreateOffer();

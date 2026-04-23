@@ -3,6 +3,7 @@
  * 5-factor deal scoring: price discount · rental yield · location growth · liquidity risk · developer reputation
  */
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { TrendingUp, MapPin, DollarSign, AlertTriangle, Building2 } from "lucide-react";
 
 export interface DealScoreInput {
@@ -102,6 +103,7 @@ export function calculateDealScore(input: DealScoreInput): DealScore {
 interface Props { input: DealScoreInput; compact?: boolean; }
 
 export default function InvestmentScore({ input, compact = false }: Props) {
+  const { t } = useTranslation();
   const result = calculateDealScore(input);
 
   const gradeStyle: Record<string, { ring: string; bg: string; text: string }> = {
