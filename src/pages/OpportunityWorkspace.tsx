@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 
 export default function OpportunityWorkspace() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -60,8 +60,9 @@ export default function OpportunityWorkspace() {
   const runAnalysis = async () => {
     setAnalyzing(true);
     try {
+      const lang = i18n.language?.split("-")[0] ?? "en";
       const { data, error } = await supabase.functions.invoke("opportunity-ai", {
-        body: { type: "full_analysis", opportunity: opp },
+        body: { type: "full_analysis", language: lang, opportunity: opp },
       });
       if (error) throw error;
       const result = data.analysis;
@@ -80,8 +81,9 @@ export default function OpportunityWorkspace() {
   const runPrediction = async () => {
     setPredicting(true);
     try {
+      const lang = i18n.language?.split("-")[0] ?? "en";
       const { data, error } = await supabase.functions.invoke("opportunity-ai", {
-        body: { type: "predictive", opportunity: opp },
+        body: { type: "predictive", language: lang, opportunity: opp },
       });
       if (error) throw error;
       setPredictions(data.analysis);
