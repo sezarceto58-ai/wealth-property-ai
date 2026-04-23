@@ -1521,6 +1521,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      consume_usage: {
+        Args: { p_amount?: number; p_metric: string }
+        Returns: {
+          limit: number
+          metric: string
+          plan: string
+          remaining: number
+          used: number
+        }[]
+      }
       get_admin_role: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
