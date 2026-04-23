@@ -72,17 +72,17 @@ export default function SellerDashboard() {
           <TrendingUp className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-foreground">Validate Your Listing Price</p>
+          <p className="font-semibold text-foreground">{t("seller.validatePrice")}</p>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Use the AI Valuation Engine to check if your listing price is competitive.
-            <span className="ml-1 text-emerald-600 dark:text-emerald-400 font-medium">Free — 2 uses included.</span>
+            {t("seller.validatePriceDesc")}
+            <span className="ml-1 text-emerald-600 dark:text-emerald-400 font-medium">{t("seller.freeUsesIncluded")}</span>
           </p>
         </div>
         <Link
           to="/seller/valuation"
           className="px-5 py-2.5 rounded-xl bg-emerald-600 dark:bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 transition-colors shrink-0 flex items-center gap-2"
         >
-          <Sparkles className="w-4 h-4" /> Check Price
+          <Sparkles className="w-4 h-4" /> {t("seller.checkPrice")}
         </Link>
       </motion.div>
 
@@ -103,8 +103,8 @@ export default function SellerDashboard() {
           ) : pendingOffers.length === 0 ? (
             <EmptyState
               icon={Package}
-              title="No Pending Offers"
-              description="When buyers submit offers on your listings, they'll appear here for you to review."
+              title={t("seller.noPendingOffers")}
+              description={t("seller.noPendingOffersDesc")}
             />
           ) : (
             <motion.div variants={stagger} initial="hidden" animate="show" className="grid gap-4">
@@ -118,11 +118,11 @@ export default function SellerDashboard() {
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold text-foreground mb-4">Quick Links</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-4">{t("seller.quickLinks")}</h2>
           <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-2">
             {[
-              { to: "/seller/listings",  icon: Building2,    color: "text-primary",     label: t("nav.myListings"),   sub: `${properties.length} active` },
-              { to: "/seller/crm",       icon: Users,        color: "text-success",     label: t("nav.crmLeads"),     sub: `${newLeads} new leads` },
+              { to: "/seller/listings",  icon: Building2,    color: "text-primary",     label: t("nav.myListings"),   sub: t("seller.activeCount", { count: properties.length }) },
+              { to: "/seller/crm",       icon: Users,        color: "text-success",     label: t("nav.crmLeads"),     sub: t("seller.newLeadsCount", { count: newLeads }) },
               { to: "/seller/messages",  icon: MessageSquare,color: "text-warning",     label: t("common.messages"), sub: null },
               { to: "/seller/analytics", icon: BarChart3,    color: "text-info",        label: t("nav.analytics"),   sub: null },
             ].map((link) => (

@@ -23,11 +23,11 @@ type PlanRow = {
   created_at: string;
 };
 
-const statusConfig: Record<string, { icon: any; color: string; label: string }> = {
-  draft: { icon: FileText, color: "text-muted-foreground", label: "Draft" },
-  processing: { icon: Clock, color: "text-warning", label: "Processing" },
-  complete: { icon: CheckCircle2, color: "text-success", label: "Complete" },
-  error: { icon: AlertCircle, color: "text-destructive", label: "Error" },
+const STATUS_ICONS: Record<string, { icon: any; color: string; labelKey: string }> = {
+  draft: { icon: FileText, color: "text-muted-foreground", labelKey: "developer.statusDraft" },
+  processing: { icon: Clock, color: "text-warning", labelKey: "developer.processing" },
+  complete: { icon: CheckCircle2, color: "text-success", labelKey: "developer.completed" },
+  error: { icon: AlertCircle, color: "text-destructive", labelKey: "developer.statusError" },
 };
 
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
@@ -106,17 +106,17 @@ export default function DeveloperDashboard() {
           <TrendingUp className="w-6 h-6 text-amber-600 dark:text-amber-400" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-foreground">AI Property Valuation Engine</p>
+          <p className="font-semibold text-foreground">{t("developer.aiValuationBanner")}</p>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Instantly assess land and property values before acquiring or developing.
-            <span className="ml-1 text-amber-600 dark:text-amber-400 font-medium">Free — 2 uses included.</span>
+            {t("developer.aiValuationBannerDesc")}
+            <span className="ml-1 text-amber-600 dark:text-amber-400 font-medium">{t("developer.freeUsesIncluded")}</span>
           </p>
         </div>
         <Link
           to="/developer/valuation"
           className="px-5 py-2.5 rounded-xl bg-amber-600 text-white font-semibold text-sm hover:bg-amber-700 transition-colors shrink-0 flex items-center gap-2"
         >
-          <Sparkles className="w-4 h-4" /> Value a Property
+          <Sparkles className="w-4 h-4" /> {t("developer.valueAProperty")}
         </Link>
       </div>
 
@@ -144,7 +144,7 @@ export default function DeveloperDashboard() {
         ) : (
           <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-3">
             {plans.map((plan) => {
-              const st = statusConfig[plan.status] || statusConfig.draft;
+              const st = STATUS_ICONS[plan.status] || STATUS_ICONS.draft;
               const StIcon = st.icon;
               return (
                 <motion.div key={plan.id} variants={item}>
@@ -160,12 +160,12 @@ export default function DeveloperDashboard() {
                         {plan.land_area.toLocaleString()} m² — {plan.shape}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {plan.land_location?.lat?.toFixed(4)}, {plan.land_location?.lng?.toFixed(4)} · {plan.max_floors} floors max
+                        {plan.land_location?.lat?.toFixed(4)}, {plan.land_location?.lng?.toFixed(4)} · {t("developer.floorsMax", { count: plan.max_floors })}
                       </p>
                     </div>
                     <div className={`flex items-center gap-1.5 text-xs font-medium ${st.color}`}>
                       <StIcon className="w-3.5 h-3.5" />
-                      {st.label}
+                      {t(st.labelKey)}
                     </div>
                     <p className="text-xs text-muted-foreground hidden sm:block">
                       {new Date(plan.created_at).toLocaleDateString()}

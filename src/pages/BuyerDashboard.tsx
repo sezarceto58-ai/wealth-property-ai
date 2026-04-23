@@ -84,17 +84,17 @@ export default function BuyerDashboard() {
           <Sparkles className="w-6 h-6 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-foreground">AI Property Valuation — Free for All</p>
+          <p className="font-semibold text-foreground">{t("buyer.aiValuationBanner")}</p>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Get an instant AI-powered market value estimate and discount analysis for any property.
-            <span className="ml-1 text-emerald-600 dark:text-emerald-400 font-medium">2 free uses included.</span>
+            {t("buyer.aiValuationBannerDesc")}
+            <span className="ml-1 text-emerald-600 dark:text-emerald-400 font-medium">{t("buyer.freeUsesIncluded")}</span>
           </p>
         </div>
         <Link
           to="/buyer/valuation"
           className="px-5 py-2.5 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors shrink-0 flex items-center gap-2"
         >
-          <TrendingUp className="w-4 h-4" /> Try AI Valuation
+          <TrendingUp className="w-4 h-4" /> {t("buyer.tryAiValuation")}
         </Link>
       </motion.div>
 
@@ -102,7 +102,7 @@ export default function BuyerDashboard() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <Star className="w-5 h-5 text-primary" /> Recommended For You
+            <Star className="w-5 h-5 text-primary" /> {t("buyer.recommendedForYou")}
           </h2>
           <Link to="/buyer/discover" className="text-xs text-primary hover:underline flex items-center gap-1">
             {t("common.viewAll")} <ArrowRight className="w-3 h-3" />
@@ -119,7 +119,7 @@ export default function BuyerDashboard() {
             description={t("buyer.noPropertiesDesc")}
             action={
               <Link to="/buyer/discover" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity">
-                <Search className="w-4 h-4" /> Browse Marketplace
+                <Search className="w-4 h-4" /> {t("buyer.browseMarketplace")}
               </Link>
             }
           />
