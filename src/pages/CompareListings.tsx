@@ -7,17 +7,17 @@ import TerraScore from "@/components/TerraScore";
 import property1 from "@/assets/property-1.jpg";
 
 const compareFields: { label: string; key: keyof DbProperty; format?: (v: DbProperty) => string }[] = [
-  { label: t("common.price"), key: "price", format: (p) => `$${p.price.toLocaleString()}` },
+  { label: "Price", key: "price", format: (p) => `$${p.price.toLocaleString()}` },
   { label: "Price (IQD)", key: "price_iqd", format: (p) => p.price_iqd ? `${p.price_iqd.toLocaleString()} IQD` : "—" },
-  { label: t("common.type"), key: "property_type" },
-  { label: t("valuation.city"), key: "city" },
+  { label: "Type", key: "property_type" },
+  { label: "City", key: "city" },
   { label: "District", key: "district" },
   { label: "Bedrooms", key: "bedrooms" },
   { label: "Bathrooms", key: "bathrooms" },
   { label: "Area (m²)", key: "area" },
   { label: "AqarScore™", key: "terra_score" },
   { label: "AI Valuation", key: "ai_valuation", format: (p) => p.ai_valuation ? `$${p.ai_valuation.toLocaleString()}` : "—" },
-  { label: t("common.verified"), key: "verified", format: (p) => p.verified ? "✅ Yes" : "❌ No" },
+  { label: "Verified", key: "verified", format: (p) => p.verified ? "✅ Yes" : "❌ No" },
   { label: "Agent", key: "agent_name" },
   { label: "Views", key: "views" },
   { label: "Status", key: "status" },
