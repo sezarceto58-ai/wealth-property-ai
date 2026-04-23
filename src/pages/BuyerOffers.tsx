@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { BadgeDollarSign, Loader2 } from "lucide-react";
 import OfferCard from "@/components/OfferCard";
 import { useMyOffers } from "@/hooks/useOffers";
@@ -6,6 +7,7 @@ import { useMyOffers } from "@/hooks/useOffers";
 const statusFilters = ["all", "SUBMITTED", "VIEWED", "ACCEPTED", "REJECTED", "COUNTERED", "EXPIRED", "WITHDRAWN"] as const;
 
 export default function BuyerOffers() {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"date" | "price" | "score">("date");
   const { data: offers = [], isLoading } = useMyOffers();
@@ -31,7 +33,7 @@ export default function BuyerOffers() {
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
           <BadgeDollarSign className="w-6 h-6 text-primary" /> My Offers
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">Track all your submitted offers and their responses.</p>
+        <p className="text-sm text-muted-foreground mt-1">{t("offers.trackDesc","Track all your submitted offers and their responses.")}</p>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

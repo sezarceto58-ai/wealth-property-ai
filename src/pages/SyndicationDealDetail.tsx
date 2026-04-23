@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeft, Users, DollarSign, TrendingUp, Clock, BadgeCheck,
@@ -47,6 +48,7 @@ function daysRemaining(dateStr: string) {
 }
 
 export default function SyndicationDealDetail() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const { toast } = useToast();
   const deal = syndicationDeals.find(d => d.id === id);
@@ -95,7 +97,7 @@ export default function SyndicationDealDetail() {
   const statusConfig = {
     open: { label: "Open for Investment", color: "bg-success/10 text-success border-success/20" },
     closing_soon: { label: "Closing Soon", color: "bg-orange-500/10 text-orange-500 border-orange-500/20" },
-    funded: { label: "Fully Funded", color: "bg-primary/10 text-primary border-primary/20" },
+    funded: { label: t("syndication.fullyFunded"), color: "bg-primary/10 text-primary border-primary/20" },
     active: { label: "Active", color: "bg-success/10 text-success border-success/20" },
     exited: { label: "Exited", color: "bg-secondary text-muted-foreground border-border" },
   };

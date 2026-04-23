@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Camera, Loader2, Save } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -9,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
 export default function Profile() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -35,10 +37,10 @@ export default function Profile() {
         phone_number: phoneNumber,
         bio,
       });
-      toast({ title: "Profile updated", description: "Your profile details were saved." });
+      toast({ title: t("common.success"), description: "Your profile details were saved." });
     } catch (error: any) {
       toast({
-        title: "Save failed",
+        title: t("common.error"),
         description: error.message || "Could not save profile.",
         variant: "destructive",
       });

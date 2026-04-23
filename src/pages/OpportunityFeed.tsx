@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -48,6 +49,7 @@ const riskColors: Record<string, string> = {
 };
 
 export default function OpportunityFeed() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);

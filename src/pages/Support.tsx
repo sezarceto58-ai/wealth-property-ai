@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   LifeBuoy, Plus, Send, ChevronRight, ArrowLeft,
   Clock, CheckCircle2, MessageSquare, AlertCircle, X,
@@ -288,6 +289,7 @@ const FAQ = [
 
 // ── Main Page ──
 export default function Support() {
+  const { t } = useTranslation();
   const [tickets, setTickets] = useState<Ticket[]>(
     mockTickets.filter(t => t.userId === "u2" || t.userId === "u3" || t.userId === "u5")
   );

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { Lock, Building2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ResetPassword() {
+  const { t } = useTranslation();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -48,7 +50,7 @@ export default function ResetPassword() {
     if (error) {
       toast({ title: "Reset failed", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Password updated", description: "You can now sign in with your new password." });
+      toast({ title: t("common.success"), description: "You can now sign in with your new password." });
       navigate("/auth");
     }
   };

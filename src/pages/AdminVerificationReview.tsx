@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Shield, FileCheck, ExternalLink, Loader2, CheckCircle, XCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,12 +18,13 @@ interface Verification {
 }
 
 const statusConfig: Record<string, { icon: any; class: string; label: string }> = {
-  pending: { icon: Clock, class: "bg-warning/10 text-warning", label: "Pending" },
-  approved: { icon: CheckCircle, class: "bg-success/10 text-success", label: "Approved" },
-  rejected: { icon: XCircle, class: "bg-destructive/10 text-destructive", label: "Rejected" },
+  pending: { icon: Clock, class: "bg-warning/10 text-warning", label: t("admin.pending") },
+  approved: { icon: CheckCircle, class: "bg-success/10 text-success", label: t("admin.approved") },
+  rejected: { icon: XCircle, class: "bg-destructive/10 text-destructive", label: t("admin.rejected") },
 };
 
 export default function AdminVerificationReview() {
+  const { t } = useTranslation();
   const [verifications, setVerifications] = useState<Verification[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
@@ -145,7 +147,7 @@ export default function AdminVerificationReview() {
                         onClick={() => updateStatus(v.id, "approved")}
                         disabled={updating === v.id}
                       >
-                        {updating === v.id ? <Loader2 className="w-3 h-3 animate-spin" /> : "Approve"}
+                        {updating === v.id ? <Loader2 className="w-3 h-3 animate-spin" /> : t("admin.approve")}
                       </Button>
                       <Button
                         size="sm"

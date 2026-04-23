@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Bell, TrendingDown, Home, Star, Check, Trash2, Lock, Zap } from "lucide-react";
 import PlanGate from "@/components/PlanGate";
@@ -66,6 +67,7 @@ function AlertItem({ alert, onDismiss }: { alert: Alert; onDismiss: (id: string)
 }
 
 export default function Alerts() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [alerts, setAlerts] = useState(mockAlerts);
   const unread = alerts.filter((a) => !a.read).length;
@@ -109,7 +111,7 @@ export default function Alerts() {
             <Zap className="w-2.5 h-2.5" /> Pro
           </span>
         </div>
-        <PlanGate requiredTier="pro" featureLabel="Priority Alerts">
+        <PlanGate requiredTier="pro" featureLabel={t("alerts.priority")}>
           <div className="space-y-3">
             {priorityAlerts.map((a) => <AlertItem key={a.id} alert={a} onDismiss={dismiss} />)}
           </div>

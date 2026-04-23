@@ -7,6 +7,7 @@ import TerraScore from "@/components/TerraScore";
 import { useMyProperties, useDeleteProperty, useUpdateProperty } from "@/hooks/useProperties";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import property1 from "@/assets/property-1.jpg";
 
 const statusColors: Record<string, string> = {
@@ -16,6 +17,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function SellerListings() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [view, setView] = useState<"grid" | "list">("list");
   const { data: listings = [], isLoading } = useMyProperties();
@@ -24,7 +26,7 @@ export default function SellerListings() {
 
   const deleteListing = (id: string) => {
     deleteMut.mutate(id);
-    toast({ title: "Listing deleted" });
+    toast({ title: t("common.success") });
   };
 
   const toggleStatus = (id: string) => {
@@ -32,7 +34,7 @@ export default function SellerListings() {
     if (!p) return;
     const next = p.status === "active" ? "pending" : p.status === "pending" ? "sold" : "active";
     updateMut.mutate({ id, status: next });
-    toast({ title: "Status updated" });
+    toast({ title: t("common.success") });
   };
 
   if (isLoading) return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
@@ -92,7 +94,7 @@ export default function SellerListings() {
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <Link to="/seller/create" className="p-2 rounded-lg hover:bg-secondary text-muted-foreground transition-colors" title="Edit"><Edit className="w-4 h-4" /></Link>
-                  <button onClick={() => deleteListing(property.id)} className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={() => deleteListing(property.id)} className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title={t("common.delete")}><Trash2 className="w-4 h-4" /></button>
                 </div>
               </div>
             </div>

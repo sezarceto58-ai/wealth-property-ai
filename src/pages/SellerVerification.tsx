@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -31,12 +32,13 @@ type PropertyDoc = {
 };
 
 const STATUS_CONFIG: Record<string, { icon: typeof CheckCircle2; color: string; label: string }> = {
-  pending: { icon: Clock, color: "text-warning", label: "Pending Review" },
-  approved: { icon: CheckCircle2, color: "text-success", label: "Approved" },
-  rejected: { icon: XCircle, color: "text-destructive", label: "Rejected" },
+  pending: { icon: Clock, color: "text-warning", label: t("admin.pending","Pending Review") },
+  approved: { icon: CheckCircle2, color: "text-success", label: t("admin.approved") },
+  rejected: { icon: XCircle, color: "text-destructive", label: t("admin.rejected") },
 };
 
 export default function SellerVerification() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const qc = useQueryClient();
   const [uploading, setUploading] = useState(false);

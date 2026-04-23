@@ -49,10 +49,10 @@ export default function SellerDashboard() {
       ) : (
         <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { title: "Active Listings",  value: properties.length,                                           icon: Building2,     trend: "up" as const },
-            { title: "Total Views",      value: properties.reduce((s, p) => s + p.views, 0).toLocaleString(),icon: Eye,           trend: "up" as const },
-            { title: "Active Leads",     value: leads.length,                                                icon: Users,         trend: "up" as const },
-            { title: "Pending Offers",   value: pendingOffers.length,                                        icon: BadgeDollarSign,trend: "up" as const },
+            { title: t("seller.activeListings"),  value: properties.length,                                           icon: Building2,     trend: "up" as const },
+            { title: t("seller.totalViews"),      value: properties.reduce((s, p) => s + p.views, 0).toLocaleString(),icon: Eye,           trend: "up" as const },
+            { title: t("seller.activeLeads"),     value: leads.length,                                                icon: Users,         trend: "up" as const },
+            { title: t("seller.pendingOffers"),   value: pendingOffers.length,                                        icon: BadgeDollarSign,trend: "up" as const },
           ].map((s) => (
             <motion.div key={s.title} variants={item}>
               <StatsCard {...s} />

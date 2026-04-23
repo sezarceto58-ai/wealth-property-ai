@@ -1,4 +1,5 @@
 import { useState, lazy, Suspense } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -49,6 +50,7 @@ const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
 const fadeItem = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.3 } } };
 
 export default function LandInputForm() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);

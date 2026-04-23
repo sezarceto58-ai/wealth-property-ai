@@ -8,6 +8,7 @@
  */
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   Brain, DollarSign, TrendingUp, BarChart3, AlertTriangle, Calculator,
@@ -608,6 +609,7 @@ const marketCompare = [
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function InvestorTools() {
+  const { t } = useTranslation();
   const totalValue = portfolioItems.reduce((s, i) => s + i.value, 0);
   const avgROI     = (portfolioItems.reduce((s, i) => s + i.roi, 0) / portfolioItems.length).toFixed(1);
 

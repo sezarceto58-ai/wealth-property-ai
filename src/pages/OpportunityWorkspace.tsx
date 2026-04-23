@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -16,6 +17,7 @@ import {
 } from "lucide-react";
 
 export default function OpportunityWorkspace() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -428,7 +430,7 @@ export default function OpportunityWorkspace() {
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2"><Building2 className="w-4 h-4 text-primary" />Development Phases</h3>
             <Button size="sm" variant="outline" onClick={() => setShowAddPhase(!showAddPhase)}>
               {showAddPhase ? <ChevronUp className="w-3 h-3 mr-1" /> : <ChevronDown className="w-3 h-3 mr-1" />}
-              {showAddPhase ? "Cancel" : "Add Phase"}
+              {showAddPhase ? t("common.cancel") : t("common.new","Add Phase")}
             </Button>
           </div>
 

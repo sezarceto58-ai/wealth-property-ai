@@ -2,6 +2,7 @@
  * Investor Syndication — simplified deal feed with fixed button colors
  */
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Users, DollarSign, TrendingUp, Clock, BadgeCheck, MapPin, ChevronRight } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
@@ -87,7 +88,7 @@ function daysLeft(dateStr: string) {
 const STATUS_LABEL: Record<string, { text: string; style: string }> = {
   open:          { text: "Open",         style: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300" },
   closing_soon:  { text: "Closing Soon", style: "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300" },
-  funded:        { text: "Fully Funded", style: "bg-primary/10 text-primary" },
+  funded:        { text: t("syndication.fullyFunded"), style: "bg-primary/10 text-primary" },
   active:        { text: "Active",       style: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300" },
   exited:        { text: "Exited",       style: "bg-secondary text-secondary-foreground" },
 };
@@ -198,6 +199,7 @@ type StatusFilter = "all" | "open" | "closing_soon" | "funded";
 type RiskFilter   = "all" | "low" | "medium" | "high";
 
 export default function SyndicationDeals() {
+  const { t } = useTranslation();
   const [statusF, setStatusF] = useState<StatusFilter>("all");
   const [riskF, setRiskF]     = useState<RiskFilter>("all");
 

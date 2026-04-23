@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { DollarSign, ArrowUpDown, Loader2 } from "lucide-react";
 import OfferCard from "@/components/OfferCard";
 import StatsCard from "@/components/StatsCard";
@@ -6,6 +7,7 @@ import { useSellerOffers } from "@/hooks/useOffers";
 import { BadgeDollarSign, TrendingUp, Users } from "lucide-react";
 
 export default function SellerOffers() {
+  const { t } = useTranslation();
   const [sortBy, setSortBy] = useState<"score" | "price" | "date">("score");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const { data: offers = [], isLoading } = useSellerOffers();
@@ -30,14 +32,14 @@ export default function SellerOffers() {
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
           <DollarSign className="w-6 h-6 text-primary" /> Offer Inbox
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">All incoming offers sorted by seriousness.</p>
+        <p className="text-sm text-muted-foreground mt-1">{t("offers.inboxDesc","All incoming offers sorted by seriousness.")}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard title="Total Offers" value={offers.length} icon={BadgeDollarSign} trend="up" />
-        <StatsCard title="High Intent" value={highIntent} icon={Users} trend="up" />
-        <StatsCard title="Avg Seriousness" value={avgScore} icon={TrendingUp} trend="up" />
-        <StatsCard title="Total Value" value={`$${(totalValue / 1000).toFixed(0)}K`} icon={DollarSign} />
+        <StatsCard title={t("offers.total")} value={offers.length} icon={BadgeDollarSign} trend="up" />
+        <StatsCard title={t("seller.activeLeads")} value={highIntent} icon={Users} trend="up" />
+        <StatsCard title={t("offers.seriousnessScore")} value={avgScore} icon={TrendingUp} trend="up" />
+        <StatsCard title={t("common.total")} value={`$${(totalValue / 1000).toFixed(0)}K`} icon={DollarSign} />
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">

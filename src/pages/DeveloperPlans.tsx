@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,6 +20,7 @@ type PlanRow = {
 };
 
 export default function DeveloperPlans() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [plans, setPlans] = useState<PlanRow[]>([]);
   const [loading, setLoading] = useState(true);

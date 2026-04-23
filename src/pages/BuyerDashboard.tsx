@@ -59,12 +59,12 @@ export default function BuyerDashboard() {
       ) : (
         <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { title: "Properties Available", value: properties.length,     icon: Eye,            trend: "up" as const },
-            { title: "Saved Properties",     value: favorites.length,      icon: Heart,          trend: "up" as const,
+            { title: t("buyer.propertiesAvailable"), value: properties.length,     icon: Eye,            trend: "up" as const },
+            { title: t("buyer.savedProperties"),     value: favorites.length,      icon: Heart,          trend: "up" as const,
               change: limits.tier === "free" ? `${favorites.length}/${PLAN_LIMITS.free.maxFavorites} free limit` : undefined },
-            { title: "Active Offers",        value: activeOffers.length,   icon: BadgeDollarSign,trend: "up" as const,
+            { title: t("buyer.activeOffers"),        value: activeOffers.length,   icon: BadgeDollarSign,trend: "up" as const,
               change: limits.tier === "free" ? `${limits.offersThisMonth}/3 this month` : undefined },
-            { title: "Price Alerts",         value: "—",                   icon: Bell },
+            { title: t("buyer.priceAlerts"),         value: "—",                   icon: Bell },
           ].map((s) => (
             <motion.div key={s.title} variants={item}>
               <StatsCard {...s} />
@@ -115,8 +115,8 @@ export default function BuyerDashboard() {
         ) : properties.length === 0 ? (
           <EmptyState
             icon={MapPin}
-            title="No Properties Yet"
-            description="Properties will appear here as they get listed on the marketplace."
+            title={t("buyer.noPropertiesYet")}
+            description={t("buyer.noPropertiesDesc")}
             action={
               <Link to="/buyer/discover" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity">
                 <Search className="w-4 h-4" /> Browse Marketplace

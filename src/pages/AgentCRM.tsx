@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Users, Phone, Mail, Plus, X, Loader2 } from "lucide-react";
 import { useLeads, useUpdateLead, useCreateLead } from "@/hooks/useLeads";
 import { useToast } from "@/hooks/use-toast";
@@ -13,6 +14,7 @@ const stageColors: Record<string, string> = {
 };
 
 export default function AgentCRM() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { data: leads = [], isLoading } = useLeads();
   const updateLead = useUpdateLead();

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Headphones, Search, ChevronRight, ArrowLeft, Send, Lock,
   UserCheck, Clock, CheckCircle2, AlertCircle, Inbox, Filter,
@@ -285,6 +286,7 @@ function TicketDetail({ ticket, onUpdate }: {
 
 // ── Main Admin Console ──
 export default function AdminSupport() {
+  const { t } = useTranslation();
   const [tickets,  setTickets]  = useState<Ticket[]>(mockTickets);
   const [selected, setSelected] = useState<Ticket | null>(null);
   const [search,   setSearch]   = useState("");
@@ -409,7 +411,7 @@ export default function AdminSupport() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-secondary/20">
-                {["Category", "Total", "Open", "Resolved", "Avg Response"].map(h => (
+                {[t("common.type","Category"), "Total", "Open", "Resolved", "Avg Response"].map(h => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">{h}</th>
                 ))}
               </tr>

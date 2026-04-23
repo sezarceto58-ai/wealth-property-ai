@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -31,6 +32,7 @@ type Plan = {
 };
 
 export default function PlanResults() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
   const [plan, setPlan] = useState<Plan | null>(null);
@@ -44,7 +46,7 @@ export default function PlanResults() {
       .eq("id", id)
       .single() as any);
     if (error) {
-      toast({ title: "Error", description: "Plan not found", variant: "destructive" });
+      toast({ title: "Error", description: t("common.noResults","Plan not found"), variant: "destructive" });
     } else {
       setPlan(data as Plan);
     }

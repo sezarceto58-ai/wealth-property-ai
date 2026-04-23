@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,6 +12,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Sparkles, Loader2 } from "lucide-react";
 
 export default function CreateOpportunity() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);

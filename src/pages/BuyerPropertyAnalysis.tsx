@@ -1,10 +1,12 @@
 import { Link, useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, Brain, MapPin, Bed, Bath, Maximize, Loader2, Building2 } from "lucide-react";
 import PropertyAIAnalysis from "@/components/PropertyAIAnalysis";
 import { useProperty } from "@/hooks/useProperties";
 import property1 from "@/assets/property-1.jpg";
 
 export default function BuyerPropertyAnalysis() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: property, isLoading } = useProperty(id);

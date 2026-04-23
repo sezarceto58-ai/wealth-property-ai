@@ -2,6 +2,7 @@
  * Market Intelligence Dashboard — simplified 3-tab layout
  */
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { BarChart3, TrendingUp, MapPin, DollarSign, Flame, Building2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import StatsCard from "@/components/StatsCard";
@@ -61,6 +62,7 @@ function ScoreBar({ value, max, color }: { value: number; max: number; color: st
 }
 
 export default function MarketIntelligence() {
+  const { t } = useTranslation();
   const [city, setCity] = useState("Erbil");
   const hoods = neighborhoodData[city] ?? [];
 
@@ -85,9 +87,9 @@ export default function MarketIntelligence() {
       {/* KPIs */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatsCard title="Avg $/m²"        value={`$${avgPrice}`}       change="+5.8% YoY" icon={DollarSign}  trend="up" />
-        <StatsCard title="Avg Rental Yield" value={`${avgYield}%`}       change="+0.4%"     icon={TrendingUp}  trend="up" />
-        <StatsCard title="Demand Index"     value={`${avgDemand}/100`}                      icon={Flame}       trend="up" />
-        <StatsCard title="Active Listings"  value={hoods.reduce((s, n) => s + n.daysOnMarket, 0)} icon={Building2} />
+        <StatsCard title={t("market.avgRentalYield")} value={`${avgYield}%`}       change="+0.4%"     icon={TrendingUp}  trend="up" />
+        <StatsCard title={t("market.demandIndex")}     value={`${avgDemand}/100`}                      icon={Flame}       trend="up" />
+        <StatsCard title={t("market.activeListings")}  value={hoods.reduce((s, n) => s + n.daysOnMarket, 0)} icon={Building2} />
       </div>
 
       {/* City Picker */}
