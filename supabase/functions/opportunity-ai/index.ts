@@ -3,6 +3,20 @@ import { corsHeaders } from "../_shared/cors.ts";
 import { requireUser } from "../_shared/auth.ts";
 import { consumeUsage } from "../_shared/usage.ts";
 
+// ── Language config ────────────────────────────────────────────────────────────
+
+type Lang = "en" | "ar" | "ku";
+
+const LANG_INSTRUCTIONS: Record<Lang, string> = {
+  en: "Respond entirely in English.",
+  ar: "أجب بالكامل باللغة العربية الفصحى المعاصرة. يجب أن تكون جميع النصوص والتحليلات والتوضيحات باللغة العربية الواضحة المناسبة لتطبيقات الأعمال.",
+  ku: "بۆ کوردی سۆرانی وەڵام بدەرەوە. هەموو دەقەکان، شیکارییەکان و ڕوونکردنەوەکان دەبێت بە کوردیی سۆرانیی ستانداردی کاروباری نووسرابن.",
+};
+
+function getLangInstruction(lang: string): string {
+  return LANG_INSTRUCTIONS[(lang as Lang)] ?? LANG_INSTRUCTIONS.en;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -10,16 +24,18 @@ serve(async (req) => {
     const { token } = await requireUser(req);
     await consumeUsage(token, "opportunity_ai", 1);
 
-    const { type, opportunity, criteria } = await req.json();
+    const { type, opportunity, criteria, language = "en" } = await req.json();
+    const langInstruction = getLangInstruction(language);
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     let systemPrompt = "";
     let userPrompt = "";
+    const langSuffix = `\n\nLANGUAGE INSTRUCTION (MANDATORY): ${langInstruction} All string values in the JSON response (summaries, descriptions, factor names, notes, insights, labels, recommendations text) MUST be written in the specified language. Only numeric values, JSON keys, and fixed enum tokens (like "BUY", "low", "high") stay in English.`;
 
     switch (type) {
       case "full_analysis":
-        systemPrompt = `You are TerraVista AI, an expert real estate investment analyst for the Iraqi and Middle Eastern markets. Analyze opportunities comprehensively. Return ONLY valid JSON.`;
+        systemPrompt = `You are TerraVista AI, an expert real estate investment analyst for the Iraqi and Middle Eastern markets. Analyze opportunities comprehensively. Return ONLY valid JSON.${langSuffix}`;
         userPrompt = `Analyze this investment opportunity and return JSON:
 ${JSON.stringify(opportunity)}
 
@@ -46,7 +62,7 @@ Return:
         break;
 
       case "predictive":
-        systemPrompt = `You are TerraVista AI forecasting engine. Generate realistic predictive models for real estate in Iraq/Middle East. Return ONLY valid JSON.`;
+        systemPrompt = `You are TerraVista AI forecasting engine. Generate realistic predictive models for real estate in Iraq/Middle East. Return ONLY valid JSON.${langSuffix}`;
         userPrompt = `Generate predictive analysis for: ${JSON.stringify(opportunity)}
 
 Return:
@@ -72,7 +88,7 @@ Return:
         break;
 
       case "portfolio":
-        systemPrompt = `You are TerraVista AI portfolio analyst. Analyze a portfolio of real estate opportunities. Return ONLY valid JSON.`;
+        systemPrompt = `You are TerraVista AI portfolio analyst. Analyze a portfolio of real estate opportunities. Return ONLY valid JSON.${langSuffix}`;
         userPrompt = `Analyze this portfolio: ${JSON.stringify(opportunity)}
 
 Return:
@@ -89,7 +105,7 @@ Return:
         break;
 
       case "investment_plan":
-        systemPrompt = `You are TerraVista AI strategic planner. Generate comprehensive investment strategy reports. Return ONLY valid JSON.`;
+        systemPrompt = `You are TerraVista AI strategic planner. Generate comprehensive investment strategy reports. Return ONLY valid JSON.${langSuffix}`;
         userPrompt = `Generate a full investment plan for: ${JSON.stringify(opportunity)}
 
 Return:
