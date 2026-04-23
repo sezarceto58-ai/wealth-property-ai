@@ -178,7 +178,11 @@
     "recommendedForYou": "موصى لك",
     "noPropertiesYet": "لا توجد عقارات بعد",
     "noPropertiesDesc": "ستظهر العقارات هنا عند نشرها في السوق.",
-    "browseMarketplace": "تصفح السوق"
+    "browseMarketplace": "تصفح السوق",
+    "aiValuationBanner": "تقييم العقار بالذكاء الاصطناعي — مجاني للجميع",
+    "aiValuationBannerDesc": "احصل على تقدير فوري لقيمة السوق وتحليل الخصم لأي عقار.",
+    "freeUsesIncluded": "يتضمن استخدامين مجانيين.",
+    "tryAiValuation": "جرّب التقييم الذكي"
   },
   "seller": {
     "dashboardTitle": "لوحة تحكم البائع",
@@ -193,7 +197,18 @@
     "newLeads": "عملاء جدد",
     "validatePrice": "تحقق من سعر إعلانك",
     "validatePriceDesc": "استخدم محرك تقييم الذكاء الاصطناعي للتحقق من تنافسية سعر إعلانك.",
-    "checkPrice": "تحقق من السعر"
+    "checkPrice": "تحقق من السعر",
+    "recentListings": "الإعلانات الأخيرة",
+    "noListings": "لا توجد إعلانات بعد",
+    "createFirstListing": "إنشاء أول إعلان",
+    "recentOffers": "العروض الأخيرة",
+    "noOffers": "لا توجد عروض بعد",
+    "recentLeads": "العملاء المحتملون الجدد",
+    "noLeads": "لا يوجد عملاء محتملون بعد",
+    "quickLinks": "روابط سريعة",
+    "freeUsesIncluded": "مجاني — يتضمن استخدامين",
+    "activeCount": "{{count}} نشط",
+    "newLeadsCount": "{{count}} عميل جديد"
   },
   "developer": {
     "dashboardTitle": "لوحة تحكم المطوّر",
@@ -213,7 +228,12 @@
     "reports": "التقارير",
     "exportShare": "تصدير ومشاركة",
     "aiValuationBanner": "محرك تقييم العقارات بالذكاء الاصطناعي",
-    "aiValuationBannerDesc": "قيّم الأراضي والعقارات بسرعة قبل الاستحواذ أو التطوير."
+    "aiValuationBannerDesc": "قيّم الأراضي والعقارات بسرعة قبل الاستحواذ أو التطوير.",
+    "freeUsesIncluded": "مجاني — يتضمن استخدامين",
+    "valueAProperty": "تقييم عقار",
+    "statusDraft": "مسودة",
+    "statusError": "خطأ",
+    "floorsMax": "{{count}} طابق كحد أقصى"
   },
   "opportunities": {
     "title": "فرص الاستثمار",
@@ -356,7 +376,7 @@
     "mediumConfidence": "ثقة متوسطة",
     "lowConfidence": "ثقة منخفضة",
     "usesRemaining": "{{count}} استخدام متبقٍّ",
-    "usesExhausted": "لقد استخدمت نرخاندنَيك المجانيَّين",
+    "usesExhausted": "لقد استخدمت كلا تقييميك المجانيَّين",
     "upgradeForUnlimited": "ارفع خطتك إلى برو للحصول على تقييمات غير محدودة",
     "propertyBasics": "أساسيات العقار",
     "locationMap": "الموقع والخريطة",
@@ -510,7 +530,40 @@
     "analyzing": "جارٍ التحليل…",
     "desc": "التقييم الاستثماري، SWOT، المالية، المخاطر والمزيد",
     "title": "تحليل العقار بالذكاء الاصطناعي",
-    "intro": "احصل على تحليل شامل يتضمن: تقييم الاستثمار، تحليل SWOT، المقاييس المالية، ذكاء السوق، تقييم المخاطر، التركيبة السكانية، ودرجة ESG"
+    "intro": "احصل على تحليل شامل يتضمن: تقييم الاستثمار، تحليل SWOT، المقاييس المالية، ذكاء السوق، تقييم المخاطر، التركيبة السكانية، ودرجة ESG",
+    "fieldLabels": {
+      "overall": "الإجمالي",
+      "location": "الموقع",
+      "value": "القيمة",
+      "growth": "النمو",
+      "risk": "المخاطر",
+      "liquidity": "السيولة",
+      "estimatedROI": "العائد على الاستثمار",
+      "estimatedIRR": "معدل العائد الداخلي",
+      "capRate": "معدل الرسملة",
+      "cashOnCash": "العائد النقدي",
+      "noi": "صافي الدخل التشغيلي",
+      "annualCashFlow": "التدفق النقدي السنوي",
+      "gdv": "القيمة التطويرية الإجمالية",
+      "dscr": "نسبة تغطية الدين",
+      "peRatio": "نسبة السعر للأرباح",
+      "volatility": "مستوى التذبذب",
+      "breakEvenYears": "سنوات التعادل",
+      "population": "عدد السكان",
+      "medianIncome": "الدخل المتوسط",
+      "employmentRate": "معدل التوظيف",
+      "growthRate": "معدل النمو",
+      "trend": "الاتجاه",
+      "pricePerSqm": "السعر/م²",
+      "areaGrowth": "نمو المنطقة",
+      "supplyDemand": "العرض والطلب",
+      "forecast": "التوقعات",
+      "score": "النقاط الإجمالية",
+      "environmental": "البيئي",
+      "social": "الاجتماعي",
+      "governance": "الحوكمة",
+      "notes": "ملاحظات"
+    }
   },
   "marketplace": {
     "title": "اكتشف العقارات المميزة",
