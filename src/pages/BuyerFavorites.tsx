@@ -7,7 +7,6 @@ import { usePlanLimits } from "@/hooks/usePlanLimits";
 import { PLAN_LIMITS } from "@/hooks/usePlanLimits";
 
 export default function BuyerFavorites() {
-  const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const { data: favorites = [], isLoading } = useFavorites();

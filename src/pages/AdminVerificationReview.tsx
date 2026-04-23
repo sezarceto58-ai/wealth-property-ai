@@ -18,9 +18,9 @@ interface Verification {
 }
 
 const statusConfig: Record<string, { icon: any; class: string; label: string }> = {
-  pending: { icon: Clock, class: "bg-warning/10 text-warning", label: t("admin.pending") },
-  approved: { icon: CheckCircle, class: "bg-success/10 text-success", label: t("admin.approved") },
-  rejected: { icon: XCircle, class: "bg-destructive/10 text-destructive", label: t("admin.rejected") },
+  pending: { icon: Clock, class: "bg-warning/10 text-warning", label: "Pending" },
+  approved: { icon: CheckCircle, class: "bg-success/10 text-success", label: "Approved" },
+  rejected: { icon: XCircle, class: "bg-destructive/10 text-destructive", label: "Rejected" },
 };
 
 export default function AdminVerificationReview() {

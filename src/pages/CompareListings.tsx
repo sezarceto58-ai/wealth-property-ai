@@ -24,7 +24,6 @@ const compareFields: { label: string; key: keyof DbProperty; format?: (v: DbProp
 ];
 
 export default function CompareListings() {
-  const { t } = useTranslation();
   const { data: allProperties = [], isLoading } = useProperties();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 

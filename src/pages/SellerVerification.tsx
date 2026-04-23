@@ -32,9 +32,9 @@ type PropertyDoc = {
 };
 
 const STATUS_CONFIG: Record<string, { icon: typeof CheckCircle2; color: string; label: string }> = {
-  pending: { icon: Clock, color: "text-warning", label: t("admin.pending","Pending Review") },
-  approved: { icon: CheckCircle2, color: "text-success", label: t("admin.approved") },
-  rejected: { icon: XCircle, color: "text-destructive", label: t("admin.rejected") },
+  pending: { icon: Clock, color: "text-warning", label: "Pending Review" },
+  approved: { icon: CheckCircle2, color: "text-success", label: "Approved" },
+  rejected: { icon: XCircle, color: "text-destructive", label: "Rejected" },
 };
 
 export default function SellerVerification() {
