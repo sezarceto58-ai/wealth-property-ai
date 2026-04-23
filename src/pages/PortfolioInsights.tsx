@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 export default function PortfolioInsights() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [opportunities, setOpportunities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,8 +40,9 @@ export default function PortfolioInsights() {
   const runPortfolioAI = async () => {
     setAnalyzing(true);
     try {
+      const lang = i18n.language?.split("-")[0] ?? "en";
       const { data, error } = await supabase.functions.invoke("opportunity-ai", {
-        body: { type: "portfolio", opportunity: opportunities },
+        body: { type: "portfolio", language: lang, opportunity: opportunities },
       });
       if (error) throw error;
       setPortfolioAnalysis(data.analysis);
