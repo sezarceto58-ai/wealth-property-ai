@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { BarChart3, Eye, Users, TrendingUp, DollarSign, Loader2 } from "lucide-react";
 import StatsCard from "@/components/StatsCard";
 import PlanGate from "@/components/PlanGate";
@@ -6,6 +7,7 @@ import { useSellerOffers } from "@/hooks/useOffers";
 import property1 from "@/assets/property-1.jpg";
 
 function AnalyticsContent() {
+  const { t } = useTranslation();
   const { data: properties = [], isLoading } = useMyProperties();
   const { data: offers = [] } = useSellerOffers();
 
@@ -18,10 +20,10 @@ function AnalyticsContent() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <StatsCard title={t("seller.totalViews")}   value={totalViews.toLocaleString()} icon={Eye}       trend="up" change="+12% this month" />
+        <StatsCard title={t("seller.totalViews", "Total Views")}   value={totalViews.toLocaleString()} icon={Eye}       trend="up" change="+12% this month" />
         <StatsCard title="Total Offers"  value={offers.length}               icon={DollarSign} />
         <StatsCard title="Total Offer Value" value={`$${(totalOfferValue / 1000).toFixed(0)}K`} icon={TrendingUp} trend="up" />
-        <StatsCard title={t("seller.activeListings")} value={properties.filter(p => p.status === "active").length} icon={BarChart3} />
+        <StatsCard title={t("seller.activeListings", "Active Listings")} value={properties.filter(p => p.status === "active").length} icon={BarChart3} />
       </div>
 
       <div className="rounded-2xl bg-card border border-border overflow-hidden">
@@ -55,7 +57,6 @@ function AnalyticsContent() {
 }
 
 export default function SellerAnalytics() {
-  const { t } = useTranslation();
   return (
     <div className="space-y-6">
       <div>

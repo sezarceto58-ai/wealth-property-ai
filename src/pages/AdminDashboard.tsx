@@ -25,7 +25,7 @@ const tabs = [
   { id: "verification", label: "Verification", icon: FileCheck },
   { id: "fraud", label: "Fraud & Risk", icon: AlertTriangle },
   { id: "users", label: "Users & Plans", icon: UserCog },
-  { id: "audit", label: t("admin.supportConsole","Audit Log"), icon: ClipboardList },
+  { id: "audit", label: "Audit Log", icon: ClipboardList },
   { id: "master", label: "Master Data", icon: Database },
 ];
 

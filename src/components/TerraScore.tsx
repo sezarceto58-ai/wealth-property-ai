@@ -5,7 +5,6 @@ interface AqarScoreProps {
 }
 
 export default function AqarScore({ score, size = "md", showLabel = true }: AqarScoreProps) {
-  const { t } = useTranslation();
   const getColor = () => {
     if (score >= 80) return "text-success";
     if (score >= 50) return "text-warning";

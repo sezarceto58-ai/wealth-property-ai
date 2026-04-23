@@ -5,7 +5,6 @@ import { useSellerOffers } from "@/hooks/useOffers";
 import { useMyProperties } from "@/hooks/useProperties";
 
 export default function AgentDashboard() {
-  const { t } = useTranslation();
   const { data: offers = [], isLoading } = useSellerOffers();
   const { data: properties = [] } = useMyProperties();
   const sellerOffers = offers.filter((o) => o.status === "SUBMITTED" || o.status === "VIEWED");
