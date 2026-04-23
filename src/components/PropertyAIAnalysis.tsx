@@ -111,10 +111,15 @@ export default function PropertyAIAnalysis({ property }: Props) {
 
   // ── Result ───────────────────────────────────────────────────────────────
   const recommendation = analysis.recommendation;
+  const BUY_LABELS = ["BUY", "شراء", "بکڕە"];
+  const AVOID_LABELS = ["AVOID", "تجنّب", "تجنب", "دووری لێبگرەوە"];
   const recColor =
-    ["BUY","شراء","بکڕە"].includes(recommendation)   ? "text-success" :
-    ["AVOID","تجنّب","تجنب","دووری لێبگرەوە"].includes(recommendation) ? "text-destructive" :
+    BUY_LABELS.includes(recommendation)   ? "text-success" :
+    AVOID_LABELS.includes(recommendation) ? "text-destructive" :
     "text-warning";
+
+  const fieldLabel = (key: string) =>
+    t(`aiAnalysis.fieldLabels.${key}`, key.replace(/([A-Z])/g, " $1"));
 
   return (
     <div className="rounded-xl bg-card border border-border overflow-hidden">
@@ -139,7 +144,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
               {Object.entries(analysis.investmentScore).map(([k, v]) => (
                 <div key={k} className="text-center p-2 rounded-lg bg-secondary/50">
                   <p className="text-lg font-bold text-foreground">{v as number}</p>
-                  <p className="text-xs text-muted-foreground capitalize">{k}</p>
+                  <p className="text-xs text-muted-foreground">{fieldLabel(k)}</p>
                 </div>
               ))}
             </div>
@@ -162,7 +167,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
             <div className="grid grid-cols-2 gap-2">
               {Object.entries(analysis.financials).map(([k, v]) => (
                 <div key={k} className="flex justify-between text-sm py-1">
-                  <span className="text-muted-foreground capitalize">{k.replace(/([A-Z])/g, " $1")}</span>
+                  <span className="text-muted-foreground">{fieldLabel(k)}</span>
                   <span className="font-medium text-foreground">{typeof v === "number" ? v.toLocaleString() : String(v)}</span>
                 </div>
               ))}
@@ -194,7 +199,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
           <Section title={t("aiAnalysis.demographics")} icon={<Users className="w-4 h-4" />} id="demo" expanded={expanded} toggle={toggle}>
             {Object.entries(analysis.demographics).map(([k, v]) => (
               <div key={k} className="flex justify-between text-sm py-1">
-                <span className="text-muted-foreground capitalize">{k.replace(/([A-Z])/g, " $1")}</span>
+                <span className="text-muted-foreground">{fieldLabel(k)}</span>
                 <span className="font-medium text-foreground">{String(v)}</span>
               </div>
             ))}
@@ -205,7 +210,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
           <Section title={t("aiAnalysis.market")} icon={<TrendingUp className="w-4 h-4" />} id="market" expanded={expanded} toggle={toggle}>
             {Object.entries(analysis.marketInsights).map(([k, v]) => (
               <div key={k} className="flex justify-between text-sm py-1">
-                <span className="text-muted-foreground capitalize">{k.replace(/([A-Z])/g, " $1")}</span>
+                <span className="text-muted-foreground">{fieldLabel(k)}</span>
                 <span className="font-medium text-foreground">{typeof v === "number" ? v.toLocaleString() : String(v)}</span>
               </div>
             ))}
@@ -218,7 +223,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
               {["score","environmental","social","governance"].map(k => (
                 <div key={k} className="text-center p-2 rounded-lg bg-secondary/50">
                   <p className="text-lg font-bold text-foreground">{analysis.esg[k]}</p>
-                  <p className="text-xs text-muted-foreground capitalize">{k === "score" ? t("common.all", "All") : k}</p>
+                  <p className="text-xs text-muted-foreground">{fieldLabel(k)}</p>
                 </div>
               ))}
             </div>
