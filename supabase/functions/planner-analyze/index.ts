@@ -4,6 +4,20 @@ import { corsHeaders } from "../_shared/cors.ts";
 import { requireUser } from "../_shared/auth.ts";
 import { consumeUsage } from "../_shared/usage.ts";
 
+// ── Language config ────────────────────────────────────────────────────────────
+
+type Lang = "en" | "ar" | "ku";
+
+const LANG_INSTRUCTIONS: Record<Lang, string> = {
+  en: "Respond entirely in English.",
+  ar: "أجب بالكامل باللغة العربية الفصحى المعاصرة. يجب أن تكون جميع النصوص والتحليلات والتوضيحات باللغة العربية الواضحة المناسبة لتطبيقات الأعمال.",
+  ku: "بۆ کوردی سۆرانی وەڵام بدەرەوە. هەموو دەقەکان، شیکارییەکان و ڕوونکردنەوەکان دەبێت بە کوردیی سۆرانیی ستانداردی کاروباری نووسرابن.",
+};
+
+function getLangInstruction(lang: string): string {
+  return LANG_INSTRUCTIONS[(lang as Lang)] ?? LANG_INSTRUCTIONS.en;
+}
+
 function extractJson(raw: string): any {
   // Strip markdown fences
   let cleaned = raw
@@ -63,7 +77,9 @@ serve(async (req) => {
     const {
       lat, lng, area_sqm, land_price, shape, max_floors, restrictions,
       street_type, sun_blockage, nearby_facilities, neighborhood_prices, neighborhood_projects,
+      language = "en",
     } = await req.json();
+    const langInstruction = getLangInstruction(language);
 
     if (!lat || !lng || !area_sqm) throw new Error("lat, lng, and area_sqm are required");
 
@@ -91,7 +107,9 @@ serve(async (req) => {
       ? nearby_facilities.map((f: any) => `- ${f.type}: ${f.distance_km} km away`).join("\n")
       : "No nearby facilities specified";
 
-    const prompt = `You are a world-class real estate feasibility consultant. Given the land data below, produce a COMPREHENSIVE feasibility report. Return ONLY valid JSON matching this exact schema (no markdown, no explanation):
+    const langSuffix = `\n\nLANGUAGE INSTRUCTION (MANDATORY): ${langInstruction} All string values in the JSON response (summaries, descriptions, factor names, notes, insights, labels, recommendations text, rationales, strategies) MUST be written in the specified language. Only numeric values, JSON keys, and fixed enum tokens (like "low", "high", "medium") stay in English.`;
+
+    const prompt = `You are a world-class real estate feasibility consultant. Given the land data below, produce a COMPREHENSIVE feasibility report. Return ONLY valid JSON matching this exact schema (no markdown, no explanation):${langSuffix}`;
 
 {
   "land_use": {
@@ -270,7 +288,10 @@ CRITICAL PRICING RULES:
 - Payment plans must be realistic for the market
 - SWOT must be specific to this exact location, not generic
 - Scenario testing must show realistic impacts
-- Return ONLY the JSON object`;
+- Return ONLY the JSON object
+- All text content MUST be in the specified language (${language})";
+
+    const systemMsg = `You are a senior real estate feasibility consultant with 20+ years experience in Middle East and global markets. You produce realistic, data-driven analysis. Return only valid JSON.${langSuffix}`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -281,7 +302,7 @@ CRITICAL PRICING RULES:
       body: JSON.stringify({
         model: "google/gemini-2.5-pro",
         messages: [
-          { role: "system", content: "You are a senior real estate feasibility consultant with 20+ years experience in Middle East and global markets. You produce realistic, data-driven analysis. Return only valid JSON." },
+          { role: "system", content: systemMsg },
           { role: "user", content: prompt },
         ],
       }),
