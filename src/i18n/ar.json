@@ -70,7 +70,10 @@
     "profile": "الملف الشخصي",
     "notifications": "الإشعارات",
     "noNotifications": "لا توجد إشعارات بعد",
-    "markAllRead": "تعليم الكل كمقروء"
+    "markAllRead": "تعليم الكل كمقروء",
+    "phone": "رقم الهاتف",
+    "bio": "نبذة شخصية",
+    "tools": "أدوات سريعة"
   },
   "nav": {
     "dashboard": "لوحة التحكم",
@@ -332,7 +335,15 @@
     "aiAnalysisLoading": "جارٍ تحليل العقار…",
     "aiAnalysisError": "فشل التحليل. يرجى المحاولة مجدداً.",
     "requestAnalysis": "طلب تحليل ذكي",
-    "analysisDisclaimer": "تحليل مُنشأ بالذكاء الاصطناعي. لا يُعدّ نصيحة مالية."
+    "analysisDisclaimer": "تحليل مُنشأ بالذكاء الاصطناعي. لا يُعدّ نصيحة مالية.",
+    "notFound": "العقار غير موجود.",
+    "backToMarket": "العودة إلى السوق",
+    "linkCopied": "تم نسخ الرابط!",
+    "addedToFavorites": "أُضيف إلى المفضلة",
+    "removedFromFavorites": "أُزيل من المفضلة",
+    "deepValuation": "التقييم الذكي المعمّق",
+    "aqarScore": "AqarScore™",
+    "overallScore": "نقاط جودة الصفقة"
   },
   "valuation": {
     "title": "تقييم العقار بالذكاء الاصطناعي",
@@ -402,7 +413,22 @@
     "usesRemaining_two": "استخداماتان متبقيان",
     "usesRemaining_few": "{{count}} استخدامات متبقية",
     "usesRemaining_many": "{{count}} استخدامًا متبقيًا",
-    "usesRemaining_other": "{{count}} استخدام متبقٍّ"
+    "usesRemaining_other": "{{count}} استخدام متبقٍّ",
+    "scopedTo": "هذا التقييم مخصص لـ:",
+    "confirmRequest": "أنت تطلب تقييماً لـ:",
+    "isCorrect": "هل هذا صحيح؟",
+    "willUse": "سيستخدم هذا 1 من ",
+    "remainingFree": "تقييماتك المجانية المتبقية.",
+    "requestBtn": "طلب تقييم لهذا العقار",
+    "usedAll": "لقد استخدمت ",
+    "freeUsesLabel": " تقييمات مجانية",
+    "lastFree": "كان هذا آخر تقييم مجاني.",
+    "forUnlimited": "للحصول على تقييمات غير محدودة.",
+    "propertySpecific": "تقييم خاص بهذا العقار",
+    "scopedDesc": "هذا التقييم مخصص حصراً لهذا الإعلان. تأكيد للمتابعة.",
+    "noPropertyText": "التقييم متاح لكل عقار على حدة. اختر عقاراً محدداً من السوق ثم اطلب تقييمه.",
+    "howToTitle": "كيفية الحصول على تقييم:",
+    "appreciation": "توقعات ارتفاع الأسعار"
   },
   "support": {
     "title": "مركز الدعم",
@@ -485,5 +511,88 @@
     "desc": "التقييم الاستثماري، SWOT، المالية، المخاطر والمزيد",
     "title": "تحليل العقار بالذكاء الاصطناعي",
     "intro": "احصل على تحليل شامل يتضمن: تقييم الاستثمار، تحليل SWOT، المقاييس المالية، ذكاء السوق، تقييم المخاطر، التركيبة السكانية، ودرجة ESG"
+  },
+  "marketplace": {
+    "title": "اكتشف العقارات المميزة",
+    "subtitle": "السوق العقاري الموثوق في العراق — مدعوم بتقييم AqarScore™ الذكي ومحرك AqarOffer™ للمشترين الجادين.",
+    "searchPlaceholder": "ابحث بالعنوان أو المدينة أو الحي…",
+    "allCities": "جميع المدن",
+    "allTypes": "جميع الأنواع",
+    "propertiesFound": "{{count}} عقار",
+    "noMatch": "لا توجد عقارات مطابقة لبحثك.",
+    "filters": "تصفية"
+  },
+  "offers": {
+    "title": "عروضي",
+    "offerInbox": "صندوق العروض",
+    "total": "إجمالي العروض",
+    "pending": "معلّقة",
+    "accepted": "مقبولة",
+    "rejected": "مرفوضة",
+    "offerPrice": "سعر العرض",
+    "seriousnessScore": "نقاط الجدية",
+    "sortByDate": "ترتيب بالتاريخ",
+    "sortByPrice": "ترتيب بالسعر",
+    "sortByScore": "ترتيب بالنقاط",
+    "accept": "قبول",
+    "reject": "رفض",
+    "counter": "عرض مضاد",
+    "sendOffer": "إرسال عرض",
+    "offerType": "نوع العرض",
+    "financing": "التمويل",
+    "closingTimeline": "الجدول الزمني للإغلاق",
+    "addDeposit": "إضافة التزام بعربون",
+    "upgradeUnlimited": "ترقية للحصول على عروض غير محدودة",
+    "limitReached": "تم الوصول لحد العروض الشهري",
+    "noOffers": "لا توجد عروض بعد"
+  },
+  "favorites": {
+    "title": "المفضلة",
+    "totalSaved": "إجمالي المحفوظ",
+    "avgPrice": "متوسط السعر",
+    "avgScore": "متوسط نقاط AqarScore",
+    "upgradeUnlimited": "ترقية للحصول على مفضلة غير محدودة",
+    "noFavorites": "لا توجد عقارات محفوظة بعد",
+    "noFavoritesDesc": "اضغط على القلب لحفظ العقار هنا."
+  },
+  "alerts": {
+    "title": "تنبيهات الأسعار",
+    "priority": "تنبيهات ذات أولوية",
+    "standard": "تنبيهات عادية",
+    "noAlerts": "لا توجد تنبيهات",
+    "createAlert": "إنشاء تنبيه"
+  },
+  "crm": {
+    "title": "إدارة العلاقات والعملاء المحتملين",
+    "addLead": "إضافة عميل",
+    "advance": "تقدم",
+    "newLeads": "جديد",
+    "contacted": "تم التواصل",
+    "qualified": "مؤهل",
+    "closed": "مُغلق",
+    "lost": "مفقود",
+    "noLeads": "لا يوجد عملاء محتملون بعد",
+    "source": "المصدر",
+    "stage": "المرحلة",
+    "notes": "ملاحظات"
+  },
+  "install": {
+    "title": "تثبيت AqarAI",
+    "desc": "أضف للشاشة الرئيسية للحصول على أفضل تجربة.",
+    "install": "تثبيت"
+  },
+  "offer": {
+    "submitted": "مُرسَل",
+    "viewed": "مشاهد",
+    "accepted": "مقبول",
+    "rejected": "مرفوض",
+    "countered": "مضاد",
+    "expired": "منتهي",
+    "withdrawn": "مسحوب"
+  },
+  "notFound": {
+    "title": "الصفحة غير موجودة",
+    "desc": "الصفحة التي تبحث عنها غير موجودة.",
+    "goHome": "الصفحة الرئيسية"
   }
 }

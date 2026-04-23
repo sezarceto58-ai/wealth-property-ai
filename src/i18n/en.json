@@ -70,7 +70,10 @@
     "verified": "Verified",
     "unverified": "Unverified",
     "new": "New",
-    "updated": "Updated"
+    "updated": "Updated",
+    "phone": "Phone Number",
+    "bio": "Bio",
+    "tools": "Tools"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -167,7 +170,12 @@
   },
   "buyer": {
     "dashboardTitle": "Buyer Dashboard",
-    "dashboardSubtitle": "Your personalized real estate command center."
+    "dashboardSubtitle": "Your personalized real estate command center.",
+    "propertiesAvailable": "Properties Available",
+    "savedProperties": "Saved Properties",
+    "activeOffers": "Active Offers",
+    "priceAlerts": "Price Alerts",
+    "recommendedForYou": "Recommended For You"
   },
   "seller": {
     "dashboardTitle": "Seller Dashboard",
@@ -274,7 +282,7 @@
     "resolved": "Resolved"
   },
   "property": {
-    "beds": "Bedrooms",
+    "beds": "Beds",
     "aiAnalysis": "AI Property Analysis",
     "aiAnalysisLoading": "Analyzing property…",
     "aiAnalysisError": "Analysis failed. Please try again.",
@@ -315,7 +323,15 @@
     "commercial": "Commercial",
     "land": "Land",
     "townhouse": "Townhouse",
-    "office": "Office"
+    "office": "Office",
+    "notFound": "Property not found.",
+    "backToMarket": "Back to marketplace",
+    "linkCopied": "Link copied!",
+    "addedToFavorites": "Added to favorites",
+    "removedFromFavorites": "Removed from favorites",
+    "deepValuation": "Deep AI Valuation",
+    "aqarScore": "AqarScore™",
+    "overallScore": "Overall deal quality score"
   },
   "valuation": {
     "title": "AI Property Valuation",
@@ -377,7 +393,22 @@
     "concierge": "Concierge Service",
     "scoreBreakdown": "Property Score Breakdown",
     "keyFactors": "Key Valuation Factors",
-    "comparables": "Comparable Properties"
+    "comparables": "Comparable Properties",
+    "scopedTo": "This valuation is scoped to:",
+    "confirmRequest": "You're requesting a valuation for:",
+    "isCorrect": "Is that correct?",
+    "willUse": "This will use 1 of your ",
+    "remainingFree": "remaining free valuations.",
+    "requestBtn": "Request Valuation for This Property",
+    "usedAll": "You've used your ",
+    "freeUsesLabel": " free valuations",
+    "lastFree": "This was your last free valuation.",
+    "forUnlimited": "for unlimited.",
+    "propertySpecific": "Property-specific valuation",
+    "scopedDesc": "This valuation is scoped exclusively to this listing. Confirm below to proceed.",
+    "noPropertyText": "Valuation is available on a per-property basis. Select a specific property from the marketplace, then request a valuation from its listing page.",
+    "howToTitle": "How to get a valuation:",
+    "appreciation": "Price Appreciation Forecast"
   },
   "aiAnalysis": {
     "investmentScore": "Investment Score",
@@ -414,7 +445,9 @@
     "priceGrowth": "Price Growth",
     "rentalYield": "Rental Yield",
     "investorSentiment": "Investor Sentiment",
-    "supplyDemand": "Supply vs Demand"
+    "supplyDemand": "Supply vs Demand",
+    "forecasts": "Forecasts",
+    "rentalYieldMap": "Rental Yield Ranking"
   },
   "syndication": {
     "title": "Syndication Deals",
@@ -431,5 +464,88 @@
     "areYouDeveloper": "Are you a developer?",
     "areYouDeveloperDesc": "List your project and connect with 500+ verified investors",
     "listProject": "List Your Project"
+  },
+  "marketplace": {
+    "title": "Discover Premium Properties",
+    "subtitle": "Iraq's trusted real estate marketplace — powered by AqarScore™ AI valuation and AqarOffer™ serious buyer engine.",
+    "searchPlaceholder": "Search by title, city, or district…",
+    "allCities": "All Cities",
+    "allTypes": "All Types",
+    "propertiesFound": "{{count}} properties found",
+    "noMatch": "No properties match your search.",
+    "filters": "Filters"
+  },
+  "offers": {
+    "title": "My Offers",
+    "offerInbox": "Offer Inbox",
+    "total": "Total Offers",
+    "pending": "Pending",
+    "accepted": "Accepted",
+    "rejected": "Rejected",
+    "offerPrice": "Offer Price",
+    "seriousnessScore": "Seriousness Score",
+    "sortByDate": "Sort by Date",
+    "sortByPrice": "Sort by Price",
+    "sortByScore": "Sort by Score",
+    "accept": "Accept",
+    "reject": "Reject",
+    "counter": "Counter",
+    "sendOffer": "Send Offer",
+    "offerType": "Offer Type",
+    "financing": "Financing",
+    "closingTimeline": "Closing Timeline",
+    "addDeposit": "Add Deposit Commitment",
+    "upgradeUnlimited": "Upgrade for unlimited offers",
+    "limitReached": "Monthly offer limit reached",
+    "noOffers": "No offers yet"
+  },
+  "favorites": {
+    "title": "My Favorites",
+    "totalSaved": "Total Saved",
+    "avgPrice": "Avg Price",
+    "avgScore": "Avg AqarScore",
+    "upgradeUnlimited": "Upgrade for unlimited favorites",
+    "noFavorites": "No saved properties yet",
+    "noFavoritesDesc": "Heart a property to save it here."
+  },
+  "alerts": {
+    "title": "Price Alerts",
+    "priority": "Priority Alerts",
+    "standard": "Standard Alerts",
+    "noAlerts": "No alerts set",
+    "createAlert": "Create Alert"
+  },
+  "crm": {
+    "title": "CRM & Leads",
+    "addLead": "Add Lead",
+    "advance": "Advance",
+    "newLeads": "New",
+    "contacted": "Contacted",
+    "qualified": "Qualified",
+    "closed": "Closed",
+    "lost": "Lost",
+    "noLeads": "No leads yet",
+    "source": "Source",
+    "stage": "Stage",
+    "notes": "Notes"
+  },
+  "install": {
+    "title": "Install AqarAI",
+    "desc": "Add to home screen for the best experience.",
+    "install": "Install"
+  },
+  "offer": {
+    "submitted": "Submitted",
+    "viewed": "Viewed",
+    "accepted": "Accepted",
+    "rejected": "Rejected",
+    "countered": "Countered",
+    "expired": "Expired",
+    "withdrawn": "Withdrawn"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "desc": "The page you are looking for does not exist.",
+    "goHome": "Go Home"
   }
 }
