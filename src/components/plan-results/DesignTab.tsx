@@ -1,17 +1,27 @@
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Building2, ParkingCircle, Trees } from "lucide-react";
 
+const copy = {
+  en: { buildings: "Buildings", shape: "Shape", floors: "Floors", totalUnits: "Total Units", commercialArea: "Commercial Area", greenArea: "Green Area", parkingSpaces: "Parking Spaces", basementLevels: "Basement Levels", facilities: "Facilities & Amenities", unitTypes: "Unit Types Detail", type: "Type", area: "Area", count: "Count", bed: "Bed", bath: "Bath", balcony: "Balcony", kitchen: "Kitchen", ceiling: "Ceiling", rationale: "Design Rationale", tower: "Tower" },
+  ar: { buildings: "المباني", shape: "الشكل", floors: "الطوابق", totalUnits: "إجمالي الوحدات", commercialArea: "المساحة التجارية", greenArea: "المساحة الخضراء", parkingSpaces: "مواقف السيارات", basementLevels: "طوابق القبو", facilities: "المرافق والخدمات", unitTypes: "تفاصيل أنواع الوحدات", type: "النوع", area: "المساحة", count: "العدد", bed: "غرف النوم", bath: "الحمامات", balcony: "الشرفة", kitchen: "المطبخ", ceiling: "الارتفاع", rationale: "مبررات التصميم", tower: "برج" },
+  ku: { buildings: "بیناکان", shape: "شێوە", floors: "نهۆمەکان", totalUnits: "کۆی یەکەکان", commercialArea: "بواری بازرگانی", greenArea: "بواری سەوز", parkingSpaces: "شوێنەکانی پارکینگ", basementLevels: "نهۆمەکانی ژێرزەوی", facilities: "خزمەتگوزاری و تایبەتمەندییەکان", unitTypes: "وردەکاری جۆرەکانی یەکە", type: "جۆر", area: "بوار", count: "ژمارە", bed: "ژووری خەو", bath: "حمام", balcony: "بالکۆن", kitchen: "چێشتخانە", ceiling: "بەرزی", rationale: "هۆکاری دیزاین", tower: "برج" },
+} as const;
+
 export default function DesignTab({ r }: { r: any }) {
+  const { i18n } = useTranslation();
+  const lang = (i18n.language?.split("-")[0] ?? "en") as "en" | "ar" | "ku";
+  const ui = useMemo(() => copy[lang] ?? copy.en, [lang]);
   const d = r.design || {};
   return (
     <div className="space-y-5">
-      {/* Overview Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Buildings", value: d.buildings_count || 1 },
-          { label: "Shape", value: d.building_shape || d.floors ? `${d.building_shape || "Tower"}` : "—" },
-          { label: "Floors", value: d.floors },
-          { label: "Total Units", value: d.total_units || (d.floors || 0) * (d.units_per_floor || 0) },
+          { label: ui.buildings, value: d.buildings_count || 1 },
+          { label: ui.shape, value: d.building_shape || d.floors ? `${d.building_shape || ui.tower}` : "—" },
+          { label: ui.floors, value: d.floors },
+          { label: ui.totalUnits, value: d.total_units || (d.floors || 0) * (d.units_per_floor || 0) },
         ].map((kpi) => (
           <div key={kpi.label} className="rounded-xl bg-card border border-border p-4 text-center">
             <p className="text-xs text-muted-foreground">{kpi.label}</p>
@@ -20,13 +30,12 @@ export default function DesignTab({ r }: { r: any }) {
         ))}
       </div>
 
-      {/* Areas */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Commercial Area", value: d.commercial_area_sqm ? `${d.commercial_area_sqm.toLocaleString()} m²` : "—", icon: Building2 },
-          { label: "Green Area", value: d.green_area_sqm ? `${d.green_area_sqm.toLocaleString()} m²` : "—", icon: Trees },
-          { label: "Parking Spaces", value: d.parking_spaces ?? "—", icon: ParkingCircle },
-          { label: "Basement Levels", value: d.basement_levels ?? 0 },
+          { label: ui.commercialArea, value: d.commercial_area_sqm ? `${d.commercial_area_sqm.toLocaleString()} m²` : "—", icon: Building2 },
+          { label: ui.greenArea, value: d.green_area_sqm ? `${d.green_area_sqm.toLocaleString()} m²` : "—", icon: Trees },
+          { label: ui.parkingSpaces, value: d.parking_spaces ?? "—", icon: ParkingCircle },
+          { label: ui.basementLevels, value: d.basement_levels ?? 0 },
         ].map((kpi) => (
           <div key={kpi.label} className="rounded-xl bg-card border border-border p-4 text-center">
             <p className="text-xs text-muted-foreground">{kpi.label}</p>
@@ -35,32 +44,30 @@ export default function DesignTab({ r }: { r: any }) {
         ))}
       </div>
 
-      {/* Facilities */}
       {d.facilities?.length > 0 && (
         <div className="rounded-xl bg-card border border-border p-5 space-y-3">
-          <h4 className="text-sm font-semibold text-foreground">Facilities & Amenities</h4>
+          <h4 className="text-sm font-semibold text-foreground">{ui.facilities}</h4>
           <div className="flex flex-wrap gap-2">{d.facilities.map((f: string) => (
             <Badge key={f} className="text-xs bg-primary/10 text-primary border-0">{f}</Badge>
           ))}</div>
         </div>
       )}
 
-      {/* Unit Types Table */}
       {d.unit_types?.length > 0 && (
         <div className="rounded-xl bg-card border border-border p-5 space-y-3">
-          <h4 className="text-sm font-semibold text-foreground">Unit Types Detail</h4>
+          <h4 className="text-sm font-semibold text-foreground">{ui.unitTypes}</h4>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
-                  <th className="py-2 text-muted-foreground font-medium">Type</th>
-                  <th className="py-2 text-muted-foreground font-medium">Area</th>
-                  <th className="py-2 text-muted-foreground font-medium">Count</th>
-                  <th className="py-2 text-muted-foreground font-medium">Bed</th>
-                  <th className="py-2 text-muted-foreground font-medium">Bath</th>
-                  <th className="py-2 text-muted-foreground font-medium">Balcony</th>
-                  <th className="py-2 text-muted-foreground font-medium">Kitchen</th>
-                  <th className="py-2 text-muted-foreground font-medium">Ceiling</th>
+                  <th className="py-2 text-muted-foreground font-medium">{ui.type}</th>
+                  <th className="py-2 text-muted-foreground font-medium">{ui.area}</th>
+                  <th className="py-2 text-muted-foreground font-medium">{ui.count}</th>
+                  <th className="py-2 text-muted-foreground font-medium">{ui.bed}</th>
+                  <th className="py-2 text-muted-foreground font-medium">{ui.bath}</th>
+                  <th className="py-2 text-muted-foreground font-medium">{ui.balcony}</th>
+                  <th className="py-2 text-muted-foreground font-medium">{ui.kitchen}</th>
+                  <th className="py-2 text-muted-foreground font-medium">{ui.ceiling}</th>
                 </tr>
               </thead>
               <tbody>
@@ -82,10 +89,9 @@ export default function DesignTab({ r }: { r: any }) {
         </div>
       )}
 
-      {/* Design Rationale */}
       {d.design_rationale && (
         <div className="rounded-xl bg-card border border-border p-5 space-y-2">
-          <h4 className="text-sm font-semibold text-foreground">Design Rationale</h4>
+          <h4 className="text-sm font-semibold text-foreground">{ui.rationale}</h4>
           <p className="text-sm text-muted-foreground whitespace-pre-line">{d.design_rationale}</p>
         </div>
       )}

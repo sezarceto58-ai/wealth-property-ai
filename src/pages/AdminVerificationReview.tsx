@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Shield, FileCheck, ExternalLink, Loader2, CheckCircle, XCircle, Clock } from "lucide-react";
@@ -17,18 +17,68 @@ interface Verification {
   reviewed_at: string | null;
 }
 
-const statusConfig: Record<string, { icon: any; class: string; label: string }> = {
-  pending: { icon: Clock, class: "bg-warning/10 text-warning", label: "Pending" },
-  approved: { icon: CheckCircle, class: "bg-success/10 text-success", label: "Approved" },
-  rejected: { icon: XCircle, class: "bg-destructive/10 text-destructive", label: "Rejected" },
-};
+const copy = {
+  en: {
+    pending: "Pending",
+    approved: "Approved",
+    rejected: "Rejected",
+    loadError: "Error loading verifications",
+    updateFailed: "Update failed",
+    updated: "Verification updated",
+    title: "Seller Verification Review",
+    totalSubmissions: "total submissions",
+    pendingCount: "pending",
+    refresh: "Refresh",
+    empty: "No verification submissions yet.",
+    user: "User",
+    view: "View",
+  },
+  ar: {
+    pending: "قيد الانتظار",
+    approved: "موافق عليه",
+    rejected: "مرفوض",
+    loadError: "خطأ في تحميل طلبات التحقق",
+    updateFailed: "فشل التحديث",
+    updated: "تم تحديث حالة التحقق",
+    title: "مراجعة توثيق البائعين",
+    totalSubmissions: "إجمالي الطلبات",
+    pendingCount: "معلق",
+    refresh: "تحديث",
+    empty: "لا توجد طلبات توثيق بعد.",
+    user: "المستخدم",
+    view: "عرض",
+  },
+  ku: {
+    pending: "چاوەڕوانە",
+    approved: "مۆڵەتدراو",
+    rejected: "ڕەتکراوەتەوە",
+    loadError: "هەڵە لە بارکردنی داواکارییەکانی پشتڕاستکردنەوە",
+    updateFailed: "نوێکردنەوە سەرکەوتوو نەبوو",
+    updated: "دۆخی پشتڕاستکردنەوە نوێکرایەوە",
+    title: "پێداچوونەوەی پشتڕاستکردنەوەی فرۆشیار",
+    totalSubmissions: "کۆی گشتی داواکارییەکان",
+    pendingCount: "چاوەڕوان",
+    refresh: "نوێکردنەوە",
+    empty: "هێشتا هیچ داواکارییەکی پشتڕاستکردنەوە نییە.",
+    user: "بەکارهێنەر",
+    view: "بینین",
+  },
+} as const;
 
 export default function AdminVerificationReview() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [verifications, setVerifications] = useState<Verification[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
   const { toast } = useToast();
+  const lang = (i18n.language?.split("-")[0] ?? "en") as "en" | "ar" | "ku";
+  const ui = useMemo(() => copy[lang] ?? copy.en, [lang]);
+
+  const statusConfig: Record<string, { icon: any; class: string; label: string }> = {
+    pending: { icon: Clock, class: "bg-warning/10 text-warning", label: ui.pending },
+    approved: { icon: CheckCircle, class: "bg-success/10 text-success", label: ui.approved },
+    rejected: { icon: XCircle, class: "bg-destructive/10 text-destructive", label: ui.rejected },
+  };
 
   const fetchVerifications = async () => {
     setLoading(true);
@@ -38,7 +88,7 @@ export default function AdminVerificationReview() {
       .order("created_at", { ascending: false });
 
     if (error) {
-      toast({ title: "Error loading verifications", description: error.message, variant: "destructive" });
+      toast({ title: ui.loadError, description: error.message, variant: "destructive" });
     } else {
       setVerifications(data || []);
     }
@@ -47,7 +97,6 @@ export default function AdminVerificationReview() {
 
   useEffect(() => {
     fetchVerifications();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateStatus = async (id: string, newStatus: string) => {
@@ -58,9 +107,9 @@ export default function AdminVerificationReview() {
       .eq("id", id);
 
     if (error) {
-      toast({ title: "Update failed", description: error.message, variant: "destructive" });
+      toast({ title: ui.updateFailed, description: error.message, variant: "destructive" });
     } else {
-      toast({ title: `Verification ${newStatus}` });
+      toast({ title: ui.updated });
       fetchVerifications();
     }
     setUpdating(null);
@@ -86,21 +135,21 @@ export default function AdminVerificationReview() {
         <div>
           <h2 className="text-xl font-display font-bold text-foreground flex items-center gap-2">
             <Shield className="w-5 h-5 text-primary" />
-            Seller Verification Review
+            {ui.title}
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            {verifications.length} total submissions • {verifications.filter(v => v.status === "pending").length} pending
+            {verifications.length} {ui.totalSubmissions} • {verifications.filter(v => v.status === "pending").length} {ui.pendingCount}
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={fetchVerifications}>
-          Refresh
+          {ui.refresh}
         </Button>
       </div>
 
       {verifications.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           <FileCheck className="w-10 h-10 mx-auto mb-3 opacity-40" />
-          <p>No verification submissions yet.</p>
+          <p>{ui.empty}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -118,7 +167,7 @@ export default function AdminVerificationReview() {
                       {v.verification_type.replace("_", " ")}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      User: {v.user_id.slice(0, 8)}… • {new Date(v.created_at).toLocaleDateString()}
+                      {ui.user}: {v.user_id.slice(0, 8)}… • {new Date(v.created_at).toLocaleDateString()}
                     </p>
                     {v.notes && (
                       <p className="text-xs text-muted-foreground mt-1 italic">"{v.notes}"</p>
@@ -134,7 +183,7 @@ export default function AdminVerificationReview() {
 
                   {v.storage_path && (
                     <Button variant="ghost" size="sm" onClick={() => getDocUrl(v.storage_path)}>
-                      <ExternalLink className="w-3 h-3 mr-1" /> View
+                      <ExternalLink className="w-3 h-3 mr-1" /> {ui.view}
                     </Button>
                   )}
 
@@ -156,7 +205,7 @@ export default function AdminVerificationReview() {
                         onClick={() => updateStatus(v.id, "rejected")}
                         disabled={updating === v.id}
                       >
-                        Reject
+                        {t("admin.reject")}
                       </Button>
                     </>
                   )}
