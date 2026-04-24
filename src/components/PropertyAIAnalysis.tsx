@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -7,6 +7,18 @@ import {
   Brain, TrendingUp, Shield, Users, Leaf, AlertTriangle, CheckCircle,
   XCircle, Loader2, ChevronDown, ChevronUp, Target, DollarSign, BarChart3,
 } from "lucide-react";
+
+// Localized labels for fixed enum tokens returned by the AI
+const REC_LABELS: Record<string, Record<string, string>> = {
+  en: { BUY: "BUY", HOLD: "HOLD", SELL: "SELL", AVOID: "AVOID" },
+  ar: { BUY: "شراء", HOLD: "احتفاظ", SELL: "بيع", AVOID: "تجنّب" },
+  ku: { BUY: "بکڕە", HOLD: "هەڵگرە", SELL: "بیفرۆشە", AVOID: "دووری لێبگرەوە" },
+};
+const LEVEL_LABELS: Record<string, Record<string, string>> = {
+  en: { low: "LOW", medium: "MEDIUM", high: "HIGH" },
+  ar: { low: "منخفض", medium: "متوسط", high: "مرتفع" },
+  ku: { low: "نزم", medium: "مامناوەند", high: "بەرز" },
+};
 import { Button } from "@/components/ui/button";
 
 interface Props { property: DbProperty; }
@@ -43,12 +55,13 @@ function SwotBox({ label, items, icon }: { label: string; items: string[]; icon:
 
 export default function PropertyAIAnalysis({ property }: Props) {
   const { t, i18n } = useTranslation();
-  const lang = i18n.language?.split("-")[0] ?? "en";
+  const lang = (i18n.language?.split("-")[0] ?? "en") as "en" | "ar" | "ku";
 
   const [analysis, setAnalysis] = useState<any>(null);
   const [loading, setLoading]   = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const { toast } = useToast();
+  const analysisLangRef = useRef<string | null>(null);
 
   const runAnalysis = async () => {
     setLoading(true);
@@ -76,6 +89,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
         toast({ title: t("common.error"), description: data.error, variant: "destructive" });
       } else {
         setAnalysis(data.analysis);
+        analysisLangRef.current = lang;
       }
     } catch (err: any) {
       toast({ title: t("common.error"), description: err.message, variant: "destructive" });
@@ -83,6 +97,21 @@ export default function PropertyAIAnalysis({ property }: Props) {
       setLoading(false);
     }
   };
+
+  // Auto re-run when the user switches app language so the cached AI output
+  // is regenerated in the newly selected language for the same property.
+  useEffect(() => {
+    if (analysis && analysisLangRef.current && analysisLangRef.current !== lang) {
+      runAnalysis();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
+
+  // Reset cached analysis when the underlying property changes
+  useEffect(() => {
+    setAnalysis(null);
+    analysisLangRef.current = null;
+  }, [property.id]);
 
   const toggle = (key: string) => setExpanded(expanded === key ? null : key);
 
@@ -110,12 +139,12 @@ export default function PropertyAIAnalysis({ property }: Props) {
   }
 
   // ── Result ───────────────────────────────────────────────────────────────
-  const recommendation = analysis.recommendation;
-  const BUY_LABELS = ["BUY", "شراء", "بکڕە"];
-  const AVOID_LABELS = ["AVOID", "تجنّب", "تجنب", "دووری لێبگرەوە"];
+  const recommendation: string = analysis.recommendation ?? "";
+  const recKey = recommendation.toUpperCase();
+  const recLabel = REC_LABELS[lang]?.[recKey] ?? recommendation;
   const recColor =
-    BUY_LABELS.includes(recommendation)   ? "text-success" :
-    AVOID_LABELS.includes(recommendation) ? "text-destructive" :
+    recKey === "BUY"   ? "text-success" :
+    recKey === "AVOID" ? "text-destructive" :
     "text-warning";
 
   const fieldLabel = (key: string) =>
@@ -130,7 +159,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
             <h3 className="font-semibold text-foreground">{t("aiAnalysis.title")}</h3>
           </div>
           <span className={`px-3 py-1 rounded-full text-sm font-bold ${recColor} bg-card border border-border`}>
-            {recommendation}
+            {recLabel}
           </span>
         </div>
         {analysis.summary && <p className="text-sm text-muted-foreground mt-2 leading-relaxed" dir="auto">{analysis.summary}</p>}
@@ -183,7 +212,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
                 analysis.risk.level === "low"  ? "bg-success/10 text-success" :
                 analysis.risk.level === "high" ? "bg-destructive/10 text-destructive" :
                 "bg-warning/10 text-warning"}`}>
-                {analysis.risk.level?.toUpperCase()}
+                {LEVEL_LABELS[lang]?.[analysis.risk.level] ?? analysis.risk.level?.toUpperCase()}
               </span>
             </div>
             {analysis.risk.factors?.map((f: any, i: number) => (
