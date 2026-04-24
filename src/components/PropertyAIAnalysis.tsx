@@ -55,12 +55,13 @@ function SwotBox({ label, items, icon }: { label: string; items: string[]; icon:
 
 export default function PropertyAIAnalysis({ property }: Props) {
   const { t, i18n } = useTranslation();
-  const lang = i18n.language?.split("-")[0] ?? "en";
+  const lang = (i18n.language?.split("-")[0] ?? "en") as "en" | "ar" | "ku";
 
   const [analysis, setAnalysis] = useState<any>(null);
   const [loading, setLoading]   = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const { toast } = useToast();
+  const analysisLangRef = useRef<string | null>(null);
 
   const runAnalysis = async () => {
     setLoading(true);
