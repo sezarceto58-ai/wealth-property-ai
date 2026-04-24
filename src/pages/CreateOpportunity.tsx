@@ -28,7 +28,7 @@ export default function CreateOpportunity() {
 
   const handleSubmit = async () => {
     if (!user || !form.title.trim()) {
-      toast.error("Title is required");
+      toast.error(t("opportunities.titleRequired"));
       return;
     }
     setSaving(true);
@@ -39,10 +39,10 @@ export default function CreateOpportunity() {
     }).select("id").single() as any);
 
     if (error) {
-      toast.error("Failed to create opportunity");
+      toast.error(t("opportunities.createError"));
       console.error(error);
     } else {
-      toast.success("Opportunity created!");
+      toast.success(t("opportunities.createSuccess"));
       navigate(`/developer/opportunities/${data.id}`);
     }
     setSaving(false);
@@ -53,71 +53,71 @@ export default function CreateOpportunity() {
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="w-4 h-4" /></Button>
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground">New Opportunity</h1>
-          <p className="text-sm text-muted-foreground">Create an investment opportunity workspace</p>
+          <h1 className="text-2xl font-display font-bold text-foreground">{t("opportunities.newOpportunity")}</h1>
+          <p className="text-sm text-muted-foreground">{t("opportunities.createDesc")}</p>
         </div>
       </div>
 
       <div className="rounded-xl bg-card border border-border p-6 space-y-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
-            <Label>Title *</Label>
+            <Label>{t("common.name")} *</Label>
             <Input placeholder="e.g. Baghdad Residential Tower" value={form.title} onChange={(e) => update("title", e.target.value)} />
           </div>
           <div className="sm:col-span-2">
-            <Label>Description</Label>
-            <Textarea placeholder="Describe this investment opportunity..." value={form.description} onChange={(e) => update("description", e.target.value)} rows={3} />
+            <Label>{t("common.description")}</Label>
+            <Textarea placeholder={t("opportunities.createDesc")} value={form.description} onChange={(e) => update("description", e.target.value)} rows={3} />
           </div>
 
           <div>
-            <Label>Investment Type</Label>
+            <Label>{t("opportunities.investmentType")}</Label>
             <Select value={form.investment_type} onValueChange={(v) => update("investment_type", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="buy">Buy & Hold</SelectItem>
-                <SelectItem value="develop">Develop</SelectItem>
-                <SelectItem value="flip">Flip</SelectItem>
-                <SelectItem value="rent">Rental</SelectItem>
+                <SelectItem value="buy">{t("opportunities.typeBuyHold")}</SelectItem>
+                <SelectItem value="develop">{t("opportunities.typeDevelop")}</SelectItem>
+                <SelectItem value="flip">{t("opportunities.typeFlip")}</SelectItem>
+                <SelectItem value="rent">{t("opportunities.typeRental")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div>
-            <Label>Property Type</Label>
+            <Label>{t("valuation.propertyType")}</Label>
             <Select value={form.property_type} onValueChange={(v) => update("property_type", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="residential">Residential</SelectItem>
-                <SelectItem value="commercial">Commercial</SelectItem>
-                <SelectItem value="mixed_use">Mixed Use</SelectItem>
-                <SelectItem value="land">Land</SelectItem>
-                <SelectItem value="industrial">Industrial</SelectItem>
+                <SelectItem value="residential">{t("opportunities.propResidential")}</SelectItem>
+                <SelectItem value="commercial">{t("opportunities.propCommercial")}</SelectItem>
+                <SelectItem value="mixed_use">{t("opportunities.propMixedUse")}</SelectItem>
+                <SelectItem value="land">{t("opportunities.propLand")}</SelectItem>
+                <SelectItem value="industrial">{t("opportunities.propIndustrial")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
-            <Label>City</Label>
+            <Label>{t("valuation.city")}</Label>
             <Input placeholder="Baghdad" value={form.city} onChange={(e) => update("city", e.target.value)} />
           </div>
           <div>
-            <Label>Address</Label>
-            <Input placeholder="Street address..." value={form.address} onChange={(e) => update("address", e.target.value)} />
+            <Label>{t("opportunities.address")}</Label>
+            <Input value={form.address} onChange={(e) => update("address", e.target.value)} />
           </div>
 
           <div>
-            <Label>Entry Price ($)</Label>
+            <Label>{t("opportunities.entryPrice")}</Label>
             <Input type="number" value={form.entry_price} onChange={(e) => update("entry_price", +e.target.value)} />
           </div>
           <div>
-            <Label>Estimated Dev Cost ($)</Label>
+            <Label>{t("opportunities.devCost")}</Label>
             <Input type="number" value={form.estimated_dev_cost} onChange={(e) => update("estimated_dev_cost", +e.target.value)} />
           </div>
           <div>
-            <Label>Expected Revenue ($)</Label>
+            <Label>{t("opportunities.expectedRevenue")}</Label>
             <Input type="number" value={form.expected_revenue} onChange={(e) => update("expected_revenue", +e.target.value)} />
           </div>
           <div>
-            <Label>Currency</Label>
+            <Label>{t("opportunities.currency")}</Label>
             <Select value={form.currency} onValueChange={(v) => update("currency", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -131,44 +131,44 @@ export default function CreateOpportunity() {
           </div>
 
           <div>
-            <Label>Land Area (m²)</Label>
+            <Label>{t("opportunities.landArea")}</Label>
             <Input type="number" value={form.land_area} onChange={(e) => update("land_area", +e.target.value)} />
           </div>
           <div>
-            <Label>Built Area (m²)</Label>
+            <Label>{t("valuation.builtArea")}</Label>
             <Input type="number" value={form.built_area} onChange={(e) => update("built_area", +e.target.value)} />
           </div>
           <div>
-            <Label>Floors</Label>
+            <Label>{t("valuation.floors")}</Label>
             <Input type="number" value={form.floors} onChange={(e) => update("floors", +e.target.value)} />
           </div>
           <div>
-            <Label>Timeline (months)</Label>
+            <Label>{t("opportunities.timeline")}</Label>
             <Input type="number" value={form.timeline_months} onChange={(e) => update("timeline_months", +e.target.value)} />
           </div>
 
           <div>
-            <Label>Risk Level</Label>
+            <Label>{t("opportunities.riskLevel")}</Label>
             <Select value={form.risk_level} onValueChange={(v) => update("risk_level", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="low">{t("opportunities.riskLow")}</SelectItem>
+                <SelectItem value="medium">{t("opportunities.riskMedium")}</SelectItem>
+                <SelectItem value="high">{t("opportunities.riskHigh")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div>
-            <Label>Zoning</Label>
-            <Input placeholder="e.g. Residential R2" value={form.zoning} onChange={(e) => update("zoning", e.target.value)} />
+            <Label>{t("opportunities.zoning")}</Label>
+            <Input value={form.zoning} onChange={(e) => update("zoning", e.target.value)} />
           </div>
         </div>
 
         <div className="flex justify-end gap-3 pt-4 border-t border-border">
-          <Button variant="outline" onClick={() => navigate(-1)}>Cancel</Button>
+          <Button variant="outline" onClick={() => navigate(-1)}>{t("common.cancel")}</Button>
           <Button onClick={handleSubmit} disabled={saving} className="bg-gradient-gold text-primary-foreground shadow-gold">
             {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
-            Create & Analyze
+            {t("opportunities.createAndAnalyze")}
           </Button>
         </div>
       </div>

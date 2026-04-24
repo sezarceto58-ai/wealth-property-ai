@@ -37,10 +37,10 @@ export default function Profile() {
         phone_number: phoneNumber,
         bio,
       });
-      toast({ title: t("common.success"), description: "Your profile details were saved." });
+      toast({ title: t("profile.saveSuccess"), description: "Your profile details were saved." });
     } catch (error: any) {
       toast({
-        title: t("common.error"),
+        title: t("profile.saveError"),
         description: error.message || "Could not save profile.",
         variant: "destructive",
       });
@@ -57,10 +57,10 @@ export default function Profile() {
 
     try {
       await uploadAvatar(file);
-      toast({ title: "Avatar uploaded", description: "Your profile picture has been updated." });
+      toast({ title: t("profile.uploadSuccess"), description: "Your profile picture has been updated." });
     } catch (error: any) {
       toast({
-        title: "Upload failed",
+        title: t("profile.uploadError"),
         description: error.message || "Could not upload avatar.",
         variant: "destructive",
       });
@@ -79,8 +79,8 @@ export default function Profile() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-display font-bold text-foreground mb-1">Your Profile</h1>
-      <p className="text-sm text-muted-foreground mb-8">Manage your avatar, display name, phone number, and bio.</p>
+      <h1 className="text-3xl font-display font-bold text-foreground mb-1">{t("profile.title")}</h1>
+      <p className="text-sm text-muted-foreground mb-8">{t("profile.subtitle")}</p>
 
       <form onSubmit={onSubmit} className="rounded-2xl border border-border bg-card p-6 lg:p-8 space-y-6">
         <div className="flex items-center gap-4">
@@ -93,36 +93,36 @@ export default function Profile() {
           )}
           <div className="space-y-2">
             <Button type="button" variant="secondary" onClick={onPickAvatar} disabled={isUploading}>
-              {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />} Upload Avatar
+              {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />} {t("profile.uploadAvatar")}
             </Button>
-            <p className="text-xs text-muted-foreground">Use JPG or PNG. Stored in your profile record.</p>
+            <p className="text-xs text-muted-foreground">{t("profile.avatarHint")}</p>
           </div>
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={onAvatarChange} />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="displayName">Display Name</Label>
+          <Label htmlFor="displayName">{t("profile.displayName")}</Label>
           <Input id="displayName" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your public display name" />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="phoneNumber">Phone Number</Label>
+          <Label htmlFor="phoneNumber">{t("profile.phoneNumber")}</Label>
           <Input id="phoneNumber" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="+964 ..." />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="bio">Bio</Label>
+          <Label htmlFor="bio">{t("profile.bioLabel")}</Label>
           <Textarea
             id="bio"
             value={bio}
             onChange={(e) => setBio(e.target.value)}
-            placeholder="Tell buyers or sellers a bit about yourself"
+            placeholder={t("profile.bioPlaceholder")}
             rows={5}
           />
         </div>
 
         <Button type="submit" disabled={isSaving}>
-          {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save Profile
+          {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {t("profile.saveProfile")}
         </Button>
       </form>
     </div>

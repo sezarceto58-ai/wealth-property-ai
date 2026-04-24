@@ -48,6 +48,7 @@ const dealTypeColors: Record<DealType, string> = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function MortgageCalculator() {
+  const { t } = useTranslation();
   const [price, setPrice] = useState(300000);
   const [down, setDown]   = useState(20);
   const [rate, setRate]   = useState(7.5);
@@ -61,14 +62,14 @@ function MortgageCalculator() {
   return (
     <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
       <h3 className="font-semibold text-foreground flex items-center gap-2">
-        <Calculator className="w-4 h-4 text-primary" /> Mortgage Calculator
+        <Calculator className="w-4 h-4 text-primary" /> {t("investor.mortgageCalc")}
       </h3>
       <div className="grid grid-cols-2 gap-4">
         {[
-          { label: "Property Price ($)",  val: price, set: setPrice,  step: 5000  },
-          { label: "Down Payment (%)",    val: down,  set: setDown,   step: 5     },
-          { label: "Interest Rate (%)",   val: rate,  set: setRate,   step: 0.25  },
-          { label: "Loan Term (Years)",   val: years, set: setYears,  step: 5     },
+          { label: t("investor.propertyPrice"),  val: price, set: setPrice,  step: 5000  },
+          { label: t("investor.downPayment"),    val: down,  set: setDown,   step: 5     },
+          { label: t("investor.interestRate"),   val: rate,  set: setRate,   step: 0.25  },
+          { label: t("investor.loanTerm"),       val: years, set: setYears,  step: 5     },
         ].map(f => (
           <div key={f.label}>
             <label className="text-xs text-muted-foreground">{f.label}</label>
@@ -78,15 +79,15 @@ function MortgageCalculator() {
       </div>
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-xl bg-primary/5 p-3 text-center">
-          <p className="text-xs text-muted-foreground">Monthly</p>
+          <p className="text-xs text-muted-foreground">{t("investor.monthly")}</p>
           <p className="text-xl font-bold text-primary">${monthly.toFixed(0)}</p>
         </div>
         <div className="rounded-xl bg-success/10 p-3 text-center">
-          <p className="text-xs text-muted-foreground">Total Interest</p>
+          <p className="text-xs text-muted-foreground">{t("investor.totalInterest")}</p>
           <p className="text-xl font-bold text-success">${(interest / 1000).toFixed(0)}K</p>
         </div>
         <div className="rounded-xl bg-warning/10 p-3 text-center">
-          <p className="text-xs text-muted-foreground">Loan Amount</p>
+          <p className="text-xs text-muted-foreground">{t("investor.loanAmount")}</p>
           <p className="text-xl font-bold text-warning">${(loan / 1000).toFixed(0)}K</p>
         </div>
       </div>
@@ -115,6 +116,7 @@ const DISTRICTS: Record<string, string[]> = {
 const FACILITIES = ["school", "hospital", "mall", "park", "university", "metro", "mosque"];
 
 function PredictiveEngineTab() {
+  const { t } = useTranslation();
   const [inp, setInp] = useState<InvestmentInput>(INP_DEFAULTS);
   const [result, setResult] = useState(() => calculateInvestmentPrediction(INP_DEFAULTS));
   const [showForm, setShowForm] = useState(false);
@@ -184,7 +186,7 @@ function PredictiveEngineTab() {
 
         {/* Price appreciation forecast */}
         <div className="mt-4">
-          <p className="text-xs font-semibold text-foreground mb-2">Price Appreciation Forecast</p>
+          <p className="text-xs font-semibold text-foreground mb-2">{t("investor.priceAppreciation")}</p>
           <div className="grid grid-cols-4 gap-2">
             {[
               { label: "1 Year",  val: result.priceAppreciation.y1 },
@@ -203,7 +205,7 @@ function PredictiveEngineTab() {
 
       {/* 6 Factor bars */}
       <div className="rounded-2xl bg-card border border-border p-5 space-y-4">
-        <p className="font-semibold text-foreground text-sm">6-Factor Investment Analysis</p>
+        <p className="font-semibold text-foreground text-sm">{t("investor.factorAnalysis")}</p>
         {result.factors.map(f => {
           const barColor = f.trend === "rising" ? "bg-emerald-500" : f.trend === "declining" ? "bg-red-500" : "bg-amber-400";
           const scoreColor = f.trend === "rising" ? "text-emerald-600 dark:text-emerald-400" : f.trend === "declining" ? "text-destructive" : "text-amber-600";
@@ -240,7 +242,7 @@ function PredictiveEngineTab() {
       {/* 10-Year projection table */}
       <div className="rounded-2xl bg-card border border-border overflow-hidden">
         <div className="p-4 border-b border-border flex items-center justify-between">
-          <p className="font-semibold text-foreground text-sm">10-Year Cash Flow Projection</p>
+          <p className="font-semibold text-foreground text-sm">{t("investor.cashFlowProjection")}</p>
           <span className="text-xs text-muted-foreground">Based on {inp.city} market assumptions</span>
         </div>
         <div className="overflow-x-auto">
@@ -272,7 +274,7 @@ function PredictiveEngineTab() {
       {/* Catalysts & Risks */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="rounded-2xl bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800 p-4 space-y-2">
-          <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wide">🚀 Upside Catalysts</p>
+          <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wide">{t("investor.upsideCatalysts")}</p>
           {result.catalysts.map((c, i) => (
             <div key={i} className="flex items-start gap-2 text-xs text-emerald-700 dark:text-emerald-400">
               <ArrowUpRight className="w-3.5 h-3.5 shrink-0 mt-0.5" />{c}
@@ -280,7 +282,7 @@ function PredictiveEngineTab() {
           ))}
         </div>
         <div className="rounded-2xl bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-800 p-4 space-y-2">
-          <p className="text-xs font-bold text-orange-800 dark:text-orange-300 uppercase tracking-wide">⚠️ Key Risks</p>
+          <p className="text-xs font-bold text-orange-800 dark:text-orange-300 uppercase tracking-wide">{t("investor.keyRisks")}</p>
           {result.risks.map((r, i) => (
             <div key={i} className="flex items-start gap-2 text-xs text-orange-700 dark:text-orange-400">
               <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />{r}
@@ -292,8 +294,8 @@ function PredictiveEngineTab() {
       {/* Input form toggle */}
       <div className="rounded-2xl bg-card border border-border p-4">
         <button onClick={() => setShowForm(!showForm)} className="w-full flex items-center justify-between text-sm font-semibold text-foreground">
-          <span className="flex items-center gap-2"><Target className="w-4 h-4 text-primary" /> Analyse a Different Property</span>
-          <span className="text-xs text-primary">{showForm ? "Hide" : "Customise inputs →"}</span>
+          <span className="flex items-center gap-2"><Target className="w-4 h-4 text-primary" /> {t("investor.analyseProperty")}</span>
+          <span className="text-xs text-primary">{showForm ? "Hide" : t("investor.customiseInputs")}</span>
         </button>
         {showForm && (
           <div className="mt-4 space-y-4 pt-4 border-t border-border">
@@ -316,7 +318,7 @@ function PredictiveEngineTab() {
               </div>
             </div>
             <div>
-              <label className="text-xs text-muted-foreground mb-1.5 block">Nearby Facilities</label>
+              <label className="text-xs text-muted-foreground mb-1.5 block">{t("investor.nearbyFacilities")}</label>
               <div className="flex flex-wrap gap-1.5">
                 {FACILITIES.map(f => {
                   const sel = inp.nearbyFacilities?.includes(f);
@@ -326,7 +328,7 @@ function PredictiveEngineTab() {
                 })}
               </div>
             </div>
-            <Button onClick={rerun} className="bg-primary text-white rounded-xl"><Sparkles className="w-4 h-4 me-2" /> Re-analyse</Button>
+            <Button onClick={rerun} className="bg-primary text-white rounded-xl"><Sparkles className="w-4 h-4 me-2" /> {t("investor.reanalyse")}</Button>
           </div>
         )}
       </div>
@@ -351,6 +353,7 @@ function ScoreRing({ score, grade, color }: { score: number; grade: string; colo
 }
 
 function DealCard({ deal }: { deal: DealResult }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const img = IMG_MAP[deal.image ?? "property-1"] ?? property1;
   const urgencyColor = deal.urgency === "Act Now" ? "bg-red-500" : deal.urgency === "Monitor" ? "bg-amber-500" : "bg-secondary";
@@ -451,7 +454,7 @@ function DealCard({ deal }: { deal: DealResult }) {
             onClick={() => navigate(`/property/${deal.id}`)}
             className="px-3 py-1.5 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors"
           >
-            View Deal
+            {t("investor.viewDeal")}
           </button>
         </div>
       </div>
@@ -460,6 +463,7 @@ function DealCard({ deal }: { deal: DealResult }) {
 }
 
 function SmartDealsTab() {
+  const { t } = useTranslation();
   const [typeFilter, setTypeFilter]   = useState<DealType | "All">("All");
   const [riskFilter, setRiskFilter]   = useState("All");
   const [cityFilter, setCityFilter]   = useState("All");
@@ -488,22 +492,22 @@ function SmartDealsTab() {
       {/* Stats banner */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="rounded-xl bg-card border border-border p-4">
-          <p className="text-xs text-muted-foreground">Deals Scanned</p>
+          <p className="text-xs text-muted-foreground">{t("investor.dealsScanned")}</p>
           <p className="text-2xl font-bold text-foreground">{ALL_DEALS.length}</p>
           <p className="text-[10px] text-muted-foreground mt-0.5">AI-scored listings</p>
         </div>
         <div className="rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 p-4">
-          <p className="text-xs text-emerald-700 dark:text-emerald-400">Top Deal Score</p>
+          <p className="text-xs text-emerald-700 dark:text-emerald-400">{t("investor.topDealScore")}</p>
           <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">{topDeal?.dealScore ?? 0}/100</p>
           <p className="text-[10px] text-emerald-600/70 dark:text-emerald-500 mt-0.5">{topDeal?.city}</p>
         </div>
         <div className="rounded-xl bg-card border border-border p-4">
-          <p className="text-xs text-muted-foreground">Avg Expected ROI</p>
+          <p className="text-xs text-muted-foreground">{t("investor.avgExpectedROI")}</p>
           <p className="text-2xl font-bold text-primary">{Math.round(ALL_DEALS.reduce((s, d) => s + d.expectedROI, 0) / ALL_DEALS.length)}%</p>
           <p className="text-[10px] text-muted-foreground mt-0.5">3-year total</p>
         </div>
         <div className="rounded-xl bg-card border border-border p-4">
-          <p className="text-xs text-muted-foreground">"Act Now" Deals</p>
+          <p className="text-xs text-muted-foreground">{t("investor.actNowDeals")}</p>
           <p className="text-2xl font-bold text-red-600">{ALL_DEALS.filter(d => d.urgency === "Act Now").length}</p>
           <p className="text-[10px] text-muted-foreground mt-0.5">High urgency</p>
         </div>
@@ -518,7 +522,7 @@ function SmartDealsTab() {
               className="w-full h-9 rounded-xl border border-border bg-background ps-9 pe-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
           </div>
           <button onClick={() => setShowFilters(!showFilters)} className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-medium transition-colors ${showFilters ? "bg-primary text-white border-primary" : "border-border text-muted-foreground hover:text-foreground"}`}>
-            <Filter className="w-3.5 h-3.5" /> Filters
+            <Filter className="w-3.5 h-3.5" /> {t("investor.filters")}
           </button>
         </div>
 
@@ -617,10 +621,10 @@ export default function InvestorTools() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-          <Brain className="w-6 h-6 text-primary" /> Investor Intelligence
+          <Brain className="w-6 h-6 text-primary" /> {t("investor.title")}
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Predictive investment scoring, smart deal discovery, and portfolio analytics.
+          {t("investor.subtitle")}
         </p>
       </div>
 
@@ -631,25 +635,25 @@ export default function InvestorTools() {
       <PlanGate requiredTier="elite" featureLabel="Investor Portfolio Tools">
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatsCard title="Portfolio Value" value={`$${(totalValue / 1e6).toFixed(1)}M`} change="+8.3% YoY" icon={DollarSign} trend="up" />
-            <StatsCard title="Avg ROI"         value={`${avgROI}%`}    change="+1.2%"    icon={TrendingUp}   trend="up" />
-            <StatsCard title="Properties"      value={portfolioItems.length}               icon={BarChart3} />
-            <StatsCard title="Deals Available" value={ALL_DEALS.filter(d => d.dealScore >= 70).length} change="70+ score" icon={Target} trend="up" />
+            <StatsCard title={t("investor.portfolioValue")} value={`$${(totalValue / 1e6).toFixed(1)}M`} change="+8.3% YoY" icon={DollarSign} trend="up" />
+            <StatsCard title={t("investor.avgROI")}         value={`${avgROI}%`}    change="+1.2%"    icon={TrendingUp}   trend="up" />
+            <StatsCard title={t("investor.properties")}     value={portfolioItems.length}               icon={BarChart3} />
+            <StatsCard title={t("investor.dealsAvailable")} value={ALL_DEALS.filter(d => d.dealScore >= 70).length} change="70+ score" icon={Target} trend="up" />
           </div>
 
           <Tabs defaultValue="prediction">
             <TabsList className="bg-secondary rounded-xl p-1 h-auto flex-wrap gap-1">
               <TabsTrigger value="prediction" className="rounded-lg text-xs gap-1.5">
-                <TrendingUp className="w-3.5 h-3.5" /> Predictive Engine
+                <TrendingUp className="w-3.5 h-3.5" /> {t("investor.tabPredictive")}
               </TabsTrigger>
               <TabsTrigger value="deals" className="rounded-lg text-xs gap-1.5">
-                <Flame className="w-3.5 h-3.5" /> Smart Deals
+                <Flame className="w-3.5 h-3.5" /> {t("investor.tabDeals")}
               </TabsTrigger>
               <TabsTrigger value="portfolio" className="rounded-lg text-xs gap-1.5">
-                <BarChart3 className="w-3.5 h-3.5" /> Portfolio
+                <BarChart3 className="w-3.5 h-3.5" /> {t("investor.tabPortfolio")}
               </TabsTrigger>
               <TabsTrigger value="market" className="rounded-lg text-xs gap-1.5">
-                <Globe className="w-3.5 h-3.5" /> Market Intel
+                <Globe className="w-3.5 h-3.5" /> {t("investor.tabMortgage")}
               </TabsTrigger>
             </TabsList>
 
@@ -658,12 +662,12 @@ export default function InvestorTools() {
 
             <TabsContent value="portfolio">
               <div className="rounded-2xl bg-card border border-border overflow-hidden">
-                <div className="p-5 border-b border-border"><h2 className="font-semibold text-foreground">Portfolio Holdings</h2></div>
+                <div className="p-5 border-b border-border"><h2 className="font-semibold text-foreground">{t("investor.portfolioHoldings")}</h2></div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-border bg-secondary/20">
-                        {["Asset", "Value", "ROI", "IRR", "Risk"].map(h => (
+                        {[t("investor.colPropertyId"), t("investor.colLocation"), t("investor.colPurchasePrice"), t("investor.colCurrentValue"), t("investor.colROI"), t("investor.colStatus")].map(h => (
                           <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">{h}</th>
                         ))}
                       </tr>
@@ -688,7 +692,7 @@ export default function InvestorTools() {
 
             <TabsContent value="market">
               <div className="rounded-2xl bg-card border border-border overflow-hidden">
-                <div className="p-5 border-b border-border"><h2 className="font-semibold text-foreground">Multi-Market Intelligence</h2></div>
+                <div className="p-5 border-b border-border"><h2 className="font-semibold text-foreground">{t("investor.multiMarket")}</h2></div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>

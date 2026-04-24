@@ -18,15 +18,15 @@ const adminStats = {
   avgAqarScore: 71,
 };
 
-const tabs = [
-  { id: "overview", label: "Overview", icon: Activity },
-  { id: "offers", label: "Offers Center", icon: BadgeDollarSign },
-  { id: "listings", label: "Listings", icon: Building2 },
-  { id: "verification", label: "Verification", icon: FileCheck },
-  { id: "fraud", label: "Fraud & Risk", icon: AlertTriangle },
-  { id: "users", label: "Users & Plans", icon: UserCog },
-  { id: "audit", label: "Audit Log", icon: ClipboardList },
-  { id: "master", label: "Master Data", icon: Database },
+const TAB_KEYS = [
+  { id: "overview",     labelKey: "admin.tabOverview",      icon: Activity },
+  { id: "offers",       labelKey: "admin.tabOffers",        icon: BadgeDollarSign },
+  { id: "listings",     labelKey: "admin.tabListings",      icon: Building2 },
+  { id: "verification", labelKey: "admin.tabVerification",  icon: FileCheck },
+  { id: "fraud",        labelKey: "admin.tabFraud",         icon: AlertTriangle },
+  { id: "users",        labelKey: "admin.tabUsers",         icon: UserCog },
+  { id: "audit",        labelKey: "admin.tabAudit",         icon: ClipboardList },
+  { id: "master",       labelKey: "admin.tabMaster",        icon: Database },
 ];
 
 const verificationQueue = [
@@ -100,14 +100,14 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-          <Shield className="w-6 h-6 text-primary" /> Governance Console
+          <Shield className="w-6 h-6 text-primary" /> {t("admin.consoleTitle")}
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">Admin monitoring, verification, and fraud detection.</p>
+        <p className="text-sm text-muted-foreground mt-1">{t("admin.consoleSubtitle")}</p>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 bg-secondary rounded-xl p-1 overflow-x-auto">
-        {tabs.map((tab) => (
+        {TAB_KEYS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
@@ -115,7 +115,7 @@ export default function AdminDashboard() {
               activeTab === tab.id ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
             }`}
           >
-            <tab.icon className="w-4 h-4" /> {tab.label}
+            <tab.icon className="w-4 h-4" /> {t(tab.labelKey)}
           </button>
         ))}
       </div>
@@ -123,16 +123,16 @@ export default function AdminDashboard() {
       {activeTab === "overview" && (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatsCard title="Total Listings" value={adminStats.totalListings.toLocaleString()} change="+124 this month" icon={Building2} trend="up" />
-            <StatsCard title="Active Offers" value={adminStats.activeOffers} change="+38 this week" icon={BadgeDollarSign} trend="up" />
-            <StatsCard title="Pending Verifications" value={adminStats.pendingVerifications} icon={FileCheck} />
-            <StatsCard title="Flagged Listings" value={adminStats.flaggedListings} change="3 new" icon={AlertTriangle} trend="down" />
+            <StatsCard title={t("admin.totalListings")} value={adminStats.totalListings.toLocaleString()} icon={Building2} trend="up" />
+            <StatsCard title={t("admin.activeOffers")} value={adminStats.activeOffers} icon={BadgeDollarSign} trend="up" />
+            <StatsCard title={t("admin.pendingVerifications")} value={adminStats.pendingVerifications} icon={FileCheck} />
+            <StatsCard title={t("admin.flaggedListings")} value={adminStats.flaggedListings} icon={AlertTriangle} trend="down" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatsCard title="Total Users" value={adminStats.totalUsers.toLocaleString()} change="+420 this month" icon={Users} trend="up" />
-            <StatsCard title="Monthly Revenue" value={`$${adminStats.monthlyRevenue.toLocaleString()}`} change="+12%" icon={BadgeDollarSign} trend="up" />
-            <StatsCard title="Conversion Rate" value={`${adminStats.conversionRate}%`} icon={Activity} />
-            <StatsCard title="Avg AqarScore" value={adminStats.avgAqarScore} icon={Eye} />
+            <StatsCard title={t("admin.totalUsers")} value={adminStats.totalUsers.toLocaleString()} icon={Users} trend="up" />
+            <StatsCard title={t("admin.monthlyRevenue")} value={`$${adminStats.monthlyRevenue.toLocaleString()}`} icon={BadgeDollarSign} trend="up" />
+            <StatsCard title={t("admin.conversionRate")} value={`${adminStats.conversionRate}%`} icon={Activity} />
+            <StatsCard title={t("admin.avgScore")} value={adminStats.avgAqarScore} icon={Eye} />
           </div>
         </>
       )}
@@ -140,21 +140,21 @@ export default function AdminDashboard() {
       {activeTab === "offers" && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-foreground">Offer Monitoring Center</h2>
+            <h2 className="font-semibold text-foreground">{t("admin.offerMonitoring")}</h2>
             <div className="flex gap-2">
-              <button className="px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-medium">Freeze Offer</button>
-              <button className="px-3 py-1.5 rounded-lg bg-warning/10 text-warning text-xs font-medium">Flag Buyer</button>
+              <button className="px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-medium">{t("admin.freezeOffer")}</button>
+              <button className="px-3 py-1.5 rounded-lg bg-warning/10 text-warning text-xs font-medium">{t("admin.flagBuyer")}</button>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground text-center py-8">Offer monitoring requires database integration.</p>
+          <p className="text-sm text-muted-foreground text-center py-8">{t("admin.offerMonitoringNote")}</p>
         </div>
       )}
 
       {activeTab === "listings" && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-foreground">Listings Moderation Queue</h2>
-            <span className="px-2 py-0.5 rounded-full bg-warning/10 text-warning text-xs font-bold">{pendingListings.length} pending</span>
+            <h2 className="font-semibold text-foreground">{t("admin.listingsMod")}</h2>
+            <span className="px-2 py-0.5 rounded-full bg-warning/10 text-warning text-xs font-bold">{pendingListings.length} {t("admin.pending")}</span>
           </div>
           {pendingListings.map((listing) => (
             <div key={listing.id} className="rounded-xl bg-card border border-border p-5 flex items-center justify-between animate-fade-in">
@@ -164,7 +164,7 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">{listing.title}</p>
-                  <p className="text-xs text-muted-foreground">Agent: {listing.agent} • {listing.submitted}</p>
+                  <p className="text-xs text-muted-foreground">{listing.agent} • {listing.submitted}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -175,9 +175,9 @@ export default function AdminDashboard() {
                     {listing.flag.replace("_", " ")}
                   </span>
                 )}
-                <button className="px-3 py-1.5 rounded-lg bg-success/10 text-success text-xs font-medium">Approve</button>
-                <button className="px-3 py-1.5 rounded-lg bg-warning/10 text-warning text-xs font-medium">Request Edits</button>
-                <button className="px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-medium">Reject</button>
+                <button className="px-3 py-1.5 rounded-lg bg-success/10 text-success text-xs font-medium">{t("admin.approve")}</button>
+                <button className="px-3 py-1.5 rounded-lg bg-warning/10 text-warning text-xs font-medium">{t("admin.requestEdits")}</button>
+                <button className="px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-medium">{t("admin.reject")}</button>
               </div>
             </div>
           ))}
@@ -186,7 +186,7 @@ export default function AdminDashboard() {
 
       {activeTab === "verification" && (
         <div className="space-y-4">
-          <h2 className="font-semibold text-foreground">Verification Queue</h2>
+          <h2 className="font-semibold text-foreground">{t("admin.verificationQueue")}</h2>
           {verificationQueue.map((item) => (
             <div key={item.id} className="rounded-xl bg-card border border-border p-5 flex items-center justify-between animate-fade-in">
               <div className="flex items-center gap-3">

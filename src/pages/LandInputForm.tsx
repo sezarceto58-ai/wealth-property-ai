@@ -19,33 +19,6 @@ import { Progress } from "@/components/ui/progress";
 
 const MapPicker = lazy(() => import("@/components/MapPicker"));
 
-const RESTRICTION_OPTIONS = [
-  { id: "green_zone", label: "Green Zone", icon: TreePine },
-  { id: "height_limit", label: "Height Limit", icon: Building2 },
-  { id: "heritage_zone", label: "Heritage Zone", icon: Landmark },
-  { id: "flood_zone", label: "Flood Zone", icon: Layers },
-  { id: "commercial_only", label: "Commercial Only", icon: DollarSign },
-];
-
-const FACILITY_OPTIONS = [
-  { id: "hospital", label: "Hospital / Clinic", icon: "🏥" },
-  { id: "school", label: "School / University", icon: "🎓" },
-  { id: "main_road", label: "Main Road / Highway", icon: "🛣️" },
-  { id: "park", label: "Park / Garden", icon: "🌳" },
-  { id: "mall", label: "Mall / Shopping Center", icon: "🛒" },
-  { id: "mosque", label: "Mosque / Place of Worship", icon: "🕌" },
-  { id: "gas_station", label: "Gas Station", icon: "⛽" },
-  { id: "government", label: "Government Building", icon: "🏛️" },
-];
-
-const STEPS = [
-  { label: "Location", icon: MapPin },
-  { label: "Land Details", icon: Ruler },
-  { label: "Constraints", icon: Building2 },
-  { label: "Context", icon: Landmark },
-  { label: "Review", icon: Sparkles },
-];
-
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
 const fadeItem = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.3 } } };
 
@@ -55,6 +28,33 @@ export default function LandInputForm() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(0);
+
+  const STEPS = [
+    { label: t("landForm.stepLocation"), icon: MapPin },
+    { label: t("landForm.stepLandDetails"), icon: Ruler },
+    { label: t("landForm.stepConstraints"), icon: Building2 },
+    { label: t("landForm.stepContext"), icon: Landmark },
+    { label: t("landForm.stepReview"), icon: Sparkles },
+  ];
+
+  const RESTRICTION_OPTIONS = [
+    { id: "green_zone", label: t("landForm.restrictionGreen"), icon: TreePine },
+    { id: "height_limit", label: t("landForm.restrictionHeight"), icon: Building2 },
+    { id: "heritage_zone", label: t("landForm.restrictionHeritage"), icon: Landmark },
+    { id: "flood_zone", label: t("landForm.restrictionFlood"), icon: Layers },
+    { id: "commercial_only", label: t("landForm.restrictionCommercial"), icon: DollarSign },
+  ];
+
+  const FACILITY_OPTIONS = [
+    { id: "hospital", label: t("landForm.facilityHospital"), icon: "🏥" },
+    { id: "school", label: t("landForm.facilitySchool"), icon: "🎓" },
+    { id: "main_road", label: t("landForm.facilityHighway"), icon: "🛣️" },
+    { id: "park", label: t("landForm.facilityPark"), icon: "🌳" },
+    { id: "mall", label: t("landForm.facilityMall"), icon: "🛒" },
+    { id: "mosque", label: t("landForm.facilityMosque"), icon: "🕌" },
+    { id: "gas_station", label: t("landForm.facilityTransport"), icon: "⛽" },
+    { id: "government", label: t("landForm.facilityGov"), icon: "🏛️" },
+  ];
 
   const [form, setForm] = useState({
     lat: "",
@@ -109,7 +109,7 @@ export default function LandInputForm() {
 
   const handleSubmit = async () => {
     if (!form.lat || !form.lng || !form.area_sqm) {
-      toast({ title: "Missing fields", description: "Please fill in location and area.", variant: "destructive" });
+      toast({ title: t("landForm.fillRequired"), variant: "destructive" });
       return;
     }
 
@@ -143,7 +143,7 @@ export default function LandInputForm() {
       navigate(`/developer/plan/${data.plan_id}`);
     } catch (err: any) {
       toast({
-        title: "Analysis failed",
+        title: t("landForm.analysisError"),
         description: err.message || "Something went wrong",
         variant: "destructive",
       });
@@ -168,10 +168,10 @@ export default function LandInputForm() {
             <div className="p-2 rounded-xl bg-primary-foreground/20">
               <Zap className="w-5 h-5 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-display font-bold text-primary-foreground">AI Land Analyzer</h1>
+            <h1 className="text-2xl font-display font-bold text-primary-foreground">{t("landForm.title")}</h1>
           </div>
           <p className="text-sm text-primary-foreground/80 max-w-lg">
-            Enter your land details and our AI will generate a comprehensive feasibility report with land use optimization, pricing analysis, and marketing strategy.
+            {t("landForm.subtitle")}
           </p>
         </div>
       </motion.div>
@@ -218,8 +218,8 @@ export default function LandInputForm() {
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-primary/10"><MapPin className="w-5 h-5 text-primary" /></div>
               <div>
-                <h3 className="text-base font-semibold text-foreground">Location & Environment</h3>
-                <p className="text-xs text-muted-foreground">Click on the map or enter coordinates</p>
+                <h3 className="text-base font-semibold text-foreground">{t("landForm.locationTitle")}</h3>
+                <p className="text-xs text-muted-foreground">{t("landForm.locationDesc")}</p>
               </div>
             </div>
             <Suspense fallback={<div className="h-[300px] rounded-xl bg-muted/30 animate-pulse" />}>
@@ -243,25 +243,25 @@ export default function LandInputForm() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-xs flex items-center gap-1.5"><Navigation className="w-3 h-3" /> Street Type</Label>
+                <Label className="text-xs flex items-center gap-1.5"><Navigation className="w-3 h-3" /> {t("landForm.streetType")}</Label>
                 <Select value={form.street_type} onValueChange={(v) => setForm({ ...form, street_type: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="main">Main Road / Highway</SelectItem>
-                    <SelectItem value="secondary">Secondary Street</SelectItem>
-                    <SelectItem value="alley">Alley / Narrow Street</SelectItem>
-                    <SelectItem value="corner">Corner Lot (2+ streets)</SelectItem>
+                    <SelectItem value="main">{t("landForm.streetMain")}</SelectItem>
+                    <SelectItem value="secondary">{t("landForm.streetResidential")}</SelectItem>
+                    <SelectItem value="alley">{t("landForm.streetPrivate")}</SelectItem>
+                    <SelectItem value="corner">{t("landForm.shapeCorner")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-xs flex items-center gap-1.5"><Sun className="w-3 h-3" /> Sun Blockage</Label>
+                <Label className="text-xs flex items-center gap-1.5"><Sun className="w-3 h-3" /> {t("landForm.sunBlock")}</Label>
                 <Select value={form.sun_blockage} onValueChange={(v) => setForm({ ...form, sun_blockage: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">None — Open sky</SelectItem>
-                    <SelectItem value="partial">Partial — One side</SelectItem>
-                    <SelectItem value="significant">Significant — Multiple sides</SelectItem>
+                    <SelectItem value="none">{t("landForm.sunNone")}</SelectItem>
+                    <SelectItem value="partial">{t("landForm.sunPartial")}</SelectItem>
+                    <SelectItem value="significant">{t("landForm.sunFull")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -274,23 +274,23 @@ export default function LandInputForm() {
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-primary/10"><Ruler className="w-5 h-5 text-primary" /></div>
               <div>
-                <h3 className="text-base font-semibold text-foreground">Land Specifications</h3>
-                <p className="text-xs text-muted-foreground">Area, shape, and pricing information</p>
+                <h3 className="text-base font-semibold text-foreground">{t("landForm.landDetailsTitle")}</h3>
+                <p className="text-xs text-muted-foreground">{t("landForm.landDetailsDesc")}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="area" className="text-xs">Area (m²) *</Label>
+                <Label htmlFor="area" className="text-xs">{t("landForm.area")}</Label>
                 <Input id="area" type="number" min="1" placeholder="2000" value={form.area_sqm} onChange={(e) => setForm({ ...form, area_sqm: e.target.value })} required />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs">Shape</Label>
+                <Label className="text-xs">{t("landForm.shape")}</Label>
                 <Select value={form.shape} onValueChange={(v) => setForm({ ...form, shape: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="rectangle">Rectangle</SelectItem>
-                    <SelectItem value="square">Square</SelectItem>
-                    <SelectItem value="irregular">Irregular</SelectItem>
+                    <SelectItem value="rectangle">{t("landForm.shapeRectangle")}</SelectItem>
+                    <SelectItem value="square">{t("landForm.shapeRegular")}</SelectItem>
+                    <SelectItem value="irregular">{t("landForm.shapeIrregular")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -328,8 +328,8 @@ export default function LandInputForm() {
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-xl bg-destructive/10"><ShieldAlert className="w-5 h-5 text-destructive" /></div>
                 <div>
-                  <h3 className="text-base font-semibold text-foreground">Zoning Restrictions</h3>
-                  <p className="text-xs text-muted-foreground">Select any applicable restrictions</p>
+                  <h3 className="text-base font-semibold text-foreground">{t("landForm.constraintsTitle")}</h3>
+                  <p className="text-xs text-muted-foreground">{t("landForm.constraintsDesc")}</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -357,8 +357,8 @@ export default function LandInputForm() {
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-xl bg-success/10"><School className="w-5 h-5 text-success" /></div>
                 <div>
-                  <h3 className="text-base font-semibold text-foreground">Nearby Facilities</h3>
-                  <p className="text-xs text-muted-foreground">Select facilities and enter distance in km</p>
+                  <h3 className="text-base font-semibold text-foreground">{t("landForm.contextTitle")}</h3>
+                  <p className="text-xs text-muted-foreground">{t("landForm.contextDesc")}</p>
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -407,15 +407,15 @@ export default function LandInputForm() {
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-warning/10"><Landmark className="w-5 h-5 text-warning" /></div>
               <div>
-                <h3 className="text-base font-semibold text-foreground">Neighborhood Context</h3>
-                <p className="text-xs text-muted-foreground">Help the AI understand the local market</p>
+                <h3 className="text-base font-semibold text-foreground">{t("landForm.zoning")}</h3>
+                <p className="text-xs text-muted-foreground">{t("landForm.notes")}</p>
               </div>
             </div>
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label className="text-xs">Neighboring Land / Property Prices</Label>
                 <Textarea
-                  placeholder="e.g. Adjacent lot sold for $300/m², apartments nearby sell for $1,200/m²…"
+                  placeholder={t("landForm.notesPlaceholder")}
                   className="min-h-[80px] text-sm"
                   value={form.neighborhood_prices}
                   onChange={(e) => setForm({ ...form, neighborhood_prices: e.target.value })}
@@ -439,20 +439,20 @@ export default function LandInputForm() {
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-primary/10"><Sparkles className="w-5 h-5 text-primary" /></div>
               <div>
-                <h3 className="text-base font-semibold text-foreground">Review & Analyze</h3>
-                <p className="text-xs text-muted-foreground">Verify your inputs before running the AI analysis</p>
+                <h3 className="text-base font-semibold text-foreground">{t("landForm.reviewTitle")}</h3>
+                <p className="text-xs text-muted-foreground">{t("landForm.reviewDesc")}</p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               {[
-                { label: "Location", value: form.lat && form.lng ? `${parseFloat(form.lat).toFixed(4)}, ${parseFloat(form.lng).toFixed(4)}` : "Not set", icon: MapPin },
-                { label: "Area", value: form.area_sqm ? `${Number(form.area_sqm).toLocaleString()} m²` : "Not set", icon: Ruler },
-                { label: "Shape", value: form.shape, icon: Layers },
-                { label: "Max Floors", value: form.max_floors, icon: Building2 },
-                { label: "Street Type", value: form.street_type, icon: Navigation },
-                { label: "Land Price", value: form.land_price ? `$${Number(form.land_price).toLocaleString()}` : "Not set", icon: DollarSign },
-                { label: "Restrictions", value: form.restrictions.length ? form.restrictions.join(", ") : "None", icon: ShieldAlert },
-                { label: "Facilities", value: form.nearby_facilities.length ? `${form.nearby_facilities.length} selected` : "None", icon: School },
+                { label: t("landForm.reviewCity"), value: form.lat && form.lng ? `${parseFloat(form.lat).toFixed(4)}, ${parseFloat(form.lng).toFixed(4)}` : "Not set", icon: MapPin },
+                { label: t("landForm.reviewArea"), value: form.area_sqm ? `${Number(form.area_sqm).toLocaleString()} m²` : "Not set", icon: Ruler },
+                { label: t("landForm.reviewShape"), value: form.shape, icon: Layers },
+                { label: t("landForm.reviewStreetWidth"), value: form.max_floors, icon: Building2 },
+                { label: t("landForm.reviewStreetType"), value: form.street_type, icon: Navigation },
+                { label: t("landForm.reviewNotes"), value: form.land_price ? `$${Number(form.land_price).toLocaleString()}` : "Not set", icon: DollarSign },
+                { label: t("landForm.reviewRestrictions"), value: form.restrictions.length ? form.restrictions.join(", ") : "None", icon: ShieldAlert },
+                { label: t("landForm.reviewFacilities"), value: form.nearby_facilities.length ? `${form.nearby_facilities.length} selected` : "None", icon: School },
               ].map((row) => {
                 const RowIcon = row.icon;
                 return (
@@ -478,7 +478,7 @@ export default function LandInputForm() {
           onClick={() => setStep((s) => Math.max(0, s - 1))}
           disabled={step === 0}
         >
-          Back
+          {t("common.back")}
         </Button>
         {step < STEPS.length - 1 ? (
           <Button
@@ -487,7 +487,7 @@ export default function LandInputForm() {
             disabled={!canAdvance()}
             className="gap-2"
           >
-            Next <ArrowRight className="w-4 h-4" />
+            {t("common.next")} <ArrowRight className="w-4 h-4" />
           </Button>
         ) : (
           <Button
@@ -498,9 +498,9 @@ export default function LandInputForm() {
             size="lg"
           >
             {loading ? (
-              <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing with AI…</>
+              <><Loader2 className="w-4 h-4 animate-spin" /> {t("landForm.analyzing")}</>
             ) : (
-              <><Sparkles className="w-4 h-4" /> Run AI Analysis</>
+              <><Sparkles className="w-4 h-4" /> {t("landForm.analyze")}</>
             )}
           </Button>
         )}

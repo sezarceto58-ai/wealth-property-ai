@@ -27,6 +27,7 @@ function NewTicketForm({ onSubmit, onCancel }: {
   onSubmit: (t: Ticket) => void;
   onCancel: () => void;
 }) {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [subject,     setSubject]     = useState("");
   const [category,    setCategory]    = useState<TicketCategory>("technical");
@@ -35,7 +36,7 @@ function NewTicketForm({ onSubmit, onCancel }: {
 
   const handleSubmit = () => {
     if (!subject.trim() || !description.trim()) {
-      toast({ title: "Please fill in all fields.", variant: "destructive" });
+      toast({ title: t("support.fillAllFields"), variant: "destructive" });
       return;
     }
     const now = new Date().toISOString();
@@ -55,7 +56,7 @@ function NewTicketForm({ onSubmit, onCancel }: {
       }],
     };
     onSubmit(newTicket);
-    toast({ title: `Ticket ${newTicket.id} submitted`, description: "We'll respond within 24 hours." });
+    toast({ title: t("support.ticketSubmittedTitle") });
   };
 
   const fieldClass = "w-full h-10 rounded-xl border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 text-foreground";
@@ -64,7 +65,7 @@ function NewTicketForm({ onSubmit, onCancel }: {
     <div className="rounded-2xl bg-card border border-border p-6 space-y-5">
       <div className="flex items-center justify-between">
         <h2 className="font-semibold text-foreground flex items-center gap-2">
-          <Plus className="w-4 h-4 text-primary" /> New Support Ticket
+          <Plus className="w-4 h-4 text-primary" /> {t("support.newTicket")}
         </h2>
         <button onClick={onCancel} className="p-1.5 rounded-lg hover:bg-secondary/60 text-muted-foreground transition-colors">
           <X className="w-4 h-4" />
@@ -74,10 +75,10 @@ function NewTicketForm({ onSubmit, onCancel }: {
       <div className="space-y-4">
         {/* Subject */}
         <div>
-          <label className="text-xs font-semibold text-foreground mb-1.5 block">Subject *</label>
+          <label className="text-xs font-semibold text-foreground mb-1.5 block">{t("support.subject")}</label>
           <input
             className={fieldClass}
-            placeholder="Brief description of your issue"
+            placeholder={t("support.subjectPlaceholder")}
             value={subject}
             onChange={e => setSubject(e.target.value)}
           />
@@ -86,7 +87,7 @@ function NewTicketForm({ onSubmit, onCancel }: {
         <div className="grid grid-cols-2 gap-4">
           {/* Category */}
           <div>
-            <label className="text-xs font-semibold text-foreground mb-1.5 block">Category</label>
+            <label className="text-xs font-semibold text-foreground mb-1.5 block">{t("support.category")}</label>
             <select
               value={category}
               onChange={e => setCategory(e.target.value as TicketCategory)}
@@ -100,7 +101,7 @@ function NewTicketForm({ onSubmit, onCancel }: {
 
           {/* Priority */}
           <div>
-            <label className="text-xs font-semibold text-foreground mb-1.5 block">Priority</label>
+            <label className="text-xs font-semibold text-foreground mb-1.5 block">{t("support.priorityLabel")}</label>
             <select
               value={priority}
               onChange={e => setPriority(e.target.value as TicketPriority)}
@@ -115,9 +116,9 @@ function NewTicketForm({ onSubmit, onCancel }: {
 
         {/* Description */}
         <div>
-          <label className="text-xs font-semibold text-foreground mb-1.5 block">Description *</label>
+          <label className="text-xs font-semibold text-foreground mb-1.5 block">{t("support.descriptionLabel")}</label>
           <Textarea
-            placeholder="Please describe your issue in detail. Include any error messages, steps to reproduce, or screenshots if possible."
+            placeholder={t("support.descriptionPlaceholder")}
             value={description}
             onChange={e => setDescription(e.target.value)}
             className="min-h-[120px] resize-none rounded-xl"
@@ -130,13 +131,13 @@ function NewTicketForm({ onSubmit, onCancel }: {
           onClick={handleSubmit}
           className="flex-1 py-2.5 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
         >
-          <Send className="w-4 h-4" /> Submit Ticket
+          <Send className="w-4 h-4" /> {t("support.submitTicket")}
         </button>
         <button
           onClick={onCancel}
           className="px-5 py-2.5 rounded-xl border border-border text-foreground text-sm font-medium hover:bg-secondary/40 transition-colors"
         >
-          Cancel
+          {t("common.cancel")}
         </button>
       </div>
     </div>
@@ -149,6 +150,7 @@ function TicketThread({ ticket, onClose, onReply }: {
   onClose: () => void;
   onReply: (ticketId: string, body: string) => void;
 }) {
+  const { t } = useTranslation();
   const [reply, setReply] = useState("");
   const { toast } = useToast();
   const sc = STATUS_CONFIG[ticket.status];
@@ -179,8 +181,8 @@ function TicketThread({ ticket, onClose, onReply }: {
           </div>
           <h2 className="font-semibold text-foreground">{ticket.subject}</h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {CATEGORY_LABELS[ticket.category]} · Opened {timeAgo(ticket.createdAt)}
-            {ticket.assignedTo && ` · Assigned to ${ticket.assignedTo}`}
+            {CATEGORY_LABELS[ticket.category]} · {t("support.openedLabel")} {timeAgo(ticket.createdAt)}
+            {ticket.assignedTo && ` · ${t("support.assignedLabel")} ${ticket.assignedTo}`}
           </p>
         </div>
       </div>
@@ -204,7 +206,7 @@ function TicketThread({ ticket, onClose, onReply }: {
                     <div className="flex items-center gap-2 mb-1.5">
                       <span className="text-sm font-semibold text-foreground">{msg.authorName}</span>
                       {isSupport && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary">Support</span>
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary">{t("support.teamBadge")}</span>
                       )}
                       <span className="text-xs text-muted-foreground ml-auto">{timeAgo(msg.createdAt)}</span>
                     </div>
@@ -220,7 +222,7 @@ function TicketThread({ ticket, onClose, onReply }: {
         {ticket.status !== "closed" && ticket.status !== "resolved" && (
           <div className="p-4 border-t border-border bg-secondary/20">
             <Textarea
-              placeholder="Write a reply…"
+              placeholder={t("support.writeReplyPlaceholder")}
               value={reply}
               onChange={e => setReply(e.target.value)}
               className="min-h-[80px] resize-none rounded-xl bg-background"
@@ -231,7 +233,7 @@ function TicketThread({ ticket, onClose, onReply }: {
                 disabled={!reply.trim()}
                 className="px-5 py-2 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 transition-all flex items-center gap-2"
               >
-                <Send className="w-3.5 h-3.5" /> Send Reply
+                <Send className="w-3.5 h-3.5" /> {t("support.sendReply")}
               </button>
             </div>
           </div>
@@ -239,7 +241,7 @@ function TicketThread({ ticket, onClose, onReply }: {
         {(ticket.status === "resolved" || ticket.status === "closed") && (
           <div className="p-4 border-t border-border text-center text-sm text-muted-foreground">
             <CheckCircle2 className="w-4 h-4 inline mr-1.5 text-emerald-500" />
-            This ticket is {ticket.status}. Open a new ticket if you need further help.
+            {t("support.ticketClosed", { status: ticket.status })}
           </div>
         )}
       </div>
@@ -249,6 +251,7 @@ function TicketThread({ ticket, onClose, onReply }: {
 
 // ── Ticket Row ──
 function TicketRow({ ticket, onClick }: { ticket: Ticket; onClick: () => void }) {
+  const { t } = useTranslation();
   const sc = STATUS_CONFIG[ticket.status];
   const pc = PRIORITY_CONFIG[ticket.priority];
   const unread = ticket.messages.length > 1 && ticket.status !== "resolved" && ticket.status !== "closed";
@@ -263,7 +266,7 @@ function TicketRow({ ticket, onClick }: { ticket: Ticket; onClick: () => void })
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs font-mono text-muted-foreground">{ticket.id}</span>
           <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold ${pc.style}`}>{pc.icon} {pc.label}</span>
-          {unread && <span className="px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-bold">New reply</span>}
+          {unread && <span className="px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-bold">{t("support.newReply")}</span>}
         </div>
         <p className="text-sm font-medium text-foreground mt-0.5 truncate">{ticket.subject}</p>
         <p className="text-xs text-muted-foreground mt-0.5">
@@ -340,10 +343,10 @@ export default function Support() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-            <LifeBuoy className="w-6 h-6 text-primary" /> Support Center
+            <LifeBuoy className="w-6 h-6 text-primary" /> {t("support.centerTitle")}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Get help, track your tickets, and read our FAQ.
+            {t("support.centerSubtitle")}
           </p>
         </div>
         {view === "list" && (
@@ -351,7 +354,7 @@ export default function Support() {
             onClick={() => setView("new")}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors shrink-0"
           >
-            <Plus className="w-4 h-4" /> New Ticket
+            <Plus className="w-4 h-4" /> {t("support.newTicket")}
           </button>
         )}
       </div>
@@ -376,9 +379,9 @@ export default function Support() {
           {/* Summary Stats */}
           <div className="grid grid-cols-3 gap-3">
             {[
-              { label: "Total Tickets",  value: tickets.length,  icon: MessageSquare, color: "text-primary" },
-              { label: "Open",           value: openCount,       icon: AlertCircle,   color: "text-amber-600 dark:text-amber-400" },
-              { label: "Resolved",       value: resolvedCount,   icon: CheckCircle2,  color: "text-emerald-600 dark:text-emerald-400" },
+              { label: t("support.statTotalTickets"), value: tickets.length,  icon: MessageSquare, color: "text-primary" },
+              { label: t("support.statOpen"),         value: openCount,       icon: AlertCircle,   color: "text-amber-600 dark:text-amber-400" },
+              { label: t("support.statResolved"),     value: resolvedCount,   icon: CheckCircle2,  color: "text-emerald-600 dark:text-emerald-400" },
             ].map(s => {
               const Icon = s.icon;
               return (
@@ -403,7 +406,7 @@ export default function Support() {
                   filterStatus === f ? "bg-primary text-white" : "text-secondary-foreground hover:bg-secondary/70"
                 }`}
               >
-                {f === "all" ? "All Tickets" : f === "open" ? "Open" : "Resolved"}
+                {f === "all" ? t("support.allTickets") : f === "open" ? t("support.openTickets") : t("support.resolvedTickets")}
               </button>
             ))}
           </div>
@@ -413,8 +416,8 @@ export default function Support() {
             {filtered.length === 0 ? (
               <div className="py-14 text-center text-muted-foreground">
                 <MessageSquare className="w-8 h-8 mx-auto mb-3 opacity-25" />
-                <p className="font-medium">No tickets found.</p>
-                <p className="text-xs mt-1">Submit a new ticket if you need help.</p>
+                <p className="font-medium">{t("support.noTicketsFound")}</p>
+                <p className="text-xs mt-1">{t("support.submitNew")}</p>
               </div>
             ) : (
               filtered.map(t => <TicketRow key={t.id} ticket={t} onClick={() => openTicket(t)} />)
@@ -424,7 +427,7 @@ export default function Support() {
           {/* FAQ */}
           <div className="rounded-2xl bg-card border border-border overflow-hidden">
             <div className="px-5 py-4 border-b border-border">
-              <h2 className="font-semibold text-foreground">Frequently Asked Questions</h2>
+              <h2 className="font-semibold text-foreground">{t("support.faqTitle")}</h2>
             </div>
             <div className="divide-y divide-border">
               {FAQ.map((item, i) => (
@@ -444,7 +447,7 @@ export default function Support() {
           {/* Contact card */}
           <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="flex-1">
-              <p className="font-semibold text-foreground">Need urgent help?</p>
+              <p className="font-semibold text-foreground">{t("support.urgentHelp")}</p>
               <p className="text-sm text-muted-foreground mt-0.5">
                 Email us at <span className="text-primary font-medium">support@aqarai.iq</span> or call{" "}
                 <span className="text-primary font-medium">+964 750 000 0000</span>
@@ -452,7 +455,7 @@ export default function Support() {
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Support online</span>
+              <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">{t("support.supportOnline")}</span>
             </div>
           </div>
         </>

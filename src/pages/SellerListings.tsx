@@ -44,26 +44,26 @@ export default function SellerListings() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-            <Building2 className="w-6 h-6 text-primary" /> My Listings
+            <Building2 className="w-6 h-6 text-primary" /> {t("seller.myListings")}
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">{listings.filter((l) => l.status === "active").length} active listings</p>
+          <p className="text-sm text-muted-foreground mt-1">{t("seller.activeListingsCount", { count: listings.filter((l) => l.status === "active").length })}</p>
         </div>
         <Link to="/seller/create" className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-gold text-primary-foreground text-sm font-semibold shadow-gold hover:opacity-90 transition-opacity">
-          <Plus className="w-4 h-4" /> New Listing
+          <Plus className="w-4 h-4" /> {t("seller.newListing")}
         </Link>
       </div>
 
       <div className="flex gap-1 rounded-xl p-1 w-fit bg-primary">
         {(["list", "grid"] as const).map((v) =>
-        <button key={v} onClick={() => setView(v)} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize ${view === v ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>{v}</button>
+        <button key={v} onClick={() => setView(v)} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize ${view === v ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>{v === "list" ? t("seller.viewList") : t("seller.viewGrid")}</button>
         )}
       </div>
 
       {listings.length === 0 ?
       <div className="text-center py-20 rounded-xl bg-card border border-border">
           <Building2 className="w-12 h-12 mx-auto text-muted-foreground/40 mb-4" />
-          <p className="text-muted-foreground">No listings yet.</p>
-          <Link to="/seller/create" className="text-primary text-sm mt-2 inline-block hover:underline">Create your first listing</Link>
+          <p className="text-muted-foreground">{t("seller.noListingsYet")}</p>
+          <Link to="/seller/create" className="text-primary text-sm mt-2 inline-block hover:underline">{t("seller.createFirst")}</Link>
         </div> :
       view === "list" ?
       <div className="space-y-3">
@@ -88,7 +88,7 @@ export default function SellerListings() {
                   <div className="flex items-center gap-6 mt-3">
                     <p className="text-lg font-bold text-foreground">${property.price.toLocaleString()}</p>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1"><Eye className="w-3.5 h-3.5" /> {property.views.toLocaleString()} views</span>
+                      <span className="flex items-center gap-1"><Eye className="w-3.5 h-3.5" /> {property.views.toLocaleString()} {t("seller.viewsLabel")}</span>
                     </div>
                   </div>
                 </div>
@@ -113,8 +113,8 @@ export default function SellerListings() {
                 <p className="text-lg font-bold text-foreground">${property.price.toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" /> {property.city}</p>
                 <div className="flex gap-2 mt-3">
-                  <Link to="/seller/create" className="flex-1 py-1.5 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium text-center hover:bg-secondary/80">Edit</Link>
-                  <button onClick={() => deleteListing(property.id)} className="flex-1 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-medium hover:bg-destructive/20">Delete</button>
+                  <Link to="/seller/create" className="flex-1 py-1.5 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium text-center hover:bg-secondary/80">{t("common.edit")}</Link>
+                  <button onClick={() => deleteListing(property.id)} className="flex-1 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-medium hover:bg-destructive/20">{t("common.delete")}</button>
                 </div>
               </div>
             </div>

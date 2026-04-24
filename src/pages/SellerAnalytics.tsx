@@ -21,18 +21,18 @@ function AnalyticsContent() {
     <div className="space-y-6">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatsCard title={t("seller.totalViews", "Total Views")}   value={totalViews.toLocaleString()} icon={Eye}       trend="up" change="+12% this month" />
-        <StatsCard title="Total Offers"  value={offers.length}               icon={DollarSign} />
-        <StatsCard title="Total Offer Value" value={`$${(totalOfferValue / 1000).toFixed(0)}K`} icon={TrendingUp} trend="up" />
+        <StatsCard title={t("seller.totalOffers")}  value={offers.length}               icon={DollarSign} />
+        <StatsCard title={t("seller.totalOfferValue")} value={`$${(totalOfferValue / 1000).toFixed(0)}K`} icon={TrendingUp} trend="up" />
         <StatsCard title={t("seller.activeListings", "Active Listings")} value={properties.filter(p => p.status === "active").length} icon={BarChart3} />
       </div>
 
       <div className="rounded-2xl bg-card border border-border overflow-hidden">
         <div className="px-5 py-4 border-b border-border">
-          <h2 className="font-semibold text-foreground">Top Performing Listings</h2>
+          <h2 className="font-semibold text-foreground">{t("seller.topPerforming")}</h2>
         </div>
         {topListings.length === 0 ? (
           <div className="py-12 text-center text-muted-foreground">
-            <p>No listings yet.</p>
+            <p>{t("seller.noListingsAnalytics")}</p>
           </div>
         ) : (
           <div className="divide-y divide-border">
@@ -45,7 +45,7 @@ function AnalyticsContent() {
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-sm font-semibold text-foreground flex items-center gap-1 justify-end"><Eye className="w-3.5 h-3.5 text-muted-foreground" />{p.views}</p>
-                  <p className="text-xs text-muted-foreground">{offers.filter(o => o.property_id === p.id).length} offers</p>
+                  <p className="text-xs text-muted-foreground">{offers.filter(o => o.property_id === p.id).length} {t("seller.offersCount")}</p>
                 </div>
               </div>
             ))}
@@ -57,13 +57,14 @@ function AnalyticsContent() {
 }
 
 export default function SellerAnalytics() {
+  const { t } = useTranslation();
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-          <BarChart3 className="w-6 h-6 text-primary" /> Analytics Dashboard
+          <BarChart3 className="w-6 h-6 text-primary" /> {t("seller.analyticsTitle")}
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">Track listing performance and offer activity.</p>
+        <p className="text-sm text-muted-foreground mt-1">{t("seller.analyticsSubtitle")}</p>
       </div>
 
       <PlanGate requiredTier="pro" featureLabel="Analytics Dashboard">

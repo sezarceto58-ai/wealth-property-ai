@@ -53,6 +53,7 @@ function PlanCard({
   subscribing: string | null;
   currentTier: TierKey;
 }) {
+  const { t } = useTranslation();
   const plan   = TIERS[planKey];
   const config = PLAN_CONFIG[planKey];
   const Icon   = config.icon;
@@ -77,7 +78,7 @@ function PlanCard({
       {config.highlighted && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
           <span className="px-4 py-1 rounded-full bg-primary text-white text-xs font-bold shadow-sm">
-            Most Popular
+            {t("pricing.mostPopularBadge")}
           </span>
         </div>
       )}
@@ -94,21 +95,21 @@ function PlanCard({
               {displayPrice === 0 ? "Free" : `$${displayPrice % 1 === 0 ? displayPrice : displayPrice.toFixed(2)}`}
             </span>
             {displayPrice > 0 && (
-              <span className="text-sm text-muted-foreground mb-1">/mo</span>
+              <span className="text-sm text-muted-foreground mb-1">{t("pricing.perMonthShort")}</span>
             )}
           </div>
           {billing === "yearly" && yearlyTotal > 0 && (
             <p className="text-xs text-muted-foreground mt-0.5">
-              Billed ${yearlyTotal}/year
+              {t("pricing.billedYearly", { amount: yearlyTotal })}
               {discount > 0 && (
                 <span className="ml-1.5 text-emerald-600 dark:text-emerald-400 font-semibold">
-                  Save {discount}%
+                  {t("pricing.savePercent", { percent: discount })}
                 </span>
               )}
             </p>
           )}
           {billing === "monthly" && displayPrice === 0 && (
-            <p className="text-xs text-muted-foreground mt-0.5">Always free</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{t("pricing.alwaysFree")}</p>
           )}
         </div>
       </div>
@@ -128,11 +129,11 @@ function PlanCard({
       {/* CTA */}
       {isCurrent ? (
         <div className="py-2.5 rounded-xl bg-secondary text-secondary-foreground text-sm font-semibold text-center">
-          ✓ Current Plan
+          {t("pricing.currentPlanCheck")}
         </div>
       ) : planKey === "free" && currentTier !== "free" ? (
         <div className="py-2.5 rounded-xl border border-border text-muted-foreground text-sm font-medium text-center opacity-60">
-          Downgrade
+          {t("pricing.downgradeBtn")}
         </div>
       ) : (
         <button
@@ -141,11 +142,11 @@ function PlanCard({
           className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 ${config.ctaClass} disabled:opacity-60`}
         >
           {isLoading ? (
-            <><Loader2 className="w-4 h-4 animate-spin" /> Processing…</>
+            <><Loader2 className="w-4 h-4 animate-spin" /> {t("pricing.processing")}</>
           ) : planKey === "free" ? (
-            <>Get Started Free</>
+            <>{t("pricing.getStartedFree")}</>
           ) : (
-            <>Upgrade to {plan.name} <ArrowRight className="w-4 h-4" /></>
+            <>{t("pricing.upgradeBtn", { plan: plan.name })} <ArrowRight className="w-4 h-4" /></>
           )}
         </button>
       )}
@@ -186,16 +187,16 @@ export default function Pricing() {
         <div className="mx-4 mb-8 rounded-2xl border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <AlertCircle className="w-6 h-6 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="font-semibold text-amber-800 dark:text-amber-300">Online payment is coming soon</p>
+            <p className="font-semibold text-amber-800 dark:text-amber-300">{t("pricing.paymentComingSoon")}</p>
             <p className="text-sm text-amber-700 dark:text-amber-400 mt-0.5">
-              To upgrade your plan, please contact us directly and our team will assist you.
+              {t("pricing.upgradeNote")}
             </p>
           </div>
           <a
             href="mailto:support@aqarai.iq"
             className="px-4 py-2.5 rounded-xl bg-amber-600 text-white text-sm font-semibold hover:bg-amber-700 transition-colors shrink-0 flex items-center gap-2"
           >
-            <Mail className="w-4 h-4" /> Contact Support
+            <Mail className="w-4 h-4" /> {t("pricing.contactSupport")}
           </a>
         </div>
       )}
@@ -259,7 +260,7 @@ export default function Pricing() {
             onClick={manageSubscription}
             className="text-sm text-primary hover:underline font-medium"
           >
-            Manage or cancel subscription →
+            {t("pricing.manageSubscription")}
           </button>
         </div>
       )}
@@ -267,13 +268,13 @@ export default function Pricing() {
       {/* Feature comparison table (mobile: hidden, desktop: shown) */}
       <div className="mt-12 px-4 hidden sm:block">
         <h2 className="text-lg font-display font-bold text-foreground text-center mb-6">
-          Full Feature Comparison
+          {t("pricing.fullFeatureComparison")}
         </h2>
         <div className="rounded-2xl border border-border overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-secondary/30">
-                <th className="text-left px-5 py-3 font-semibold text-foreground w-1/2">Feature</th>
+                <th className="text-left px-5 py-3 font-semibold text-foreground w-1/2">{t("pricing.featureColumn")}</th>
                 {(Object.keys(TIERS) as TierKey[]).map((k) => (
                   <th key={k} className={`text-center px-4 py-3 font-bold ${PLAN_CONFIG[k].color}`}>
                     {TIERS[k].name}
@@ -322,7 +323,7 @@ export default function Pricing() {
       {/* FAQ */}
       <div className="mt-10 px-4">
         <h2 className="text-lg font-display font-bold text-foreground text-center mb-5">
-          Common Questions
+          {t("pricing.commonQuestions")}
         </h2>
         <div className="rounded-2xl border border-border overflow-hidden divide-y divide-border">
           {[

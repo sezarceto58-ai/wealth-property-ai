@@ -22,6 +22,8 @@ export default function AgentCRM() {
   const [showAddContact, setShowAddContact] = useState(false);
   const [newContact, setNewContact] = useState({ name: "", email: "", phone: "" });
 
+  const stageLabel = (stage: string) => t(`crm.${stage}`, stage);
+
   const advanceLead = (id: string) => {
     const stages = ["new", "contacted", "qualified", "closed"];
     const lead = leads.find((l) => l.id === id);
@@ -30,38 +32,38 @@ export default function AgentCRM() {
     if (idx < stages.length - 1) {
       const next = stages[idx + 1];
       updateLead.mutate({ id, stage: next });
-      toast({ title: "Lead advanced", description: `Moved to ${next}` });
+      toast({ title: t("crm.advance"), description: stageLabel(next) });
     }
   };
 
   const markLost = (id: string) => {
     updateLead.mutate({ id, stage: "lost" });
-    toast({ title: "Lead marked as lost" });
+    toast({ title: t("crm.lost") });
   };
 
   const addContact = () => {
     if (!newContact.name) {
-      toast({ title: "Missing name", variant: "destructive" });
+      toast({ title: t("auth.enterName"), variant: "destructive" });
       return;
     }
     createLead.mutate({ name: newContact.name, email: newContact.email, phone: newContact.phone, stage: "new", source: "Manual" });
     setNewContact({ name: "", email: "", phone: "" });
     setShowAddContact(false);
-    toast({ title: "Lead added" });
+    toast({ title: t("crm.addLead") });
   };
 
   if (isLoading) return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
 
   return (
-    <PlanGate requiredTier="pro" featureLabel="CRM & Lead Management">
+    <PlanGate requiredTier="pro" featureLabel={t("crm.title")}>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground">CRM</h1>
-          <p className="text-sm text-muted-foreground mt-1">Manage your leads.</p>
+          <h1 className="text-2xl font-display font-bold text-foreground">{t("crm.title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("seller.dashboardSubtitle")}</p>
         </div>
         <button onClick={() => setShowAddContact(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-gold text-primary-foreground text-sm font-semibold shadow-gold hover:opacity-90 transition-opacity">
-          <Plus className="w-4 h-4" /> Add Lead
+          <Plus className="w-4 h-4" /> {t("crm.addLead")}
         </button>
       </div>
 
@@ -70,14 +72,14 @@ export default function AgentCRM() {
           <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setShowAddContact(false)} />
           <div className="relative w-full max-w-md rounded-2xl bg-card border border-border shadow-elevated p-6 animate-scale-in">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-display font-bold text-foreground">Add Lead</h2>
+              <h2 className="text-lg font-display font-bold text-foreground">{t("crm.addLead")}</h2>
               <button onClick={() => setShowAddContact(false)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground"><X className="w-4 h-4" /></button>
             </div>
             <div className="space-y-3">
-              <input value={newContact.name} onChange={(e) => setNewContact({ ...newContact, name: e.target.value })} placeholder="Full Name *" className="w-full px-3 py-2.5 rounded-lg bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20" />
-              <input value={newContact.email} onChange={(e) => setNewContact({ ...newContact, email: e.target.value })} placeholder="Email" type="email" className="w-full px-3 py-2.5 rounded-lg bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20" />
-              <input value={newContact.phone} onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })} placeholder="Phone" className="w-full px-3 py-2.5 rounded-lg bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20" />
-              <button onClick={addContact} className="w-full py-2.5 rounded-xl bg-gradient-gold text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity">Add Lead</button>
+              <input value={newContact.name} onChange={(e) => setNewContact({ ...newContact, name: e.target.value })} placeholder={`${t("auth.displayName")} *`} className="w-full px-3 py-2.5 rounded-lg bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20" />
+              <input value={newContact.email} onChange={(e) => setNewContact({ ...newContact, email: e.target.value })} placeholder={t("auth.email")} type="email" className="w-full px-3 py-2.5 rounded-lg bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20" />
+              <input value={newContact.phone} onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })} placeholder={t("common.phone")} className="w-full px-3 py-2.5 rounded-lg bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20" />
+              <button onClick={addContact} className="w-full py-2.5 rounded-xl bg-gradient-gold text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity">{t("crm.addLead")}</button>
             </div>
           </div>
         </div>
@@ -88,7 +90,7 @@ export default function AgentCRM() {
           const count = leads.filter((l) => l.stage === stage).length;
           return (
             <div key={stage} className="rounded-xl bg-card border border-border p-4 text-center">
-              <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold capitalize ${stageColors[stage]}`}>{stage}</span>
+              <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${stageColors[stage]}`}>{stageLabel(stage)}</span>
               <p className="text-2xl font-bold text-foreground mt-2">{count}</p>
             </div>
           );
@@ -102,22 +104,22 @@ export default function AgentCRM() {
               <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-sm font-bold text-foreground">{lead.name.charAt(0)}</div>
               <div>
                 <p className="text-sm font-semibold text-foreground">{lead.name}</p>
-                <p className="text-xs text-muted-foreground">{lead.email || lead.phone || "No contact"}</p>
+                <p className="text-xs text-muted-foreground">{lead.email || lead.phone || "—"}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${stageColors[lead.stage] || ""}`}>{lead.stage}</span>
+              <span className={`px-2 py-0.5 rounded text-xs font-medium ${stageColors[lead.stage] || ""}`}>{stageLabel(lead.stage)}</span>
               <span className="text-xs text-muted-foreground">{lead.source}</span>
               {lead.stage !== "closed" && lead.stage !== "lost" && (
                 <div className="flex gap-1">
-                  <button onClick={() => advanceLead(lead.id)} className="px-2 py-1 rounded text-xs bg-success/10 text-success hover:bg-success/20 transition-colors">Advance</button>
-                  <button onClick={() => markLost(lead.id)} className="px-2 py-1 rounded text-xs bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors">Lost</button>
+                  <button onClick={() => advanceLead(lead.id)} className="px-2 py-1 rounded text-xs bg-success/10 text-success hover:bg-success/20 transition-colors">{t("crm.advance")}</button>
+                  <button onClick={() => markLost(lead.id)} className="px-2 py-1 rounded text-xs bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors">{t("crm.lost")}</button>
                 </div>
               )}
             </div>
           </div>
         ))}
-        {leads.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No leads yet. Add your first lead above.</p>}
+        {leads.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">{t("crm.noLeads")}</p>}
       </div>
     </div>
     </PlanGate>

@@ -19,7 +19,7 @@ const featureOptions = [
 type TabKey = "manual" | "ai";
 
 export default function CreateProperty() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const lang = i18n.language?.split("-")[0] ?? "en";
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -106,7 +106,7 @@ export default function CreateProperty() {
     const ok = await saveToSupabase("active");
     setPublishing(false);
     if (ok) {
-      toast({ title: "Listing published! 🎉", description: `${form.title} is now live on the marketplace.` });
+      toast({ title: t("createProperty.publishSuccess") });
       setTimeout(() => navigate("/seller/listings"), 1200);
     }
   };
@@ -116,7 +116,7 @@ export default function CreateProperty() {
     const ok = await saveToSupabase("draft");
     setPublishing(false);
     if (ok) {
-      toast({ title: "Draft saved", description: "Your listing has been saved as a draft." });
+      toast({ title: t("createProperty.draftSaved") });
     }
   };
 
@@ -176,8 +176,8 @@ export default function CreateProperty() {
           <Plus className="w-6 h-6 text-primary-foreground" />
         </div>
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground">Create New Listing</h1>
-          <p className="text-sm text-muted-foreground">Fill in details manually or let AI generate your listing</p>
+          <h1 className="text-2xl font-display font-bold text-foreground">{t("createProperty.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("createProperty.subtitle")}</p>
         </div>
       </div>
 
@@ -190,8 +190,8 @@ export default function CreateProperty() {
           "bg-primary text-primary-foreground shadow-sm" :
           "text-muted-foreground hover:text-foreground hover:bg-secondary/50"}`
           }>
-          
-          <Building2 className="w-4 h-4" /> Manual Entry
+
+          <Building2 className="w-4 h-4" /> {t("createProperty.tabManual")}
         </button>
         <button
           onClick={() => setActiveTab("ai")}
@@ -200,8 +200,8 @@ export default function CreateProperty() {
           "bg-primary text-primary-foreground shadow-sm" :
           "text-muted-foreground hover:text-foreground hover:bg-secondary/50"}`
           }>
-          
-          <Brain className="w-4 h-4" /> AI Analysis & Insights
+
+          <Brain className="w-4 h-4" /> {t("createProperty.tabAI")}
         </button>
       </div>
 
@@ -210,12 +210,12 @@ export default function CreateProperty() {
         <div className="flex items-center gap-3">
           <Sparkles className="w-5 h-5 text-primary" />
           <div>
-            <p className="text-sm font-semibold text-foreground">AI-Powered Listing</p>
-            <p className="text-xs text-muted-foreground">Fill in basic details below, then generate AI analysis & optimized copy</p>
+            <p className="text-sm font-semibold text-foreground">{t("createProperty.aiPoweredBanner")}</p>
+            <p className="text-xs text-muted-foreground">{t("createProperty.aiPoweredBannerDesc")}</p>
           </div>
         </div>
         <Button onClick={handleAIGenerate} disabled={aiLoading} size="sm" className="bg-gradient-gold text-primary-foreground hover:opacity-90 border-0">
-          {aiLoading ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> Generating...</> : <><Brain className="w-4 h-4 mr-1" /> Generate</>}
+          {aiLoading ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> {t("createProperty.generating")}</> : <><Brain className="w-4 h-4 mr-1" /> {t("createProperty.generate")}</>}
         </Button>
       </div>
 
@@ -233,17 +233,18 @@ export default function CreateProperty() {
 
 /* ─── Manual Form ─── */
 function ManualForm({ form, update, toggleFeature, handlePublish, handleSaveDraft, toast, publishing }: any) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-5">
       {/* Images */}
       <div className="rounded-xl bg-card border border-border p-5">
         <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2 bg-muted">
-          <ImagePlus className="w-4 h-4 text-primary" /> Property Images
+          <ImagePlus className="w-4 h-4 text-primary" /> {t("createProperty.images")}
         </h2>
         <div
           className="border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary/30 transition-colors"
           onClick={() => toast({ title: "Upload ready", description: "Image upload will be available with storage integration." })}>
-          
+
           <ImagePlus className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
           <p className="text-sm text-muted-foreground">Drag & drop images or click to browse</p>
           <p className="text-xs text-muted-foreground/60 mt-1">Max 10 images, 5MB each</p>
@@ -253,29 +254,28 @@ function ManualForm({ form, update, toggleFeature, handlePublish, handleSaveDraf
       {/* Basic Info */}
       <div className="rounded-xl bg-card border border-border p-5 space-y-4">
         <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <Building2 className="w-4 h-4 text-primary" /> Basic Information
+          <Building2 className="w-4 h-4 text-primary" /> {t("createProperty.basicInfo")}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
-            <label className="text-xs text-muted-foreground mb-1 block">Title (English) *</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("createProperty.titleEn")}</label>
             <input value={form.title} onChange={(e: any) => update("title", e.target.value)} className="w-full px-3 py-2.5 rounded-lg bg-secondary text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20 border border-border" placeholder="Modern Apartment - Erbil" />
           </div>
           <div className="sm:col-span-2">
-            <label className="text-xs text-muted-foreground mb-1 block">Title (Arabic)</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("createProperty.titleAr")}</label>
             <input value={form.titleAr} onChange={(e: any) => update("titleAr", e.target.value)} placeholder="شقة حديثة - أربيل" dir="rtl" className="w-full px-3 py-2.5 rounded-lg bg-secondary text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20 border border-border" />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Property Type</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("createProperty.propertyType")}</label>
             <select value={form.propertyType} onChange={(e: any) => update("propertyType", e.target.value)} className="w-full px-3 py-2.5 rounded-lg text-foreground text-sm outline-none focus:ring-2 focus:ring-primary/20 border border-border bg-[#a6d6ed]">
-              {propertyTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+              {propertyTypes.map((pt) => <option key={pt} value={pt}>{pt}</option>)}
             </select>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Listing Type</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("createProperty.listingType")}</label>
             <div className="flex gap-2">
-              {(["sale", "rent"] as const).map((t) =>
-              <button key={t} onClick={() => update("type", t)} className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors capitalize ${form.type === t ? "bg-primary/10 text-primary border border-primary/30" : "bg-card text-muted-foreground border border-border hover:border-primary/20"}`}>{t}</button>
-              )}
+              <button onClick={() => update("type", "sale")} className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors capitalize ${form.type === "sale" ? "bg-primary/10 text-primary border border-primary/30" : "bg-card text-muted-foreground border border-border hover:border-primary/20"}`}>{t("createProperty.selectForSale")}</button>
+              <button onClick={() => update("type", "rent")} className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors capitalize ${form.type === "rent" ? "bg-primary/10 text-primary border border-primary/30" : "bg-card text-muted-foreground border border-border hover:border-primary/20"}`}>{t("createProperty.selectForRent")}</button>
             </div>
           </div>
         </div>
@@ -284,18 +284,18 @@ function ManualForm({ form, update, toggleFeature, handlePublish, handleSaveDraf
       {/* Location */}
       <div className="rounded-xl bg-card border border-border p-5 space-y-4">
         <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-primary" /> Location
+          <MapPin className="w-4 h-4 text-primary" /> {t("createProperty.locationSection")}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">City</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("createProperty.city")}</label>
             <select value={form.city} onChange={(e: any) => update("city", e.target.value)} className="w-full px-3 py-2.5 rounded-lg text-foreground text-sm outline-none focus:ring-2 focus:ring-primary/20 border border-border bg-[#a6d6ed]">
               {cities.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">District *</label>
-            <input value={form.district} onChange={(e: any) => update("district", e.target.value)} placeholder="Dream City" className="w-full px-3 py-2.5 rounded-lg bg-secondary text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20 border border-border" />
+            <label className="text-xs text-muted-foreground mb-1 block">{t("createProperty.district")}</label>
+            <input value={form.district} onChange={(e: any) => update("district", e.target.value)} placeholder={t("createProperty.districtPlaceholder")} className="w-full px-3 py-2.5 rounded-lg bg-secondary text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20 border border-border" />
           </div>
         </div>
       </div>
@@ -303,15 +303,15 @@ function ManualForm({ form, update, toggleFeature, handlePublish, handleSaveDraf
       {/* Pricing */}
       <div className="rounded-xl bg-card border border-border p-5 space-y-4">
         <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <DollarSign className="w-4 h-4 text-primary" /> Pricing
+          <DollarSign className="w-4 h-4 text-primary" /> {t("createProperty.pricingSection")}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Price *</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("createProperty.price")}</label>
             <input type="number" value={form.price} onChange={(e: any) => update("price", e.target.value)} placeholder="320000" className="w-full px-3 py-2.5 rounded-lg bg-secondary text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20 border border-border" />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Currency</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("createProperty.currency")}</label>
             <div className="flex gap-2">
               {(["USD", "IQD"] as const).map((c) =>
               <button key={c} onClick={() => update("currency", c)} className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${form.currency === c ? "bg-primary/10 text-primary border border-primary/30" : "bg-card text-muted-foreground border border-border hover:border-primary/20"}`}>{c}</button>
@@ -324,19 +324,19 @@ function ManualForm({ form, update, toggleFeature, handlePublish, handleSaveDraf
       {/* Specs */}
       <div className="rounded-xl bg-card border border-border p-5 space-y-4">
         <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <Maximize className="w-4 h-4 text-primary" /> Specifications
+          <Maximize className="w-4 h-4 text-primary" /> {t("createProperty.specifications")}
         </h2>
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Bedrooms</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("createProperty.bedrooms")}</label>
             <input type="number" value={form.bedrooms} onChange={(e: any) => update("bedrooms", e.target.value)} className="w-full px-3 py-2.5 rounded-lg bg-secondary text-foreground text-sm outline-none focus:ring-2 focus:ring-primary/20 border border-border" />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Bathrooms</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("createProperty.bathrooms")}</label>
             <input type="number" value={form.bathrooms} onChange={(e: any) => update("bathrooms", e.target.value)} className="w-full px-3 py-2.5 rounded-lg bg-secondary text-foreground text-sm outline-none focus:ring-2 focus:ring-primary/20 border border-border" />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Area (m²) *</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("createProperty.area")}</label>
             <input type="number" value={form.area} onChange={(e: any) => update("area", e.target.value)} placeholder="450" className="w-full px-3 py-2.5 rounded-lg bg-secondary text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20 border border-border" />
           </div>
         </div>
@@ -344,14 +344,16 @@ function ManualForm({ form, update, toggleFeature, handlePublish, handleSaveDraf
 
       {/* Description */}
       <div className="rounded-xl bg-card border border-border p-5 space-y-4">
-        <label className="text-xs text-muted-foreground mb-1 block">Description</label>
-        <textarea value={form.description} onChange={(e: any) => update("description", e.target.value)} rows={4} placeholder="Describe the property in detail..." className="w-full px-3 py-2.5 rounded-lg bg-secondary text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20 border border-border resize-none" />
+        <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <Tag className="w-4 h-4 text-primary" /> {t("createProperty.descriptionSection")}
+        </h2>
+        <textarea value={form.description} onChange={(e: any) => update("description", e.target.value)} rows={4} placeholder={t("createProperty.descriptionPlaceholder")} className="w-full px-3 py-2.5 rounded-lg bg-secondary text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20 border border-border resize-none" />
       </div>
 
       {/* Features */}
       <div className="rounded-xl bg-card border border-border p-5 space-y-4">
         <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <Tag className="w-4 h-4 text-primary" /> Features
+          <Tag className="w-4 h-4 text-primary" /> {t("createProperty.featuresSection")}
         </h2>
         <div className="flex flex-wrap gap-2">
           {featureOptions.map((f) =>
@@ -367,14 +369,14 @@ function ManualForm({ form, update, toggleFeature, handlePublish, handleSaveDraf
           disabled={publishing}
           className="flex-1 py-3 rounded-xl bg-gradient-gold text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          {publishing ? <><Loader2 className="w-4 h-4 animate-spin" /> Publishing...</> : "Publish Listing"}
+          {publishing ? <><Loader2 className="w-4 h-4 animate-spin" /> {t("createProperty.publishing")}</> : t("createProperty.publish")}
         </button>
         <button
           onClick={handleSaveDraft}
           disabled={publishing}
           className="px-6 py-3 rounded-xl border border-border text-foreground font-medium text-sm hover:bg-secondary/50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          Save Draft
+          {t("createProperty.saveDraft")}
         </button>
       </div>
     </div>);
@@ -383,6 +385,7 @@ function ManualForm({ form, update, toggleFeature, handlePublish, handleSaveDraf
 
 /* ─── AI Results Panel ─── */
 function AIResultsPanel({ result, loading, expanded, toggle, applyAIToForm }: any) {
+  const { t } = useTranslation();
   if (loading) {
     return (
       <div className="rounded-xl bg-card border border-border p-16 text-center">
@@ -397,8 +400,8 @@ function AIResultsPanel({ result, loading, expanded, toggle, applyAIToForm }: an
       <div className="rounded-xl bg-card border border-border p-16 text-center">
         <Brain className="w-14 h-14 mx-auto text-muted-foreground/20 mb-4" />
         <h3 className="font-semibold text-foreground mb-2">No AI Analysis Yet</h3>
-        <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          Fill in your property details in the Manual Entry tab and click "Generate" to get AI-powered listing copy, pricing, and comprehensive analysis.
+        <p className="text-sm text-muted-foreground max-w-md mx-auto" dir="auto">
+          {t("createProperty.noAiYet")}
         </p>
       </div>);
 
@@ -420,31 +423,31 @@ function AIResultsPanel({ result, loading, expanded, toggle, applyAIToForm }: an
       {/* Generated Listing */}
       {result.listing &&
       <div className="rounded-xl bg-card border border-border p-5">
-          <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> Generated Listing</h3>
+          <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> {t("createProperty.generatedListing")}</h3>
           <div className="space-y-3">
             <div>
-              <p className="text-xs text-muted-foreground">Title</p>
-              <p className="text-lg font-bold text-foreground">{result.listing.title}</p>
+              <p className="text-xs text-muted-foreground">{t("createProperty.aiTitleLabel")}</p>
+              <p className="text-lg font-bold text-foreground" dir="auto">{result.listing.title}</p>
               {result.listing.titleAr && <p className="text-sm text-muted-foreground mt-0.5 text-right" dir="rtl">{result.listing.titleAr}</p>}
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Description</p>
-              <p className="text-sm text-foreground leading-relaxed whitespace-pre-line">{result.listing.description}</p>
+              <p className="text-xs text-muted-foreground">{t("createProperty.aiDescription")}</p>
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-line" dir="auto">{result.listing.description}</p>
             </div>
             {result.listing.highlights &&
           <div>
-                <p className="text-xs text-muted-foreground mb-1">Key Highlights</p>
+                <p className="text-xs text-muted-foreground mb-1">{t("createProperty.keyHighlights")}</p>
                 <div className="flex flex-wrap gap-2">
                   {result.listing.highlights.map((h: string, i: number) =>
-              <span key={i} className="px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">{h}</span>
+              <span key={i} className="px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium" dir="auto">{h}</span>
               )}
                 </div>
               </div>
           }
             {result.listing.targetBuyer &&
           <div>
-                <p className="text-xs text-muted-foreground">Target Buyer</p>
-                <p className="text-sm text-foreground">{result.listing.targetBuyer}</p>
+                <p className="text-xs text-muted-foreground">{t("createProperty.targetBuyer")}</p>
+                <p className="text-sm text-foreground" dir="auto">{result.listing.targetBuyer}</p>
               </div>
           }
           </div>
@@ -454,7 +457,7 @@ function AIResultsPanel({ result, loading, expanded, toggle, applyAIToForm }: an
       {/* Pricing */}
       {result.pricing &&
       <div className="rounded-xl bg-card border border-border p-5">
-          <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2"><DollarSign className="w-4 h-4 text-warning" /> Price Recommendation</h3>
+          <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2"><DollarSign className="w-4 h-4 text-warning" /> {t("createProperty.priceRecommendation")}</h3>
           <div className="grid grid-cols-3 gap-3 mb-3">
             <div className="text-center p-3 rounded-lg bg-primary/5 border border-primary/10">
               <p className="text-xs text-muted-foreground">Recommended</p>
@@ -469,35 +472,35 @@ function AIResultsPanel({ result, loading, expanded, toggle, applyAIToForm }: an
               <p className="text-xl font-bold text-foreground">${result.pricing.pricePerSqm?.toLocaleString()}</p>
             </div>
           </div>
-          {result.pricing.reasoning && <p className="text-sm text-muted-foreground">{result.pricing.reasoning}</p>}
+          {result.pricing.reasoning && <p className="text-sm text-muted-foreground" dir="auto">{result.pricing.reasoning}</p>}
         </div>
       }
 
       {/* Expandable sections */}
       {result.marketTrends &&
-      <Section title="Market Trends" icon={<TrendingUp className="w-4 h-4 text-info" />} id="trends" expanded={expanded} toggle={toggle}>
+      <Section title={t("createProperty.marketTrends")} icon={<TrendingUp className="w-4 h-4 text-info" />} id="trends" expanded={expanded} toggle={toggle}>
           {Object.entries(result.marketTrends).map(([k, v]) =>
         <div key={k} className="flex justify-between text-sm py-1.5 border-b border-border/30 last:border-0">
               <span className="text-muted-foreground capitalize">{k.replace(/([A-Z])/g, " $1")}</span>
-              <span className="font-medium text-foreground">{String(v)}</span>
+              <span className="font-medium text-foreground" dir="auto">{String(v)}</span>
             </div>
         )}
         </Section>
       }
 
       {result.swot &&
-      <Section title="SWOT Analysis" icon={<BarChart3 className="w-4 h-4 text-primary" />} id="swot" expanded={expanded} toggle={toggle}>
+      <Section title={t("createProperty.swot")} icon={<BarChart3 className="w-4 h-4 text-primary" />} id="swot" expanded={expanded} toggle={toggle}>
           <div className="grid grid-cols-2 gap-3">
-            <SwotBox label="Strengths" items={result.swot.strengths} color="text-[hsl(var(--success))]" icon={<CheckCircle className="w-3.5 h-3.5" />} />
-            <SwotBox label="Weaknesses" items={result.swot.weaknesses} color="text-destructive" icon={<XCircle className="w-3.5 h-3.5" />} />
-            <SwotBox label="Opportunities" items={result.swot.opportunities} color="text-info" icon={<TrendingUp className="w-3.5 h-3.5" />} />
-            <SwotBox label="Threats" items={result.swot.threats} color="text-warning" icon={<AlertTriangle className="w-3.5 h-3.5" />} />
+            <SwotBox label={t("createProperty.strengths")} items={result.swot.strengths} color="text-[hsl(var(--success))]" icon={<CheckCircle className="w-3.5 h-3.5" />} />
+            <SwotBox label={t("createProperty.weaknesses")} items={result.swot.weaknesses} color="text-destructive" icon={<XCircle className="w-3.5 h-3.5" />} />
+            <SwotBox label={t("createProperty.opportunities")} items={result.swot.opportunities} color="text-info" icon={<TrendingUp className="w-3.5 h-3.5" />} />
+            <SwotBox label={t("createProperty.threats")} items={result.swot.threats} color="text-warning" icon={<AlertTriangle className="w-3.5 h-3.5" />} />
           </div>
         </Section>
       }
 
       {result.investmentScore &&
-      <Section title="Investment Score" icon={<Target className="w-4 h-4 text-warning" />} id="score" expanded={expanded} toggle={toggle}>
+      <Section title={t("createProperty.investmentScore")} icon={<Target className="w-4 h-4 text-warning" />} id="score" expanded={expanded} toggle={toggle}>
           <div className="grid grid-cols-3 gap-3">
             {Object.entries(result.investmentScore).map(([k, v]) =>
           <div key={k} className="text-center p-3 rounded-lg bg-primary/5 border border-primary/10">
@@ -510,18 +513,18 @@ function AIResultsPanel({ result, loading, expanded, toggle, applyAIToForm }: an
       }
 
       {result.financials &&
-      <Section title="Financial Metrics" icon={<DollarSign className="w-4 h-4 text-[hsl(var(--success))]" />} id="fin" expanded={expanded} toggle={toggle}>
+      <Section title={t("createProperty.financialMetrics")} icon={<DollarSign className="w-4 h-4 text-[hsl(var(--success))]" />} id="fin" expanded={expanded} toggle={toggle}>
           {Object.entries(result.financials).map(([k, v]) =>
         <div key={k} className="flex justify-between text-sm py-1.5 border-b border-border/30 last:border-0">
               <span className="text-muted-foreground capitalize">{k.replace(/([A-Z])/g, " $1")}</span>
-              <span className="font-medium text-foreground">{typeof v === "number" ? v.toLocaleString() : String(v)}</span>
+              <span className="font-medium text-foreground" dir="auto">{typeof v === "number" ? v.toLocaleString() : String(v)}</span>
             </div>
         )}
         </Section>
       }
 
       {result.risk &&
-      <Section title="Risk Assessment" icon={<Shield className="w-4 h-4 text-destructive" />} id="risk" expanded={expanded} toggle={toggle}>
+      <Section title={t("createProperty.riskAssessment")} icon={<Shield className="w-4 h-4 text-destructive" />} id="risk" expanded={expanded} toggle={toggle}>
           <div className="flex items-center gap-3 mb-3">
             <span className="text-2xl font-bold text-foreground">{result.risk.overallScore}/100</span>
             <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${result.risk.level === "low" ? "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]" : result.risk.level === "high" ? "bg-destructive/10 text-destructive" : "bg-warning/10 text-warning"}`}>
@@ -530,7 +533,7 @@ function AIResultsPanel({ result, loading, expanded, toggle, applyAIToForm }: an
           </div>
           {result.risk.factors?.map((f: any, i: number) =>
         <div key={i} className="flex justify-between text-sm py-1.5 border-b border-border/30 last:border-0">
-              <span className="text-muted-foreground">{f.name}</span>
+              <span className="text-muted-foreground" dir="auto">{f.name}</span>
               <span className="text-foreground font-medium">{f.score}/100</span>
             </div>
         )}
@@ -538,18 +541,18 @@ function AIResultsPanel({ result, loading, expanded, toggle, applyAIToForm }: an
       }
 
       {result.demographics &&
-      <Section title="Area Demographics" icon={<Users className="w-4 h-4 text-info" />} id="demo" expanded={expanded} toggle={toggle}>
+      <Section title={t("createProperty.areaDemographics")} icon={<Users className="w-4 h-4 text-info" />} id="demo" expanded={expanded} toggle={toggle}>
           {Object.entries(result.demographics).map(([k, v]) =>
         <div key={k} className="flex justify-between text-sm py-1.5 border-b border-border/30 last:border-0">
               <span className="text-muted-foreground capitalize">{k.replace(/([A-Z])/g, " $1")}</span>
-              <span className="font-medium text-foreground">{String(v)}</span>
+              <span className="font-medium text-foreground" dir="auto">{String(v)}</span>
             </div>
         )}
         </Section>
       }
 
       {result.esg &&
-      <Section title="ESG Score" icon={<Leaf className="w-4 h-4 text-[hsl(var(--success))]" />} id="esg" expanded={expanded} toggle={toggle}>
+      <Section title={t("createProperty.esgScore")} icon={<Leaf className="w-4 h-4 text-[hsl(var(--success))]" />} id="esg" expanded={expanded} toggle={toggle}>
           <div className="grid grid-cols-4 gap-2 mb-2">
             {["score", "environmental", "social", "governance"].map((k) =>
           <div key={k} className="text-center p-2 rounded-lg bg-[hsl(var(--success))]/5 border border-[hsl(var(--success))]/10">
@@ -558,17 +561,17 @@ function AIResultsPanel({ result, loading, expanded, toggle, applyAIToForm }: an
               </div>
           )}
           </div>
-          {result.esg.notes && <p className="text-xs text-muted-foreground">{result.esg.notes}</p>}
+          {result.esg.notes && <p className="text-xs text-muted-foreground" dir="auto">{result.esg.notes}</p>}
         </Section>
       }
 
       {result.tips &&
       <div className="rounded-xl bg-card border border-border p-5">
-          <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2"><Sparkles className="w-4 h-4 text-warning" /> Tips to Improve</h3>
+          <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2"><Sparkles className="w-4 h-4 text-warning" /> {t("createProperty.tipsToImprove")}</h3>
           <ul className="space-y-1.5">
-            {result.tips.map((t: string, i: number) =>
-          <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                <span className="text-warning font-bold">{i + 1}.</span> {t}
+            {result.tips.map((tip: string, i: number) =>
+          <li key={i} className="text-sm text-muted-foreground flex items-start gap-2" dir="auto">
+                <span className="text-warning font-bold">{i + 1}.</span> {tip}
               </li>
           )}
           </ul>
@@ -601,7 +604,7 @@ function SwotBox({ label, items, icon, color }: {label: string;items: string[];i
       <p className={`text-xs font-semibold mb-2 flex items-center gap-1.5 ${color}`}>{icon} {label}</p>
       <ul className="space-y-1">
         {items?.map((item: string, i: number) =>
-        <li key={i} className="text-xs text-muted-foreground">• {item}</li>
+        <li key={i} className="text-xs text-muted-foreground" dir="auto">• {item}</li>
         )}
       </ul>
     </div>);

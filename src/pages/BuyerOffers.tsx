@@ -27,46 +27,52 @@ export default function BuyerOffers() {
     rejected: offers.filter((o) => o.status === "REJECTED").length,
   };
 
+  const statusLabel = (s: string) => {
+    if (s === "all") return t("offers.all");
+    const key = s.toLowerCase() as keyof typeof import("@/i18n/en.json")["offer"];
+    return t(`offer.${key}`, s);
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-          <BadgeDollarSign className="w-6 h-6 text-primary" /> My Offers
+          <BadgeDollarSign className="w-6 h-6 text-primary" /> {t("offers.title")}
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">{t("offers.trackDesc","Track all your submitted offers and their responses.")}</p>
+        <p className="text-sm text-muted-foreground mt-1">{t("offers.trackDesc")}</p>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="rounded-xl bg-card border border-border p-4 text-center">
           <p className="text-2xl font-bold text-foreground">{stats.total}</p>
-          <p className="text-xs text-muted-foreground">Total Offers</p>
+          <p className="text-xs text-muted-foreground">{t("offers.total")}</p>
         </div>
         <div className="rounded-xl bg-card border border-border p-4 text-center">
           <p className="text-2xl font-bold text-info">{stats.pending}</p>
-          <p className="text-xs text-muted-foreground">Pending</p>
+          <p className="text-xs text-muted-foreground">{t("offers.pending")}</p>
         </div>
         <div className="rounded-xl bg-card border border-border p-4 text-center">
           <p className="text-2xl font-bold text-success">{stats.accepted}</p>
-          <p className="text-xs text-muted-foreground">Accepted</p>
+          <p className="text-xs text-muted-foreground">{t("offers.accepted")}</p>
         </div>
         <div className="rounded-xl bg-card border border-border p-4 text-center">
           <p className="text-2xl font-bold text-destructive">{stats.rejected}</p>
-          <p className="text-xs text-muted-foreground">Rejected</p>
+          <p className="text-xs text-muted-foreground">{t("offers.rejected")}</p>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-3 items-center justify-between">
         <div className="flex gap-1 bg-muted/30 rounded-xl p-1 overflow-x-auto">
           {statusFilters.map((s) => (
-            <button key={s} onClick={() => setFilter(s)} className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all capitalize ${filter === s ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>
-              {s === "all" ? "All" : s}
+            <button key={s} onClick={() => setFilter(s)} className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${filter === s ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>
+              {statusLabel(s)}
             </button>
           ))}
         </div>
         <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="px-3 py-1.5 rounded-lg bg-muted/30 border border-border text-foreground text-xs">
-          <option value="date">Sort by Date</option>
-          <option value="price">Sort by Price</option>
-          <option value="score">Sort by Score</option>
+          <option value="date">{t("offers.sortByDate")}</option>
+          <option value="price">{t("offers.sortByPrice")}</option>
+          <option value="score">{t("offers.sortByScore")}</option>
         </select>
       </div>
 
@@ -77,7 +83,7 @@ export default function BuyerOffers() {
           {filtered.length === 0 ? (
             <div className="text-center py-12 rounded-xl bg-card border border-border">
               <BadgeDollarSign className="w-8 h-8 mx-auto text-muted-foreground/40 mb-2" />
-              <p className="text-sm text-muted-foreground">No offers match this filter.</p>
+              <p className="text-sm text-muted-foreground">{t("offers.noMatch")}</p>
             </div>
           ) : filtered.map((offer) => <OfferCard key={offer.id} offer={offer} />)}
         </div>

@@ -67,7 +67,7 @@ const initialConversations: Conversation[] = [
 ];
 
 export default function Messaging() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [conversations, setConversations] = useState(initialConversations);
   const [activeConv, setActiveConv] = useState(conversations[0].id);
   const [newMessage, setNewMessage] = useState("");
@@ -116,9 +116,9 @@ export default function Messaging() {
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-          <MessageSquare className="w-6 h-6 text-primary" /> Messages
+          <MessageSquare className="w-6 h-6 text-primary" /> {t("messaging.title")}
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">Conversations per property — Pro+ feature.</p>
+        <p className="text-sm text-muted-foreground mt-1">{t("messaging.subtitle")}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-220px)]">
@@ -130,7 +130,7 @@ export default function Messaging() {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search conversations..."
+                placeholder={t("messaging.searchPlaceholder")}
                 className="w-full pl-9 pr-3 py-2 rounded-lg bg-muted/30 text-foreground text-sm placeholder:text-muted-foreground outline-none"
               />
             </div>
@@ -189,7 +189,7 @@ export default function Messaging() {
                       : "bg-muted/30 text-foreground rounded-bl-md"
                   }`}
                 >
-                  <p>{msg.text}</p>
+                  <p dir="auto">{msg.text}</p>
                   <div className={`flex items-center gap-1 mt-1 text-xs ${
                     msg.sender === "me" ? "text-primary-foreground/60 justify-end" : "text-muted-foreground"
                   }`}>
@@ -208,7 +208,7 @@ export default function Messaging() {
               <input
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                placeholder={t("common.search","Type a message…")}
+                placeholder={t("messaging.typePlaceholder")}
                 className="flex-1 px-4 py-2.5 rounded-xl bg-muted/30 text-foreground text-sm placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/20"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {

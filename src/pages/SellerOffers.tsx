@@ -30,9 +30,9 @@ export default function SellerOffers() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-          <DollarSign className="w-6 h-6 text-primary" /> Offer Inbox
+          <DollarSign className="w-6 h-6 text-primary" /> {t("seller.offerInboxTitle")}
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">{t("offers.inboxDesc","All incoming offers sorted by seriousness.")}</p>
+        <p className="text-sm text-muted-foreground mt-1">{t("seller.offerInboxDesc")}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -46,14 +46,14 @@ export default function SellerOffers() {
         <div className="flex gap-1 bg-secondary rounded-xl p-1 overflow-x-auto">
           {allStatuses.map((s) => (
             <button key={s} onClick={() => setStatusFilter(s)} className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all capitalize ${statusFilter === s ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>
-              {s === "all" ? "All" : s}
+              {s === "all" ? t("common.all") : s}
             </button>
           ))}
         </div>
         <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="px-3 py-1.5 rounded-lg bg-secondary border border-border text-foreground text-xs">
-          <option value="score">Seriousness Score</option>
-          <option value="price">Offer Price</option>
-          <option value="date">Date</option>
+          <option value="score">{t("seller.sortBySeriousness")}</option>
+          <option value="price">{t("seller.sortByOfferPrice")}</option>
+          <option value="date">{t("seller.sortByDate")}</option>
         </select>
       </div>
 
@@ -64,7 +64,7 @@ export default function SellerOffers() {
           {filtered.length === 0 ? (
             <div className="text-center py-12 rounded-xl bg-card border border-border">
               <DollarSign className="w-8 h-8 mx-auto text-muted-foreground/40 mb-2" />
-              <p className="text-sm text-muted-foreground">No offers match this filter.</p>
+              <p className="text-sm text-muted-foreground">{t("seller.noOffersFilter")}</p>
             </div>
           ) : filtered.map((offer) => <OfferCard key={offer.id} offer={offer} showActions />)}
         </div>

@@ -77,16 +77,16 @@ export default function MarketIntelligence() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-          <BarChart3 className="w-6 h-6 text-primary" /> Market Intelligence
+          <BarChart3 className="w-6 h-6 text-primary" /> {t("market.title")}
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Demand heat maps, rental yields, and appreciation forecasts by city.
+          {t("market.pageSubtitle")}
         </p>
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <StatsCard title="Avg $/m²"        value={`$${avgPrice}`}       change="+5.8% YoY" icon={DollarSign}  trend="up" />
+        <StatsCard title={t("market.avgPricePerSqm")} value={`$${avgPrice}`}       change="+5.8% YoY" icon={DollarSign}  trend="up" />
         <StatsCard title={t("market.avgRentalYield")} value={`${avgYield}%`}       change="+0.4%"     icon={TrendingUp}  trend="up" />
         <StatsCard title={t("market.demandIndex")}     value={`${avgDemand}/100`}                      icon={Flame}       trend="up" />
         <StatsCard title={t("market.activeListings")}  value={hoods.reduce((s, n) => s + n.daysOnMarket, 0)} icon={Building2} />
@@ -111,23 +111,30 @@ export default function MarketIntelligence() {
 
       <Tabs defaultValue="overview">
         <TabsList className="bg-secondary rounded-xl p-1 h-auto">
-          <TabsTrigger value="overview"   className="rounded-lg text-xs">Demand & Yield</TabsTrigger>
-          <TabsTrigger value="forecasts"  className="rounded-lg text-xs">Forecasts</TabsTrigger>
-          <TabsTrigger value="signals"    className="rounded-lg text-xs">Market Signals</TabsTrigger>
+          <TabsTrigger value="overview"   className="rounded-lg text-xs">{t("market.tabDemandYield")}</TabsTrigger>
+          <TabsTrigger value="forecasts"  className="rounded-lg text-xs">{t("market.tabForecasts")}</TabsTrigger>
+          <TabsTrigger value="signals"    className="rounded-lg text-xs">{t("market.tabSignals")}</TabsTrigger>
         </TabsList>
 
         {/* ── Tab 1: Demand & Yield ── */}
         <TabsContent value="overview" className="mt-4 space-y-4">
           <div className="rounded-2xl bg-card border border-border overflow-hidden">
             <div className="px-5 py-4 border-b border-border">
-              <h2 className="font-semibold text-foreground">Neighborhood Overview — {city}</h2>
-              <p className="text-xs text-muted-foreground mt-0.5">Sorted by demand score (highest first)</p>
+              <h2 className="font-semibold text-foreground">{t("market.neighborhoodOverview", { city })}</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">{t("market.sortedByDemand")}</p>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border bg-secondary/20">
-                    {["Neighborhood", "Avg $/m²", "Growth", "Rental Yield", "Demand", "Days on Market"].map(h => (
+                    {[
+                      t("market.colNeighborhood"),
+                      t("market.colAvgPrice"),
+                      t("market.colGrowth"),
+                      t("market.colRentalYield"),
+                      t("market.colDemand"),
+                      t("market.colDaysOnMarket"),
+                    ].map(h => (
                       <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -160,7 +167,7 @@ export default function MarketIntelligence() {
 
           {/* Yield ranking */}
           <div className="rounded-2xl bg-card border border-border p-5">
-            <h2 className="font-semibold text-foreground mb-4">Rental Yield Ranking</h2>
+            <h2 className="font-semibold text-foreground mb-4">{t("market.rentalYieldRanking")}</h2>
             <div className="space-y-3">
               {[...hoods].sort((a, b) => b.rentalYield - a.rentalYield).map((n) => (
                 <div key={n.name} className="flex items-center gap-3">
@@ -178,14 +185,14 @@ export default function MarketIntelligence() {
           {/* Per-neighborhood */}
           <div className="rounded-2xl bg-card border border-border overflow-hidden">
             <div className="px-5 py-4 border-b border-border">
-              <h2 className="font-semibold text-foreground">12-Month Price Forecasts — {city}</h2>
+              <h2 className="font-semibold text-foreground">{t("market.forecastsTitle", { city })}</h2>
             </div>
             <div className="divide-y divide-border">
               {[...hoods].sort((a, b) => b.forecast1yr - a.forecast1yr).map((n) => (
                 <div key={n.name} className="flex items-center justify-between px-5 py-3.5">
                   <div>
                     <p className="text-sm font-medium text-foreground">{n.name}</p>
-                    <p className="text-xs text-muted-foreground">Current avg: ${n.avgPrice.toLocaleString()}/m²</p>
+                    <p className="text-xs text-muted-foreground">{t("market.currentAvg", { price: n.avgPrice.toLocaleString() })}</p>
                   </div>
                   <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
                     <TrendingUp className="w-3.5 h-3.5" />
@@ -198,7 +205,7 @@ export default function MarketIntelligence() {
 
           {/* City 5-year outlook */}
           <div className="rounded-2xl bg-card border border-border p-5">
-            <h2 className="font-semibold text-foreground mb-4">5-Year City Outlook</h2>
+            <h2 className="font-semibold text-foreground mb-4">{t("market.fiveYearOutlook")}</h2>
             <div className="space-y-4">
               {cityForecasts.map((cf) => (
                 <div key={cf.city} className="rounded-xl bg-secondary/30 p-4">
@@ -223,7 +230,7 @@ export default function MarketIntelligence() {
         {/* ── Tab 3: Market Signals ── */}
         <TabsContent value="signals" className="mt-4">
           <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">Live intelligence signals across all markets.</p>
+            <p className="text-sm text-muted-foreground">{t("market.liveSignals")}</p>
             {marketSignals.map((s, i) => {
               const isUp = s.type === "bullish";
               const isDown = s.type === "bearish";
@@ -238,10 +245,10 @@ export default function MarketIntelligence() {
                 >
                   <span className="text-xl shrink-0">{isUp ? "📈" : isDown ? "📉" : "⚠️"}</span>
                   <div>
-                    <p className={`text-sm font-semibold ${isUp ? "text-emerald-700 dark:text-emerald-400" : isDown ? "text-red-700 dark:text-red-400" : "text-amber-700 dark:text-amber-400"}`}>
+                    <p dir="auto" className={`text-sm font-semibold ${isUp ? "text-emerald-700 dark:text-emerald-400" : isDown ? "text-red-700 dark:text-red-400" : "text-amber-700 dark:text-amber-400"}`}>
                       {s.headline}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{s.detail}</p>
+                    <p dir="auto" className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{s.detail}</p>
                   </div>
                 </div>
               );

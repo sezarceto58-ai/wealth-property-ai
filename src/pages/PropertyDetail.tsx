@@ -121,11 +121,11 @@ export default function PropertyDetail() {
                 <Maximize className="w-4 h-4" /> {property.area} m²
               </span>
             </div>
-            {property.description && <p className="text-sm text-muted-foreground leading-relaxed">{property.description}</p>}
+            {property.description && <p dir="auto" className="text-sm text-muted-foreground leading-relaxed">{property.description}</p>}
             {property.features?.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {property.features.map(f => (
-                  <span key={f} className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-medium">{f}</span>
+                  <span dir="auto" key={f} className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-medium">{f}</span>
                 ))}
               </div>
             )}

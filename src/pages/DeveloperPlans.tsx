@@ -19,6 +19,13 @@ type PlanRow = {
   created_at: string;
 };
 
+const STATUS_ICONS: Record<string, { icon: any; color: string; labelKey: string }> = {
+  draft:      { icon: FileText,    color: "text-muted-foreground", labelKey: "developer.statusDraft" },
+  processing: { icon: Clock,       color: "text-warning",          labelKey: "developer.processing"  },
+  complete:   { icon: CheckCircle2,color: "text-success",          labelKey: "developer.completed"   },
+  error:      { icon: AlertCircle, color: "text-destructive",      labelKey: "developer.statusError" },
+};
+
 export default function DeveloperPlans() {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -42,29 +49,16 @@ export default function DeveloperPlans() {
     setPlans((prev) => prev.filter((p) => p.id !== id));
   };
 
-  const statusIcon: Record<string, any> = {
-    draft: FileText,
-    processing: Clock,
-    complete: CheckCircle2,
-    error: AlertCircle,
-  };
-  const statusColor: Record<string, string> = {
-    draft: "text-muted-foreground",
-    processing: "text-warning",
-    complete: "text-success",
-    error: "text-destructive",
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-display font-bold text-foreground">All Plans</h1>
-          <p className="text-sm text-muted-foreground mt-1">Your feasibility studies and AI reports.</p>
+          <h1 className="text-2xl font-display font-bold text-foreground">{t("developer.allPlans")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("developer.plansSubtitle")}</p>
         </div>
         <Link to="/developer/analyze">
           <Button className="bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-90">
-            <Plus className="w-4 h-4 mr-2" /> New Analysis
+            <Plus className="w-4 h-4 mr-2" /> {t("developer.newAnalysis")}
           </Button>
         </Link>
       </div>
@@ -74,13 +68,18 @@ export default function DeveloperPlans() {
       ) : plans.length === 0 ? (
         <div className="rounded-xl bg-card border border-border p-8 text-center">
           <MapPin className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-          <p className="text-foreground font-medium">No plans yet</p>
-          <Link to="/developer/analyze"><Button variant="outline" className="mt-4"><Plus className="w-4 h-4 mr-2" /> Create First Plan</Button></Link>
+          <p className="text-foreground font-medium">{t("developer.noPlansYet")}</p>
+          <Link to="/developer/analyze">
+            <Button variant="outline" className="mt-4">
+              <Plus className="w-4 h-4 mr-2" /> {t("developer.createFirstPlan")}
+            </Button>
+          </Link>
         </div>
       ) : (
         <div className="space-y-3">
           {plans.map((plan) => {
-            const StIcon = statusIcon[plan.status] || FileText;
+            const st = STATUS_ICONS[plan.status] || STATUS_ICONS.draft;
+            const StIcon = st.icon;
             return (
               <div key={plan.id} className="flex items-center gap-4 rounded-xl bg-card border border-border p-4">
                 <Link to={`/developer/plan/${plan.id}`} className="flex items-center gap-4 flex-1 min-w-0">
@@ -92,11 +91,11 @@ export default function DeveloperPlans() {
                       {plan.land_area.toLocaleString()} m² — {plan.shape}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {plan.land_location?.lat?.toFixed(4)}, {plan.land_location?.lng?.toFixed(4)} · {plan.max_floors} floors
+                      {plan.land_location?.lat?.toFixed(4)}, {plan.land_location?.lng?.toFixed(4)} · {t("developer.floorsMax", { count: plan.max_floors })}
                     </p>
                   </div>
-                  <Badge variant="outline" className={`${statusColor[plan.status]} border-0 text-xs flex items-center gap-1`}>
-                    <StIcon className="w-3 h-3" /> {plan.status}
+                  <Badge variant="outline" className={`${st.color} border-0 text-xs flex items-center gap-1`}>
+                    <StIcon className="w-3 h-3" /> {t(st.labelKey)}
                   </Badge>
                   <p className="text-xs text-muted-foreground hidden sm:block">{new Date(plan.created_at).toLocaleDateString()}</p>
                 </Link>

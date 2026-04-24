@@ -3,31 +3,30 @@ import { useTranslation } from "react-i18next";
 import { GitCompareArrows, X, Plus, MapPin, Loader2 } from "lucide-react";
 import { useProperties } from "@/hooks/useProperties";
 import type { DbProperty } from "@/types/database";
-import TerraScore from "@/components/TerraScore";
 import property1 from "@/assets/property-1.jpg";
 
-const compareFields: { label: string; key: keyof DbProperty; format?: (v: DbProperty) => string }[] = [
-  { label: "Price", key: "price", format: (p) => `$${p.price.toLocaleString()}` },
-  { label: "Price (IQD)", key: "price_iqd", format: (p) => p.price_iqd ? `${p.price_iqd.toLocaleString()} IQD` : "—" },
-  { label: "Type", key: "property_type" },
-  { label: "City", key: "city" },
-  { label: "District", key: "district" },
-  { label: "Bedrooms", key: "bedrooms" },
-  { label: "Bathrooms", key: "bathrooms" },
-  { label: "Area (m²)", key: "area" },
-  { label: "AqarScore™", key: "terra_score" },
-  { label: "AI Valuation", key: "ai_valuation", format: (p) => p.ai_valuation ? `$${p.ai_valuation.toLocaleString()}` : "—" },
-  { label: "Verified", key: "verified", format: (p) => p.verified ? "✅ Yes" : "❌ No" },
-  { label: "Agent", key: "agent_name" },
-  { label: "Views", key: "views" },
-  { label: "Status", key: "status" },
-];
-
 export default function CompareListings() {
+  const { t } = useTranslation();
   const { data: allProperties = [], isLoading } = useProperties();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  // Auto-select first 2 when data loads
+  const compareFields: { labelKey: string; key: keyof DbProperty; format?: (v: DbProperty) => string }[] = [
+    { labelKey: "compare.price",      key: "price",        format: (p) => `$${p.price.toLocaleString()}` },
+    { labelKey: "compare.priceIqd",   key: "price_iqd",    format: (p) => p.price_iqd ? `${p.price_iqd.toLocaleString()} IQD` : "—" },
+    { labelKey: "compare.type",       key: "property_type" },
+    { labelKey: "compare.city",       key: "city" },
+    { labelKey: "compare.district",   key: "district" },
+    { labelKey: "compare.bedrooms",   key: "bedrooms" },
+    { labelKey: "compare.bathrooms",  key: "bathrooms" },
+    { labelKey: "compare.area",       key: "area" },
+    { labelKey: "compare.aqarScore",  key: "terra_score" },
+    { labelKey: "compare.aiValuation",key: "ai_valuation", format: (p) => p.ai_valuation ? `$${p.ai_valuation.toLocaleString()}` : "—" },
+    { labelKey: "compare.verified",   key: "verified",     format: (p) => p.verified ? "✅" : "❌" },
+    { labelKey: "compare.agent",      key: "agent_name" },
+    { labelKey: "compare.views",      key: "views" },
+    { labelKey: "compare.status",     key: "status" },
+  ];
+
   const selected = selectedIds.length > 0 ? selectedIds : allProperties.slice(0, 2).map(p => p.id);
   const selectedProperties = selected.map((id) => allProperties.find((p) => p.id === id)).filter(Boolean) as DbProperty[];
   const available = allProperties.filter((p) => !selected.includes(p.id));
@@ -46,14 +45,14 @@ export default function CompareListings() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-          <GitCompareArrows className="w-6 h-6 text-primary" /> Compare Listings
+          <GitCompareArrows className="w-6 h-6 text-primary" /> {t("compare.title")}
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">Side-by-side property comparison.</p>
+        <p className="text-sm text-muted-foreground mt-1">{t("compare.subtitle")}</p>
       </div>
 
       {selected.length < 4 && available.length > 0 && (
         <div className="flex gap-2 flex-wrap">
-          <span className="text-sm text-muted-foreground self-center">Add:</span>
+          <span className="text-sm text-muted-foreground self-center">{t("compare.add")}</span>
           {available.slice(0, 6).map((p) => (
             <button key={p.id} onClick={() => addProperty(p.id)} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium hover:bg-secondary/80 transition-colors">
               <Plus className="w-3 h-3" /> {p.title}
@@ -79,7 +78,7 @@ export default function CompareListings() {
 
             {compareFields.map((field, i) => (
               <div key={field.key} className="grid gap-4 mt-1" style={{ gridTemplateColumns: `180px repeat(${selectedProperties.length}, 1fr)` }}>
-                <div className={`flex items-center px-3 py-2.5 text-xs font-medium text-muted-foreground ${i % 2 === 0 ? "bg-secondary/50 rounded-l-lg" : ""}`}>{field.label}</div>
+                <div className={`flex items-center px-3 py-2.5 text-xs font-medium text-muted-foreground ${i % 2 === 0 ? "bg-secondary/50 rounded-l-lg" : ""}`}>{t(field.labelKey)}</div>
                 {selectedProperties.map((p) => {
                   const val = field.format ? field.format(p) : String((p as any)[field.key] ?? "—");
                   return (
