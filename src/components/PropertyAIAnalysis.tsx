@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -7,6 +7,18 @@ import {
   Brain, TrendingUp, Shield, Users, Leaf, AlertTriangle, CheckCircle,
   XCircle, Loader2, ChevronDown, ChevronUp, Target, DollarSign, BarChart3,
 } from "lucide-react";
+
+// Localized labels for fixed enum tokens returned by the AI
+const REC_LABELS: Record<string, Record<string, string>> = {
+  en: { BUY: "BUY", HOLD: "HOLD", SELL: "SELL", AVOID: "AVOID" },
+  ar: { BUY: "شراء", HOLD: "احتفاظ", SELL: "بيع", AVOID: "تجنّب" },
+  ku: { BUY: "بکڕە", HOLD: "هەڵگرە", SELL: "بیفرۆشە", AVOID: "دووری لێبگرەوە" },
+};
+const LEVEL_LABELS: Record<string, Record<string, string>> = {
+  en: { low: "LOW", medium: "MEDIUM", high: "HIGH" },
+  ar: { low: "منخفض", medium: "متوسط", high: "مرتفع" },
+  ku: { low: "نزم", medium: "مامناوەند", high: "بەرز" },
+};
 import { Button } from "@/components/ui/button";
 
 interface Props { property: DbProperty; }
