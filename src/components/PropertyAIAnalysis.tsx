@@ -89,6 +89,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
         toast({ title: t("common.error"), description: data.error, variant: "destructive" });
       } else {
         setAnalysis(data.analysis);
+        analysisLangRef.current = lang;
       }
     } catch (err: any) {
       toast({ title: t("common.error"), description: err.message, variant: "destructive" });
@@ -96,6 +97,21 @@ export default function PropertyAIAnalysis({ property }: Props) {
       setLoading(false);
     }
   };
+
+  // Auto re-run when the user switches app language so the cached AI output
+  // is regenerated in the newly selected language for the same property.
+  useEffect(() => {
+    if (analysis && analysisLangRef.current && analysisLangRef.current !== lang) {
+      runAnalysis();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
+
+  // Reset cached analysis when the underlying property changes
+  useEffect(() => {
+    setAnalysis(null);
+    analysisLangRef.current = null;
+  }, [property.id]);
 
   const toggle = (key: string) => setExpanded(expanded === key ? null : key);
 
