@@ -12,74 +12,22 @@
 import { useEffect } from "react";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import {
-  TrendingUp, MapPin, Building2, Bed, Bath, Maximize,
-  BadgeCheck, Loader2, ArrowLeft, Sparkles,
-} from "lucide-react";
+import { TrendingUp, Building2, Loader2, ArrowLeft } from "lucide-react";
 import AIValuationWidget from "@/components/AIValuationWidget";
 import { useProperty } from "@/hooks/useProperties";
 import { propertyToValuationInput } from "@/services/propertyMapper";
-import type { DbProperty } from "@/types/database";
-import property1 from "@/assets/property-1.jpg";
 
-// ── Property header card ───────────────────────────────────────────────────
+// ── Slim back bar (property details now live inside the widget) ────────────
 
-function PropertyHeader({ property, backPath }: { property: DbProperty; backPath: string }) {
+function BackBar({ backPath }: { backPath: string }) {
   const { t } = useTranslation();
-  const image = property.property_images?.[0]?.url ?? property1;
-  const diffPct = property.ai_valuation
-    ? Math.round(((property.ai_valuation - property.price) / property.price) * 100)
-    : null;
-
   return (
-    <div className="rounded-2xl bg-card border border-border overflow-hidden">
-      <Link to={backPath} className="flex items-center gap-2 px-4 py-3 text-sm text-muted-foreground hover:text-foreground transition-colors border-b border-border">
-        <ArrowLeft className="w-4 h-4 shrink-0" /> {t("common.back")}
-      </Link>
-      <div className="flex gap-4 p-4">
-        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden shrink-0">
-          <img src={image} alt={property.title} className="w-full h-full object-cover" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <h2 className="font-display font-bold text-foreground text-base sm:text-lg leading-snug line-clamp-2">
-              {property.title}
-            </h2>
-            {property.verified && <BadgeCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" />}
-          </div>
-          <p className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-            <MapPin className="w-3 h-3 shrink-0" />{property.district}, {property.city}
-          </p>
-          <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-            {property.bedrooms > 0 && <span className="flex items-center gap-1"><Bed className="w-3 h-3" />{property.bedrooms}</span>}
-            <span className="flex items-center gap-1"><Bath className="w-3 h-3" />{property.bathrooms}</span>
-            <span className="flex items-center gap-1"><Maximize className="w-3 h-3" />{property.area}m²</span>
-          </div>
-          <div className="flex items-center gap-3 mt-3 flex-wrap">
-            <div>
-              <p className="text-xs text-muted-foreground">{t("valuation.askingPrice").replace(" ($)", "")}</p>
-              <p className="text-base font-bold text-foreground">${property.price.toLocaleString()}</p>
-            </div>
-            {property.ai_valuation && diffPct !== null && (
-              <div>
-                <p className="text-xs text-muted-foreground">{t("property.aiValuation")}</p>
-                <p className={`text-base font-bold ${diffPct >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}`}>
-                  ${property.ai_valuation.toLocaleString()}
-                  <span className="text-xs ms-1">({diffPct > 0 ? "+" : ""}{diffPct}%)</span>
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-      <div className="mx-4 mb-4 rounded-xl bg-primary/5 border border-primary/20 px-4 py-3 flex items-start gap-2.5">
-        <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-        <div>
-          <p className="text-xs font-semibold text-primary">{t("valuation.propertySpecific")}</p>
-          <p className="text-xs text-muted-foreground mt-0.5">{t("valuation.scopedDesc")}</p>
-        </div>
-      </div>
-    </div>
+    <Link
+      to={backPath}
+      className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+    >
+      <ArrowLeft className="w-4 h-4 shrink-0" /> {t("common.back")}
+    </Link>
   );
 }
 
@@ -153,8 +101,8 @@ export default function AIValuationPage() {
   const input = propertyToValuationInput(property);
 
   return (
-    <div className="max-w-2xl mx-auto space-y-5 pb-16">
-      <PropertyHeader property={property} backPath={backPath} />
+    <div className="max-w-2xl mx-auto space-y-4 pb-16">
+      <BackBar backPath={backPath} />
       <AIValuationWidget property={property} input={input} />
     </div>
   );
