@@ -42,7 +42,13 @@ serve(async (req) => {
     let userPrompt = "";
 
     // ── Language-aware base instruction appended to every system prompt ────────
-    const langSuffix = `\n\nLANGUAGE INSTRUCTION (MANDATORY): ${langInstruction} All string values in the JSON response (summaries, descriptions, factor names, notes, tips, insights, labels, recommendations text) MUST be written in the specified language. Only numeric values, JSON keys, and fixed enum tokens (like "BUY", "low", "high") stay in English.`;
+    const langName = language === "ar" ? "Arabic (العربية)" : language === "ku" ? "Kurdish Sorani (کوردی سۆرانی)" : "English";
+    const langSuffix = `\n\nLANGUAGE INSTRUCTION (ABSOLUTELY MANDATORY — HIGHEST PRIORITY):
+${langInstruction}
+The target output language is: ${langName}.
+EVERY natural-language string value in the JSON response MUST be written in ${langName}. This includes (non-exhaustive): summary, description, descriptionAr, title, titleAr, highlights, targetBuyer, reasoning, marketComparison, areaGrowth, demandLevel, forecast, comparables, swot.strengths, swot.weaknesses, swot.opportunities, swot.threats, risk.factors[].name, risk.factors[].impact, demographics.*, marketInsights.*, esg.notes, tips, matchReasons, concerns, marketAdvice, suggestions, amortizationSummary text, affordabilityRating description, developerReputation.notes.
+Do NOT mix languages. Do NOT default to English. If you are uncertain how to translate a term, translate it naturally rather than leaving it in English.
+Only the following stay in English: JSON keys, numeric values, percentage symbols, currency codes, and these fixed enum tokens exactly as written: "BUY", "HOLD", "SELL", "AVOID", "low", "medium", "high", "affordable", "moderate", "stretched", "unaffordable", "above", "at", "below".`;
 
     switch (type) {
 
