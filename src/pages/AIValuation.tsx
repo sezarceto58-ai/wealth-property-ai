@@ -101,8 +101,8 @@ export default function AIValuationPage() {
   const input = propertyToValuationInput(property);
 
   return (
-    <div className="max-w-2xl mx-auto space-y-5 pb-16">
-      <PropertyHeader property={property} backPath={backPath} />
+    <div className="max-w-2xl mx-auto space-y-4 pb-16">
+      <BackBar backPath={backPath} />
       <AIValuationWidget property={property} input={input} />
     </div>
   );
