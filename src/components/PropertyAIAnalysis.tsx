@@ -139,12 +139,12 @@ export default function PropertyAIAnalysis({ property }: Props) {
   }
 
   // ── Result ───────────────────────────────────────────────────────────────
-  const recommendation = analysis.recommendation;
-  const BUY_LABELS = ["BUY", "شراء", "بکڕە"];
-  const AVOID_LABELS = ["AVOID", "تجنّب", "تجنب", "دووری لێبگرەوە"];
+  const recommendation: string = analysis.recommendation ?? "";
+  const recKey = recommendation.toUpperCase();
+  const recLabel = REC_LABELS[lang]?.[recKey] ?? recommendation;
   const recColor =
-    BUY_LABELS.includes(recommendation)   ? "text-success" :
-    AVOID_LABELS.includes(recommendation) ? "text-destructive" :
+    recKey === "BUY"   ? "text-success" :
+    recKey === "AVOID" ? "text-destructive" :
     "text-warning";
 
   const fieldLabel = (key: string) =>
@@ -159,7 +159,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
             <h3 className="font-semibold text-foreground">{t("aiAnalysis.title")}</h3>
           </div>
           <span className={`px-3 py-1 rounded-full text-sm font-bold ${recColor} bg-card border border-border`}>
-            {recommendation}
+            {recLabel}
           </span>
         </div>
         {analysis.summary && <p className="text-sm text-muted-foreground mt-2 leading-relaxed" dir="auto">{analysis.summary}</p>}
