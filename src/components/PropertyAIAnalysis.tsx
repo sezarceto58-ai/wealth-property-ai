@@ -34,7 +34,7 @@ function SwotBox({ label, items, icon }: { label: string; items: string[]; icon:
       <p className="text-xs font-semibold text-foreground mb-2 flex items-center gap-1">{icon} {label}</p>
       <ul className="space-y-1">
         {items?.map((item: string, i: number) => (
-          <li key={i} className="text-xs text-muted-foreground">• {item}</li>
+          <li key={i} className="text-xs text-muted-foreground" dir="auto">• {item}</li>
         ))}
       </ul>
     </div>
@@ -133,7 +133,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
             {recommendation}
           </span>
         </div>
-        {analysis.summary && <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{analysis.summary}</p>}
+        {analysis.summary && <p className="text-sm text-muted-foreground mt-2 leading-relaxed" dir="auto">{analysis.summary}</p>}
       </div>
 
       <div className="divide-y divide-border">
@@ -188,7 +188,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
             </div>
             {analysis.risk.factors?.map((f: any, i: number) => (
               <div key={i} className="flex justify-between text-sm py-1 border-t border-border/50">
-                <span className="text-muted-foreground">{f.name}</span>
+                <span className="text-muted-foreground" dir="auto">{f.name}</span>
                 <span className="text-foreground">{f.score}/100</span>
               </div>
             ))}
@@ -227,7 +227,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
                 </div>
               ))}
             </div>
-            {analysis.esg.notes && <p className="text-xs text-muted-foreground mt-1">{analysis.esg.notes}</p>}
+            {analysis.esg.notes && <p className="text-xs text-muted-foreground mt-1" dir="auto">{analysis.esg.notes}</p>}
           </Section>
         )}
       </div>
