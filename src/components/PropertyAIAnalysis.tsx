@@ -212,7 +212,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
                 analysis.risk.level === "low"  ? "bg-success/10 text-success" :
                 analysis.risk.level === "high" ? "bg-destructive/10 text-destructive" :
                 "bg-warning/10 text-warning"}`}>
-                {analysis.risk.level?.toUpperCase()}
+                {LEVEL_LABELS[lang]?.[analysis.risk.level] ?? analysis.risk.level?.toUpperCase()}
               </span>
             </div>
             {analysis.risk.factors?.map((f: any, i: number) => (
