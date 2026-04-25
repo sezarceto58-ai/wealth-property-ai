@@ -169,13 +169,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* ── Sidebar ── */}
       <aside
-        className={`fixed inset-y-0 z-50 w-72 flex flex-col transform transition-all duration-300 ease-in-out
-          lg:translate-x-0 lg:static lg:w-64 lg:z-auto
+        className={`fixed top-0 bottom-0 z-50 w-72 flex flex-col transform transition-all duration-300 ease-in-out
+          lg:translate-x-0 lg:static lg:w-64 lg:z-auto lg:bottom-auto lg:top-auto
           ${sidebarSideClass}
           ${sidebarOpen ? "translate-x-0 shadow-2xl" : sidebarHiddenClass}
           sidebar-dark
         `}
-        style={{ borderRight: isRTL ? "none" : "1px solid hsl(var(--sidebar-border))", borderLeft: isRTL ? "1px solid hsl(var(--sidebar-border))" : "none" }}
+        style={{
+          borderRight: isRTL ? "none" : "1px solid hsl(var(--sidebar-border))",
+          borderLeft: isRTL ? "1px solid hsl(var(--sidebar-border))" : "none",
+          paddingBottom: "env(safe-area-inset-bottom)",
+        }}
       >
         {/* Logo */}
         <div className="flex items-center justify-between px-5 py-4 border-b shrink-0" style={{ borderColor: "hsl(var(--sidebar-border))" }}>
@@ -200,8 +204,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </button>
         </div>
 
-        {/* Nav sections */}
-        <nav className="flex-1 overflow-y-auto p-3 space-y-4 pb-2">
+        {/* Nav sections — scrollable, never overlaps the bottom account strip */}
+        <nav className="flex-1 overflow-y-auto p-3 space-y-4 pb-4" style={{ minHeight: 0 }}>
           {nav.map((section) => (
             <div key={section.label}>
               <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest opacity-40" style={{ color: "hsl(var(--sidebar-foreground))" }}>
