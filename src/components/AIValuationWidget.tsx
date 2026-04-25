@@ -124,6 +124,8 @@ export default function AIValuationWidget({ property, input, compact = false }: 
   const userId = user?.id ?? "anonymous";
   const [usedCount, setUsedCount]   = useState(() => getUsageCount(userId));
   const [result, setResult]         = useState<ValuationResult | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const submitLockRef = useRef(false);
   const [stage, setStage]           = useState<Stage>(() => {
     if (!property) return "no_property";
     if (getUsageCount(userId) >= FREE_USES) return "exhausted";
