@@ -219,9 +219,11 @@ export default function Messaging() {
               />
               <button
                 onClick={sendMessage}
-                className="p-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                aria-label={t("messaging.send")}
+                className="p-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center gap-1.5 px-3"
               >
                 <Send className="w-4 h-4" />
+                <span className="hidden sm:inline text-xs font-semibold">{t("messaging.send")}</span>
               </button>
             </div>
           </div>
