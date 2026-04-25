@@ -334,28 +334,40 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           ))}
         </nav>
 
-        {/* Bottom account section — lifted up with extra bottom margin so it sits above mobile nav */}
+        {/* Bottom account section — sticky on mobile so account links stay fixed while nav scrolls */}
         <div
-          className="shrink-0 p-3 border-t space-y-0.5 mb-20 lg:mb-0"
-          style={{ borderColor: "hsl(var(--sidebar-border))" }}
+          className="shrink-0 p-3 border-t space-y-0.5 mb-20 lg:mb-0 sticky bottom-0 lg:static"
+          style={{ borderColor: "hsl(var(--sidebar-border))", background: "hsl(var(--sidebar-background, var(--sidebar)))" }}
         >
           {[
             { to: "/pricing", icon: CreditCard, label: t("common.pricing") },
             { to: "/profile",  icon: User,       label: t("common.profile") },
             { to: "/settings", icon: Settings,   label: t("common.settings") },
           ].map(({ to, icon: Icon, label }) => {
-            const isActive = location.pathname === to;
+            // startsWith ensures /settings/notifications etc. also highlight
+            const isActive = location.pathname.startsWith(to);
             return (
               <Link
                 key={to}
                 to={to}
                 onClick={() => setSidebarOpen(false)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                  isActive ? "bg-white/10 text-white" : "hover:bg-white/8 opacity-70 hover:opacity-100"
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 relative ${
+                  isActive ? "text-white" : "hover:bg-white/8 opacity-70 hover:opacity-100"
                 }`}
-                style={{ color: "hsl(var(--sidebar-foreground))" }}
+                style={{
+                  color: "hsl(var(--sidebar-foreground))",
+                  background: isActive
+                    ? "linear-gradient(135deg, hsl(var(--sidebar-primary) / 0.35), hsl(var(--sidebar-primary) / 0.20))"
+                    : undefined,
+                  boxShadow: isActive ? "inset 0 0 0 1px hsl(var(--sidebar-primary) / 0.25)" : undefined,
+                }}
               >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-primary" : ""}`} />
+                {isActive && (
+                  <span className="absolute start-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full bg-primary" />
+                )}
+                <div className={`p-1.5 rounded-lg shrink-0 transition-colors ${isActive ? "bg-primary/30" : "bg-white/5"}`}>
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-primary-foreground" : ""}`} />
+                </div>
                 <span className="flex-1">{label}</span>
                 {isActive && <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />}
               </Link>
@@ -366,7 +378,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-red-500/15 opacity-70 hover:opacity-100"
             style={{ color: "hsl(var(--sidebar-foreground))" }}
           >
-            <LogOut className="w-4 h-4" />
+            <div className="p-1.5 rounded-lg bg-white/5 shrink-0">
+              <LogOut className="w-3.5 h-3.5" />
+            </div>
             {t("common.signOut")}
           </button>
         </div>
