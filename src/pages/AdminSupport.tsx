@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import StatsCard from "@/components/StatsCard";
 import {
-  mockTickets, STATUS_CONFIG, PRIORITY_CONFIG, CATEGORY_LABELS,
+  mockTickets, STATUS_CONFIG, PRIORITY_CONFIG, CATEGORY_KEY_MAP,
   Ticket, TicketStatus, TicketPriority, TicketMessage,
 } from "@/data/supportData";
 
@@ -45,7 +45,7 @@ function TicketRow({ ticket, onClick, isSelected }: {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
           <span className="text-[11px] font-mono text-muted-foreground">{ticket.id}</span>
-          <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${pc.style}`}>{pc.icon} {pc.label}</span>
+          <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${pc.style}`}>{pc.icon} {t(pc.labelKey)}</span>
           {hasUnreplied && (
             <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 text-[10px] font-bold">
               {t("admin.needsReply")}
@@ -58,7 +58,7 @@ function TicketRow({ ticket, onClick, isSelected }: {
         </p>
       </div>
       <div className="shrink-0">
-        <span className={`px-2 py-0.5 rounded-lg text-[10px] font-semibold ${sc.style}`}>{sc.label}</span>
+        <span className={`px-2 py-0.5 rounded-lg text-[10px] font-semibold ${sc.style}`}>{t(sc.labelKey)}</span>
       </div>
     </button>
   );
@@ -122,12 +122,12 @@ function TicketDetail({ ticket, onUpdate }: {
       <div className="p-4 border-b border-border space-y-2">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-mono text-muted-foreground">{ticket.id}</span>
-          <span className={`px-2 py-0.5 rounded-lg text-xs font-semibold ${sc.style}`}>{sc.label}</span>
-          <span className={`px-2 py-0.5 rounded-lg text-xs font-semibold ${pc.style}`}>{pc.icon} {pc.label}</span>
+          <span className={`px-2 py-0.5 rounded-lg text-xs font-semibold ${sc.style}`}>{t(sc.labelKey)}</span>
+          <span className={`px-2 py-0.5 rounded-lg text-xs font-semibold ${pc.style}`}>{pc.icon} {t(pc.labelKey)}</span>
         </div>
         <p className="font-semibold text-foreground">{ticket.subject}</p>
         <p className="text-xs text-muted-foreground">
-          {ticket.userName} ({ticket.userEmail}) · {ticket.userRole} · {CATEGORY_LABELS[ticket.category]}
+          {ticket.userName} ({ticket.userEmail}) · {ticket.userRole} · {t(CATEGORY_KEY_MAP[ticket.category])}
         </p>
 
         {/* Controls */}
@@ -143,7 +143,7 @@ function TicketDetail({ ticket, onUpdate }: {
               className={selectClass}
             >
               {(Object.keys(STATUS_CONFIG) as TicketStatus[]).map(s => (
-                <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
+                <option key={s} value={s}>{t(STATUS_CONFIG[s].labelKey)}</option>
               ))}
             </select>
           </div>
@@ -158,7 +158,7 @@ function TicketDetail({ ticket, onUpdate }: {
               className={selectClass}
             >
               {(Object.keys(PRIORITY_CONFIG) as TicketPriority[]).map(p => (
-                <option key={p} value={p}>{PRIORITY_CONFIG[p].icon} {PRIORITY_CONFIG[p].label}</option>
+                <option key={p} value={p}>{PRIORITY_CONFIG[p].icon} {t(PRIORITY_CONFIG[p].labelKey)}</option>
               ))}
             </select>
           </div>
@@ -296,23 +296,23 @@ export default function AdminSupport() {
   const [priorityF, setPriorityF] = useState<"all" | TicketPriority>("all");
 
   const onUpdate = (updated: Ticket) => {
-    setTickets(prev => prev.map(t => t.id === updated.id ? updated : t));
+    setTickets(prev => prev.map(tk => tk.id === updated.id ? updated : tk));
     setSelected(updated);
   };
 
-  const filtered = tickets.filter(t => {
-    const matchSearch = !search || t.subject.toLowerCase().includes(search.toLowerCase()) ||
-      t.userName.toLowerCase().includes(search.toLowerCase()) ||
-      t.id.toLowerCase().includes(search.toLowerCase());
-    const matchStatus   = statusF   === "all" || t.status   === statusF;
-    const matchPriority = priorityF === "all" || t.priority === priorityF;
+  const filtered = tickets.filter(tk => {
+    const matchSearch = !search || tk.subject.toLowerCase().includes(search.toLowerCase()) ||
+      tk.userName.toLowerCase().includes(search.toLowerCase()) ||
+      tk.id.toLowerCase().includes(search.toLowerCase());
+    const matchStatus   = statusF   === "all" || tk.status   === statusF;
+    const matchPriority = priorityF === "all" || tk.priority === priorityF;
     return matchSearch && matchStatus && matchPriority;
   });
 
   const total     = tickets.length;
-  const openCount = tickets.filter(t => t.status === "open").length;
-  const urgCount  = tickets.filter(t => t.priority === "urgent" || t.priority === "high").length;
-  const unresolved = tickets.filter(t => t.messages[t.messages.length - 1]?.authorRole === "user").length;
+  const openCount = tickets.filter(tk => tk.status === "open").length;
+  const urgCount  = tickets.filter(tk => tk.priority === "urgent" || tk.priority === "high").length;
+  const unresolved = tickets.filter(tk => tk.messages[tk.messages.length - 1]?.authorRole === "user").length;
 
   const pillBase = "px-3 py-1 rounded-lg text-xs font-medium transition-all";
   const pillActive = "bg-primary text-white";
@@ -354,14 +354,14 @@ export default function AdminSupport() {
             <div className="flex gap-1 flex-wrap">
               {(["all", "open", "in_progress", "waiting", "resolved"] as const).map(s => (
                 <button key={s} onClick={() => setStatusF(s)} className={`${pillBase} ${statusF === s ? pillActive : pillInactive}`}>
-                  {s === "all" ? "All" : STATUS_CONFIG[s]?.label ?? s}
+                  {s === "all" ? t("common.all") : t(STATUS_CONFIG[s]?.labelKey ?? s)}
                 </button>
               ))}
             </div>
             <div className="flex gap-1 flex-wrap">
               {(["all", "urgent", "high", "medium", "low"] as const).map(p => (
                 <button key={p} onClick={() => setPriorityF(p)} className={`${pillBase} ${priorityF === p ? pillActive : pillInactive}`}>
-                  {p === "all" ? t("support.allPriority") : `${PRIORITY_CONFIG[p]?.icon} ${PRIORITY_CONFIG[p]?.label}`}
+                  {p === "all" ? t("support.allPriority") : `${PRIORITY_CONFIG[p]?.icon} ${t(PRIORITY_CONFIG[p]?.labelKey)}`}
                 </button>
               ))}
             </div>
@@ -375,12 +375,12 @@ export default function AdminSupport() {
                 <p className="text-sm">{t("support.noTickets")}</p>
               </div>
             ) : (
-              filtered.map(t => (
+              filtered.map(tk => (
                 <TicketRow
-                  key={t.id}
-                  ticket={t}
-                  onClick={() => setSelected(t)}
-                  isSelected={selected?.id === t.id}
+                  key={tk.id}
+                  ticket={tk}
+                  onClick={() => setSelected(tk)}
+                  isSelected={selected?.id === tk.id}
                 />
               ))
             )}
@@ -407,13 +407,13 @@ export default function AdminSupport() {
       <div className="rounded-2xl bg-card border border-border overflow-hidden">
         <div className="px-5 py-4 border-b border-border flex items-center gap-2">
           <BarChart3 className="w-4 h-4 text-primary" />
-          <h2 className="font-semibold text-foreground">Category Breakdown</h2>
+          <h2 className="font-semibold text-foreground">{t("support.categoryBreakdown")}</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-secondary/20">
-                {[t("common.type","Category"), "Total", "Open", "Resolved", "Avg Response"].map(h => (
+                {[t("support.category"), t("support.colTotal"), t("support.colOpen"), t("support.colResolved"), t("support.colAvgResponse")].map(h => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">{h}</th>
                 ))}
               </tr>
