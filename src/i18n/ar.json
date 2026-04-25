@@ -1294,5 +1294,22 @@
     "saveDocFailed": "فشل حفظ سجل المستند",
     "propDocUploaded": "تم رفع وثيقة العقار!",
     "docDeleted": "تم حذف المستند"
+  },
+  "planResults": {
+    "title": "تقرير الجدوى",
+    "notFound": "الخطة غير موجودة",
+    "backToDashboard": "العودة إلى لوحة التحكم",
+    "analyzing": "الذكاء الاصطناعي يحلل أرضك…",
+    "analyzingHint": "يستغرق هذا عادةً 30–60 ثانية. ستتحدث الصفحة تلقائياً.",
+    "analysisFailed": "فشل التحليل. يرجى المحاولة مرة أخرى أو تعديل المدخلات.",
+    "statusComplete": "مكتمل",
+    "statusProcessing": "قيد المعالجة",
+    "statusError": "خطأ",
+    "tabUse": "الاستخدام",
+    "tabDesign": "التصميم",
+    "tabPricing": "التسعير",
+    "tabMarketing": "التسويق",
+    "tabFeasibility": "الجدوى",
+    "pricingUpdated": "تم تحديث التسعير"
   }
 }
