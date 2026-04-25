@@ -337,15 +337,22 @@ export default function AIValuationWidget({ property, input, compact = false }: 
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={handleDeny}
-            className="py-2.5 rounded-xl border border-border text-foreground text-sm font-medium hover:bg-secondary/40 transition-colors"
+            disabled={isSubmitting}
+            className="py-2.5 rounded-xl border border-border text-foreground text-sm font-medium hover:bg-secondary/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             No, go back
           </button>
           <button
             onClick={handleConfirm}
-            className="py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+            disabled={isSubmitting}
+            aria-busy={isSubmitting}
+            className="py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            <CheckCircle2 className="w-4 h-4" /> Yes, proceed
+            {isSubmitting ? (
+              <><RefreshCw className="w-4 h-4 animate-spin" /> Processing…</>
+            ) : (
+              <><CheckCircle2 className="w-4 h-4" /> Yes, proceed</>
+            )}
           </button>
         </div>
 
