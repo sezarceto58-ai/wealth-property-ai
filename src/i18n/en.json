@@ -352,7 +352,30 @@
     "manageSubscription": "Manage or cancel subscription →",
     "paymentComingSoon": "Online payment is coming soon",
     "upgradeNote": "To upgrade your plan, please contact our support team.",
-    "contactSupport": "Contact Support"
+    "contactSupport": "Contact Support",
+    "paymentComingSoonDesc": "To upgrade your plan, please contact our team directly and we'll assist you.",
+    "faq_switch_q": "Can I switch plans at any time?",
+    "faq_switch_a": "Yes — upgrades take effect immediately. Downgrades apply at the end of your current billing period.",
+    "faq_data_q": "What happens to my data if I downgrade?",
+    "faq_data_a": "All your data is preserved. Gated features become inaccessible but nothing is deleted.",
+    "faq_trial_q": "Is there a free trial for Pro or Elite?",
+    "faq_trial_a": "We offer a 7-day trial for Pro. Contact support@aqarai.iq for an Elite trial.",
+    "faq_currency_q": "Are the prices in USD?",
+    "faq_currency_a": "Yes, all prices are in US Dollars. IQD payments can be arranged through our support team.",
+    "feat_browse": "Browse marketplace",
+    "feat_search": "Basic property search",
+    "feat_favorites": "Save favorites",
+    "feat_favorites_free": "5 max",
+    "feat_offers": "Send offers",
+    "feat_offers_free": "3/mo",
+    "feat_analytics": "Analytics dashboard",
+    "feat_alerts": "Priority alerts",
+    "feat_crm": "CRM tools",
+    "feat_investor": "Investor portfolio tools",
+    "feat_deposit": "Deposit verification",
+    "feat_proof": "Proof-of-funds uploads",
+    "feat_support": "Dedicated support",
+    "feat_mortgage": "Mortgage calculator"
   },
   "settings": {
     "title": "Settings",
@@ -442,7 +465,8 @@
     "verificationUpdated": "Verification {{status}}",
     "needsReply": "Needs reply",
     "totalSubmissions": "{{total}} total submissions",
-    "pendingCount": "{{count}} pending"
+    "pendingCount": "{{count}} pending",
+    "console": "Console"
   },
   "support": {
     "title": "Support Center",
@@ -527,7 +551,10 @@
     "colTotal": "Total",
     "colOpen": "Open",
     "colResolved": "Resolved",
-    "colAvgResponse": "Avg Response"
+    "colAvgResponse": "Avg Response",
+    "subtitle": "We're here to help — browse topics or start a conversation.",
+    "onlineSupport": "Online Support",
+    "needsReply": "Needs Reply"
   },
   "property": {
     "beds": "Beds",
@@ -579,7 +606,12 @@
     "removedFromFavorites": "Removed from favorites",
     "deepValuation": "Deep AI Valuation",
     "aqarScore": "AqarScore™",
-    "overallScore": "Overall deal quality score"
+    "overallScore": "Overall deal quality score",
+    "bedrooms": "Bedrooms",
+    "bathrooms": "Bathrooms",
+    "city": "City",
+    "district": "District",
+    "warehouse": "Warehouse"
   },
   "valuation": {
     "title": "AI Property Valuation",
@@ -656,7 +688,12 @@
     "scopedDesc": "This valuation is scoped exclusively to this listing. Confirm below to proceed.",
     "noPropertyText": "Valuation is available on a per-property basis. Select a specific property from the marketplace, then request a valuation from its listing page.",
     "howToTitle": "How to get a valuation:",
-    "appreciation": "Price Appreciation Forecast"
+    "appreciation": "Price Appreciation Forecast",
+    "rooftopArea": "Rooftop Area (m²)",
+    "verifiedListing": "Verified Listing",
+    "appreciationForecast": "Appreciation Forecast",
+    "usesRemaining_one": "{{count}} use remaining",
+    "usesRemaining_other": "{{count}} uses remaining"
   },
   "aiAnalysis": {
     "investmentScore": "Investment Score",
@@ -748,7 +785,9 @@
     "avgPricePerSqm": "Avg $/m²",
     "demandIndex": "Demand Index",
     "avgRentalYield": "Avg Rental Yield",
-    "pageSubtitle": "Demand heat maps, rental yields, and appreciation forecasts by city."
+    "pageSubtitle": "Demand heat maps, rental yields, and appreciation forecasts by city.",
+    "daysOnMarket": "Days on Market",
+    "demandHeatmap": "Demand Heatmap"
   },
   "syndication": {
     "title": "Syndication Deals",
@@ -764,7 +803,17 @@
     "viewDeal": "View Deal",
     "areYouDeveloper": "Are you a developer?",
     "areYouDeveloperDesc": "List your project and connect with 500+ verified investors",
-    "listProject": "List Your Project"
+    "listProject": "List Your Project",
+    "annualIncome": "Annual Income",
+    "closingSoon": "Closing Soon",
+    "confirmCommitment": "Confirm Commitment",
+    "highRisk": "High Risk",
+    "lowRisk": "Low Risk",
+    "mediumRisk": "Medium Risk",
+    "netProfit": "Net Profit",
+    "openForInvestment": "Open for Investment",
+    "submitDeal": "Submit Deal",
+    "totalReturn": "Total Return"
   },
   "marketplace": {
     "title": "Discover Premium Properties",
