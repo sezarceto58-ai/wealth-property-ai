@@ -86,7 +86,7 @@ const developerNav = (t: any) => [
   { label: t("nav.tools"), items: [
     { path: "/developer/messages",            icon: MessageSquare, label: t("common.messages") },
     { path: "/developer/market-intelligence", icon: BarChart3,     label: t("nav.marketIntelligence") },
-    { path: "/developer/syndication",         icon: Users,         label: t("nav.syndicationDeals") },
+    
     { path: "/developer/valuation",           icon: TrendingUp,    label: t("nav.aiValuation") },
   ]},
   { label: t("nav.support"), items: [
