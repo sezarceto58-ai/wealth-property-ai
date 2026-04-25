@@ -122,8 +122,8 @@ const App = () => (
                       <Route path="/verification" element={<SellerVerification />} />
                       <Route path="/investor" element={<InvestorTools />} />
                       <Route path="/market-intelligence" element={<MarketIntelligence />} />
-                      <Route path="/syndication" element={<SyndicationDeals />} />
-                      <Route path="/syndication/:id" element={<SyndicationDealDetail />} />
+                      <Route path="/syndication" element={<Navigate to="/seller" replace />} />
+                      <Route path="/syndication/:id" element={<Navigate to="/seller" replace />} />
                       <Route path="/valuation" element={<AIValuation />} />
                       <Route path="/valuation/:id" element={<AIValuation />} />
                     </Routes>
