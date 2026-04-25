@@ -150,11 +150,15 @@ export default function AIValuationWidget({ property, input, compact = false }: 
 
   const userId = user?.id ?? "anonymous";
   const [usedCount, setUsedCount]   = useState(() => getUsageCount(userId));
-  const [result, setResult]         = useState<ValuationResult | null>(null);
+  const [result, setResult]         = useState<ValuationResult | null>(() => {
+    if (!property) return null;
+    return getSubmittedResult(userId, property.id, property.price);
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submitLockRef = useRef(false);
   const [stage, setStage]           = useState<Stage>(() => {
     if (!property) return "no_property";
+    if (isAlreadySubmitted(userId, property.id, property.price)) return "result";
     if (getUsageCount(userId) >= FREE_USES) return "exhausted";
     return "idle";
   });
@@ -164,21 +168,33 @@ export default function AIValuationWidget({ property, input, compact = false }: 
   useEffect(() => {
     if (property?.id !== lastPropertyId.current) {
       lastPropertyId.current = property?.id;
-      setResult(null);
       setUsedCount(getUsageCount(userId));
       if (!property) {
+        setResult(null);
         setStage("no_property");
+        return;
+      }
+      const prior = getSubmittedResult(userId, property.id, property.price);
+      if (prior) {
+        setResult(prior);
+        setStage("result");
       } else if (getUsageCount(userId) >= FREE_USES) {
+        setResult(null);
         setStage("exhausted");
       } else {
+        setResult(null);
         setStage("idle");    // reset to idle — must re-confirm for new property
       }
     }
-  }, [property?.id, userId]);
+  }, [property?.id, property?.price, userId]);
 
   // ── Rule 2+3: user clicks "Request Valuation" → go to confirm screen ───────
   const handleRequestValuation = () => {
     if (!property) { setStage("no_property"); return; }
+    if (isAlreadySubmitted(userId, property.id, property.price)) {
+      const prior = getSubmittedResult(userId, property.id, property.price);
+      if (prior) { setResult(prior); setStage("result"); return; }
+    }
     if (usedCount >= FREE_USES) { setStage("exhausted"); return; }
     setStage("confirm");   // show confirmation screen naming the property
   };
@@ -187,12 +203,20 @@ export default function AIValuationWidget({ property, input, compact = false }: 
   const handleConfirm = useCallback(() => {
     if (submitLockRef.current) return;          // hard lock against double-clicks
     if (!property || !input) return;
+    // Persistent lock: refreshing won't allow another confirm for same snapshot
+    const prior = getSubmittedResult(userId, property.id, property.price);
+    if (prior) {
+      setResult(prior);
+      setStage("result");
+      return;
+    }
     if (usedCount >= FREE_USES) { setStage("exhausted"); return; }
     submitLockRef.current = true;
     setIsSubmitting(true);
     try {
       const valuation = calculateValuation(input);
       const newCount = incrementUsage(userId);
+      markSubmitted(userId, property.id, property.price, valuation);
       setUsedCount(newCount);
       setResult(valuation);
       setStage("result");
@@ -208,6 +232,10 @@ export default function AIValuationWidget({ property, input, compact = false }: 
 
   // ── Reset within same property ─────────────────────────────────────────────
   const handleReset = () => {
+    if (!property) { setStage("no_property"); return; }
+    // If already submitted for this snapshot, keep showing the persisted result
+    const prior = getSubmittedResult(userId, property.id, property.price);
+    if (prior) { setResult(prior); setStage("result"); return; }
     if (usedCount >= FREE_USES) { setStage("exhausted"); return; }
     setResult(null);
     setStage("idle");
