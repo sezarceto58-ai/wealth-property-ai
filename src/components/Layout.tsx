@@ -63,7 +63,7 @@ const sellerNav = (t: any) => [
   { label: t("nav.aiTools"), items: [
     { path: "/seller/investor",            icon: TrendingUp, label: t("nav.investorIntelligence") },
     { path: "/seller/market-intelligence", icon: BarChart3,  label: t("nav.marketIntelligence") },
-    { path: "/seller/syndication",         icon: Users,      label: t("nav.syndicationDeals") },
+    
     { path: "/seller/valuation",           icon: TrendingUp, label: t("nav.aiValuation") },
   ]},
   { label: t("nav.support"), items: [
