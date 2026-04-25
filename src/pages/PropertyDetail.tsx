@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft, Heart, Share2, MapPin, Bed, Bath, Maximize,
-  BadgeCheck, MessageSquare, DollarSign, Loader2, TrendingUp,
+  BadgeCheck, MessageSquare, DollarSign, Loader2, TrendingUp, Brain, Sparkles,
 } from "lucide-react";
 import TerraScore from "@/components/TerraScore";
 import InvestmentScore from "@/components/InvestmentScore";
@@ -193,11 +193,19 @@ export default function PropertyDetail() {
               >
                 <MessageSquare className="w-4 h-4" /> {t("property.messageSeller")}
               </button>
+              {/* ── Analyze this property CTA ── */}
               <button
                 onClick={() => navigate(`/${rolePrefix}/analysis/${property.id}`)}
-                className="w-full py-3 rounded-xl border border-primary/30 bg-primary/5 text-primary font-medium text-sm hover:bg-primary/10 transition-colors"
+                className="w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all hover:opacity-90 active:scale-[0.98]"
+                style={{
+                  background: "linear-gradient(135deg, hsl(var(--sidebar-primary) / 0.85), hsl(var(--primary) / 0.75))",
+                  color: "white",
+                  boxShadow: "0 0 16px hsl(var(--primary) / 0.3), inset 0 0 0 1px hsl(var(--primary) / 0.4)",
+                }}
               >
-                {t("property.fullAnalysis")} →
+                <Brain className="w-4 h-4" />
+                Analyze this property
+                <Sparkles className="w-3.5 h-3.5 opacity-70" />
               </button>
               <button
                 onClick={() => navigate(`/${rolePrefix}/valuation/${property.id}`)}
