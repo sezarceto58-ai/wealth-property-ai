@@ -40,21 +40,34 @@ export interface Ticket {
 }
 
 // ── Status config ──
-export const STATUS_CONFIG: Record<TicketStatus, { label: string; style: string; dot: string }> = {
-  open:        { label: "Open",        style: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",          dot: "bg-blue-500" },
-  in_progress: { label: "In Progress", style: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",       dot: "bg-amber-500" },
-  waiting:     { label: "Waiting",     style: "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300",   dot: "bg-purple-500" },
-  resolved:    { label: "Resolved",    style: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300", dot: "bg-emerald-500" },
-  closed:      { label: "Closed",      style: "bg-secondary text-secondary-foreground",                                     dot: "bg-muted-foreground" },
+export const STATUS_CONFIG: Record<TicketStatus, { labelKey: string; style: string; dot: string }> = {
+  open:        { labelKey: "support.statusOpen",        style: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",          dot: "bg-blue-500" },
+  in_progress: { labelKey: "support.statusInProgress",  style: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",       dot: "bg-amber-500" },
+  waiting:     { labelKey: "support.statusWaiting",     style: "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300",   dot: "bg-purple-500" },
+  resolved:    { labelKey: "support.statusResolved",    style: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300", dot: "bg-emerald-500" },
+  closed:      { labelKey: "support.statusClosed",      style: "bg-secondary text-secondary-foreground",                                     dot: "bg-muted-foreground" },
 };
 
-export const PRIORITY_CONFIG: Record<TicketPriority, { label: string; style: string; icon: string }> = {
-  low:    { label: "Low",    style: "bg-secondary text-secondary-foreground",                                              icon: "▽" },
-  medium: { label: "Medium", style: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",               icon: "◈" },
-  high:   { label: "High",   style: "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300",           icon: "△" },
-  urgent: { label: "Urgent", style: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",                       icon: "⚠" },
+export const PRIORITY_CONFIG: Record<TicketPriority, { labelKey: string; style: string; icon: string }> = {
+  low:    { labelKey: "support.priorityLow",    style: "bg-secondary text-secondary-foreground",                                              icon: "▽" },
+  medium: { labelKey: "support.priorityMedium", style: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",               icon: "◈" },
+  high:   { labelKey: "support.priorityHigh",   style: "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300",           icon: "△" },
+  urgent: { labelKey: "support.priorityUrgent", style: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",                       icon: "⚠" },
 };
 
+// labelKey map for category → i18n key
+export const CATEGORY_KEY_MAP: Record<TicketCategory, string> = {
+  account:      "support.catAccount",
+  billing:      "support.catBilling",
+  listing:      "support.catListing",
+  offer:        "support.catOffer",
+  technical:    "support.catTechnical",
+  verification: "support.catVerification",
+  syndication:  "support.catSyndication",
+  other:        "support.catOther",
+};
+
+/** @deprecated Use CATEGORY_KEY_MAP + t() instead */
 export const CATEGORY_LABELS: Record<TicketCategory, string> = {
   account:      "Account & Profile",
   billing:      "Billing & Subscription",
