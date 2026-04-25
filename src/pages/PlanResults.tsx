@@ -46,7 +46,7 @@ export default function PlanResults() {
       .eq("id", id)
       .single() as any);
     if (error) {
-      toast({ title: "Error", description: t("common.noResults","Plan not found"), variant: "destructive" });
+      toast({ title: t("common.error"), description: t("planResults.notFound"), variant: "destructive" });
     } else {
       setPlan(data as Plan);
     }
@@ -85,8 +85,8 @@ export default function PlanResults() {
     return (
       <div className="text-center py-16">
         <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-        <p className="text-foreground font-medium">Plan not found</p>
-        <Link to="/developer"><Button variant="outline" className="mt-4">Back to Dashboard</Button></Link>
+        <p className="text-foreground font-medium">{t("planResults.notFound")}</p>
+        <Link to="/developer"><Button variant="outline" className="mt-4">{t("planResults.backToDashboard")}</Button></Link>
       </div>
     );
   }
@@ -95,8 +95,8 @@ export default function PlanResults() {
     return (
       <div className="text-center py-16 space-y-4">
         <Loader2 className="w-12 h-12 text-primary mx-auto animate-spin" />
-        <p className="text-foreground font-medium text-lg">AI is analyzing your land…</p>
-        <p className="text-sm text-muted-foreground">This usually takes 30–60 seconds. The page will update automatically.</p>
+        <p className="text-foreground font-medium text-lg">{t("planResults.analyzing")}</p>
+        <p className="text-sm text-muted-foreground">{t("planResults.analyzingHint")}</p>
       </div>
     );
   }
@@ -114,8 +114,13 @@ export default function PlanResults() {
     }).catch(() => {});
     // Also try direct update
     await (supabase.from("project_plans" as any).update({ result: newResult } as any).eq("id", id) as any);
-    toast({ title: "Pricing updated" });
+    toast({ title: t("planResults.pricingUpdated") });
   };
+
+  const statusLabel =
+    plan.status === "complete" ? t("planResults.statusComplete")
+    : plan.status === "processing" ? t("planResults.statusProcessing")
+    : t("planResults.statusError");
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -125,7 +130,7 @@ export default function PlanResults() {
           <Button variant="ghost" size="icon"><ArrowLeft className="w-4 h-4" /></Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-display font-bold text-foreground">Feasibility Report</h1>
+          <h1 className="text-2xl font-display font-bold text-foreground">{t("planResults.title")}</h1>
           <p className="text-sm text-muted-foreground">
             {plan.land_area.toLocaleString()} m² · {plan.shape} · {lat.toFixed(4)}, {lng.toFixed(4)}
           </p>
@@ -134,25 +139,25 @@ export default function PlanResults() {
           {plan.status === "complete" && <ExportReport plan={plan} />}
           <Badge variant={plan.status === "complete" ? "default" : "destructive"} className="flex items-center gap-1">
             {plan.status === "complete" ? <CheckCircle2 className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
-            {plan.status}
+            {statusLabel}
           </Badge>
         </div>
       </div>
 
       {plan.status === "error" && (
         <div className="rounded-xl bg-destructive/10 border border-destructive/30 p-4 text-sm text-destructive">
-          Analysis failed. Please try again or adjust your inputs.
+          {t("planResults.analysisFailed")}
         </div>
       )}
 
       {plan.status === "complete" && r && (
         <Tabs defaultValue="use" className="w-full">
           <TabsList className="w-full grid grid-cols-5">
-            <TabsTrigger value="use" className="text-xs"><MapPin className="w-3 h-3 mr-1" /> Use</TabsTrigger>
-            <TabsTrigger value="design" className="text-xs"><Building2 className="w-3 h-3 mr-1" /> Design</TabsTrigger>
-            <TabsTrigger value="pricing" className="text-xs"><DollarSign className="w-3 h-3 mr-1" /> Pricing</TabsTrigger>
-            <TabsTrigger value="marketing" className="text-xs"><Megaphone className="w-3 h-3 mr-1" /> Marketing</TabsTrigger>
-            <TabsTrigger value="feasibility" className="text-xs"><TrendingUp className="w-3 h-3 mr-1" /> Feasibility</TabsTrigger>
+            <TabsTrigger value="use" className="text-xs"><MapPin className="w-3 h-3 mr-1" /> {t("planResults.tabUse")}</TabsTrigger>
+            <TabsTrigger value="design" className="text-xs"><Building2 className="w-3 h-3 mr-1" /> {t("planResults.tabDesign")}</TabsTrigger>
+            <TabsTrigger value="pricing" className="text-xs"><DollarSign className="w-3 h-3 mr-1" /> {t("planResults.tabPricing")}</TabsTrigger>
+            <TabsTrigger value="marketing" className="text-xs"><Megaphone className="w-3 h-3 mr-1" /> {t("planResults.tabMarketing")}</TabsTrigger>
+            <TabsTrigger value="feasibility" className="text-xs"><TrendingUp className="w-3 h-3 mr-1" /> {t("planResults.tabFeasibility")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="use" className="mt-4"><LandUseTab r={r} lat={lat} lng={lng} /></TabsContent>
