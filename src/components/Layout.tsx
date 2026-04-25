@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -124,8 +124,112 @@ function getNavForRole(role: NavRole, t: any) {
   }
 }
 
+// ── Accordion Nav Group ────────────────────────────────────────
+function NavGroup({
+  section,
+  isOpen,
+  onToggle,
+  pathname,
+  onNav,
+  isRTL,
+}: {
+  section: { label: string; items: { path: string; icon: any; label: string }[] };
+  isOpen: boolean;
+  onToggle: () => void;
+  pathname: string;
+  onNav: () => void;
+  isRTL: boolean;
+}) {
+  const hasActive = section.items.some(item => pathname === item.path);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <div className="overflow-hidden">
+      {/* Group header button */}
+      <button
+        onClick={onToggle}
+        className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 group ${
+          hasActive
+            ? "text-primary bg-primary/15"
+            : "opacity-50 hover:opacity-80 hover:bg-white/5"
+        }`}
+        style={{ color: hasActive ? "hsl(var(--primary))" : "hsl(var(--sidebar-foreground))" }}
+        aria-expanded={isOpen}
+      >
+        {/* Active indicator bar */}
+        <span
+          className={`w-1 h-4 rounded-full transition-all duration-300 shrink-0 ${
+            hasActive ? "bg-primary" : "bg-white/15"
+          }`}
+        />
+        <span className="flex-1 text-start">{section.label}</span>
+        <ChevronDown
+          className={`w-3.5 h-3.5 transition-transform duration-300 shrink-0 ${
+            isOpen ? "rotate-180" : ""
+          } ${isRTL ? "me-auto ms-0" : ""}`}
+        />
+      </button>
+
+      {/* Animated items panel */}
+      <div
+        ref={contentRef}
+        className="overflow-hidden transition-all duration-300 ease-in-out"
+        style={{
+          maxHeight: isOpen ? `${(contentRef.current?.scrollHeight ?? 400)}px` : "0px",
+          opacity: isOpen ? 1 : 0,
+        }}
+      >
+        <div className="pt-0.5 pb-1 ps-2 space-y-0.5">
+          {section.items.map((navItem) => {
+            const isActive = pathname === navItem.path;
+            return (
+              <Link
+                key={navItem.path}
+                to={navItem.path}
+                onClick={onNav}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 relative ${
+                  isActive
+                    ? "text-white"
+                    : "hover:bg-white/8"
+                }`}
+                style={{
+                  color: isActive ? "#fff" : "hsl(var(--sidebar-foreground) / 0.75)",
+                  background: isActive
+                    ? "linear-gradient(135deg, hsl(var(--sidebar-primary) / 0.35), hsl(var(--sidebar-primary) / 0.20))"
+                    : undefined,
+                  boxShadow: isActive ? "inset 0 0 0 1px hsl(var(--sidebar-primary) / 0.25)" : undefined,
+                }}
+              >
+                {/* Active left accent */}
+                {isActive && (
+                  <span
+                    className="absolute start-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full bg-primary"
+                  />
+                )}
+                <div
+                  className={`p-1.5 rounded-lg shrink-0 transition-colors ${
+                    isActive ? "bg-primary/30" : "bg-white/5 group-hover:bg-white/10"
+                  }`}
+                >
+                  <navItem.icon className={`w-3.5 h-3.5 ${isActive ? "text-primary-foreground" : ""}`} />
+                </div>
+                <span className="truncate flex-1 text-sm">{navItem.label}</span>
+                {isActive && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main Layout ────────────────────────────────────────────────
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [openGroup, setOpenGroup]     = useState<string | null>(null);
   const location  = useLocation();
   const navigate  = useNavigate();
   const { user, signOut } = useAuth();
@@ -148,9 +252,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const activeRole = isShared ? lastRoleRef.current : (getRoleFromPath(location.pathname) ?? lastRoleRef.current);
   const nav = getNavForRole(activeRole, t);
 
+  // Auto-open the group that contains the current route
+  useEffect(() => {
+    const activeSection = nav.find(section =>
+      section.items.some(item => location.pathname === item.path)
+    );
+    if (activeSection) setOpenGroup(activeSection.label);
+  }, [location.pathname, activeRole]);
+
+  const handleGroupToggle = useCallback((label: string) => {
+    setOpenGroup(prev => prev === label ? null : label);
+  }, []);
+
   const displayName = user?.user_metadata?.display_name ?? user?.email ?? "";
   const initials    = displayName.slice(0, 2).toUpperCase() || "A";
-
   const handleSignOut = async () => { await signOut(); navigate("/"); };
 
   const sidebarHiddenClass = isRTL ? "translate-x-full" : "-translate-x-full";
@@ -177,7 +292,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         `}
         style={{
           borderRight: isRTL ? "none" : "1px solid hsl(var(--sidebar-border))",
-          borderLeft: isRTL ? "1px solid hsl(var(--sidebar-border))" : "none",
+          borderLeft:  isRTL ? "1px solid hsl(var(--sidebar-border))" : "none",
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
@@ -185,11 +300,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="flex items-center justify-between px-5 py-4 border-b shrink-0" style={{ borderColor: "hsl(var(--sidebar-border))" }}>
           <Link to="/" className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-2xl bg-gradient-gold flex items-center justify-center shadow-gold shrink-0">
-              <Building2 className="w-4.5 h-4.5 text-white" style={{ width: "1.1rem", height: "1.1rem" }} />
+              <Building2 style={{ width: "1.1rem", height: "1.1rem" }} className="text-white" />
             </div>
             <div>
               <span className="text-base font-display font-bold text-gradient-gold block leading-tight">AqarAI</span>
-              <span className="text-[10px] text-muted-foreground leading-none opacity-60 hidden sm:block">
+              <span className="text-[10px] leading-none block mt-0.5" style={{ color: "hsl(var(--sidebar-foreground) / 0.4)" }}>
                 {activeRole.charAt(0).toUpperCase() + activeRole.slice(1)}
               </span>
             </div>
@@ -204,43 +319,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </button>
         </div>
 
-        {/* Nav sections — scrollable, never overlaps the bottom account strip */}
-        <nav className="flex-1 overflow-y-auto p-3 space-y-4 pb-4" style={{ minHeight: 0 }}>
+        {/* Accordion Nav */}
+        <nav className="flex-1 overflow-y-auto p-3 space-y-1 pb-4" style={{ minHeight: 0 }}>
           {nav.map((section) => (
-            <div key={section.label}>
-              <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest opacity-40" style={{ color: "hsl(var(--sidebar-foreground))" }}>
-                {section.label}
-              </p>
-              <div className="space-y-0.5">
-                {section.items.map((navItem) => {
-                  const isActive = location.pathname === navItem.path;
-                  return (
-                    <Link
-                      key={navItem.path}
-                      to={navItem.path}
-                      onClick={() => setSidebarOpen(false)}
-                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                        isActive
-                          ? "bg-primary/20 text-white shadow-sm"
-                          : "hover:bg-white/8 opacity-75 hover:opacity-100"
-                      }`}
-                      style={{
-                        color: isActive ? "#fff" : "hsl(var(--sidebar-foreground))",
-                        background: isActive ? "rgba(var(--primary), 0.18)" : undefined,
-                      }}
-                    >
-                      <div className={`p-1.5 rounded-lg shrink-0 ${isActive ? "bg-primary/25" : "bg-white/5"}`}>
-                        <navItem.icon className="w-3.5 h-3.5" />
-                      </div>
-                      <span className="truncate flex-1">{navItem.label}</span>
-                      {isActive && (
-                        <ChevronRight className={`w-3 h-3 shrink-0 opacity-50 ${isRTL ? "rotate-180" : ""}`} />
-                      )}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
+            <NavGroup
+              key={section.label}
+              section={section}
+              isOpen={openGroup === section.label}
+              onToggle={() => handleGroupToggle(section.label)}
+              pathname={location.pathname}
+              onNav={() => setSidebarOpen(false)}
+              isRTL={isRTL}
+            />
           ))}
         </nav>
 
@@ -250,18 +340,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             { to: "/pricing", icon: CreditCard, label: t("common.pricing") },
             { to: "/profile",  icon: User,       label: t("common.profile") },
             { to: "/settings", icon: Settings,   label: t("common.settings") },
-          ].map(({ to, icon: Icon, label }) => (
-            <Link
-              key={to}
-              to={to}
-              onClick={() => setSidebarOpen(false)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/8 opacity-70 hover:opacity-100"
-              style={{ color: "hsl(var(--sidebar-foreground))" }}
-            >
-              <Icon className="w-4 h-4" />
-              {label}
-            </Link>
-          ))}
+          ].map(({ to, icon: Icon, label }) => {
+            const isActive = location.pathname === to;
+            return (
+              <Link
+                key={to}
+                to={to}
+                onClick={() => setSidebarOpen(false)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  isActive ? "bg-white/10 text-white" : "hover:bg-white/8 opacity-70 hover:opacity-100"
+                }`}
+                style={{ color: "hsl(var(--sidebar-foreground))" }}
+              >
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-primary" : ""}`} />
+                <span className="flex-1">{label}</span>
+                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />}
+              </Link>
+            );
+          })}
           <button
             onClick={handleSignOut}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-red-500/15 opacity-60 hover:opacity-100"
@@ -277,7 +373,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
         {/* Top header */}
         <header className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3 border-b border-border/60 bg-background/85 backdrop-blur-xl shrink-0 lg:px-6">
-          {/* Hamburger */}
           <button
             onClick={() => setSidebarOpen(true)}
             className="lg:hidden p-2 -ml-1 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-all active:scale-95"
@@ -285,21 +380,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           >
             <Menu className="w-5 h-5" />
           </button>
-
-          {/* Mobile Logo (only shown on mobile when sidebar is closed) */}
           <Link to="/" className="lg:hidden flex items-center gap-2">
             <div className="w-7 h-7 rounded-xl bg-gradient-gold flex items-center justify-center shadow-gold">
               <Building2 className="w-3.5 h-3.5 text-white" />
             </div>
             <span className="text-sm font-display font-bold text-gradient-gold">AqarAI</span>
           </Link>
-
           <div className="flex-1" />
-
           <div className="flex items-center gap-1.5 sm:gap-2">
             <LanguageToggle />
             <NotificationBell />
-            {/* Avatar */}
             <Link
               to="/profile"
               className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-primary hover:scale-105 transition-transform"
