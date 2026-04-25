@@ -117,8 +117,7 @@ export default function PropertyAIAnalysis({ property }: Props) {
 
   const downloadReport = () => {
     if (!analysis) return;
-    const lang2 = lang as "en" | "ar" | "ku";
-    const recLabel2 = REC_LABELS[lang2]?.[analysis.recommendation?.toUpperCase()] ?? analysis.recommendation ?? "";
+    const recLabel2 = REC_LABELS[lang]?.[analysis.recommendation?.toUpperCase()] ?? analysis.recommendation ?? "";
     const html = `<!DOCTYPE html>
 <html lang="${lang}" dir="${lang === "ar" || lang === "ku" ? "rtl" : "ltr"}">
 <head>

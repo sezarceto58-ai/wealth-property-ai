@@ -253,6 +253,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const nav = getNavForRole(activeRole, t);
 
   // Auto-open the group that contains the current route
+  // nav is derived from activeRole which is already a dep, so omitting nav is intentional
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const activeSection = nav.find(section =>
       section.items.some(item => location.pathname === item.path)
@@ -336,8 +338,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         {/* Bottom account section — sticky on mobile so account links stay fixed while nav scrolls */}
         <div
-          className="shrink-0 p-3 border-t space-y-0.5 mb-20 lg:mb-0 sticky bottom-0 lg:static"
-          style={{ borderColor: "hsl(var(--sidebar-border))", background: "hsl(var(--sidebar-background, var(--sidebar)))" }}
+          className="shrink-0 p-3 border-t space-y-0.5 mb-20 lg:mb-0"
+          style={{ borderColor: "hsl(var(--sidebar-border))", background: "hsl(var(--sidebar-background))" }}
         >
           {[
             { to: "/pricing", icon: CreditCard, label: t("common.pricing") },
