@@ -319,56 +319,56 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </button>
         </div>
 
-        {/* Scrollable area: account section first, then nav */}
-        <div className="flex-1 overflow-y-auto" style={{ minHeight: 0 }}>
-          {/* Account section — moved to top for quick access (especially on mobile) */}
-          <div className="p-3 space-y-0.5 border-b" style={{ borderColor: "hsl(var(--sidebar-border))" }}>
-            {[
-              { to: "/pricing", icon: CreditCard, label: t("common.pricing") },
-              { to: "/profile",  icon: User,       label: t("common.profile") },
-              { to: "/settings", icon: Settings,   label: t("common.settings") },
-            ].map(({ to, icon: Icon, label }) => {
-              const isActive = location.pathname === to;
-              return (
-                <Link
-                  key={to}
-                  to={to}
-                  onClick={() => setSidebarOpen(false)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                    isActive ? "bg-white/10 text-white" : "hover:bg-white/8 opacity-70 hover:opacity-100"
-                  }`}
-                  style={{ color: "hsl(var(--sidebar-foreground))" }}
-                >
-                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-primary" : ""}`} />
-                  <span className="flex-1">{label}</span>
-                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />}
-                </Link>
-              );
-            })}
-            <button
-              onClick={handleSignOut}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-red-500/15 opacity-70 hover:opacity-100"
-              style={{ color: "hsl(var(--sidebar-foreground))" }}
-            >
-              <LogOut className="w-4 h-4" />
-              {t("common.signOut")}
-            </button>
-          </div>
+        {/* Accordion Nav */}
+        <nav className="flex-1 overflow-y-auto p-3 space-y-1" style={{ minHeight: 0 }}>
+          {nav.map((section) => (
+            <NavGroup
+              key={section.label}
+              section={section}
+              isOpen={openGroup === section.label}
+              onToggle={() => handleGroupToggle(section.label)}
+              pathname={location.pathname}
+              onNav={() => setSidebarOpen(false)}
+              isRTL={isRTL}
+            />
+          ))}
+        </nav>
 
-          {/* Accordion Nav */}
-          <nav className="p-3 space-y-1 pb-6">
-            {nav.map((section) => (
-              <NavGroup
-                key={section.label}
-                section={section}
-                isOpen={openGroup === section.label}
-                onToggle={() => handleGroupToggle(section.label)}
-                pathname={location.pathname}
-                onNav={() => setSidebarOpen(false)}
-                isRTL={isRTL}
-              />
-            ))}
-          </nav>
+        {/* Bottom account section — lifted up with extra bottom margin so it sits above mobile nav */}
+        <div
+          className="shrink-0 p-3 border-t space-y-0.5 mb-20 lg:mb-0"
+          style={{ borderColor: "hsl(var(--sidebar-border))" }}
+        >
+          {[
+            { to: "/pricing", icon: CreditCard, label: t("common.pricing") },
+            { to: "/profile",  icon: User,       label: t("common.profile") },
+            { to: "/settings", icon: Settings,   label: t("common.settings") },
+          ].map(({ to, icon: Icon, label }) => {
+            const isActive = location.pathname === to;
+            return (
+              <Link
+                key={to}
+                to={to}
+                onClick={() => setSidebarOpen(false)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  isActive ? "bg-white/10 text-white" : "hover:bg-white/8 opacity-70 hover:opacity-100"
+                }`}
+                style={{ color: "hsl(var(--sidebar-foreground))" }}
+              >
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-primary" : ""}`} />
+                <span className="flex-1">{label}</span>
+                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />}
+              </Link>
+            );
+          })}
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-red-500/15 opacity-70 hover:opacity-100"
+            style={{ color: "hsl(var(--sidebar-foreground))" }}
+          >
+            <LogOut className="w-4 h-4" />
+            {t("common.signOut")}
+          </button>
         </div>
       </aside>
 
