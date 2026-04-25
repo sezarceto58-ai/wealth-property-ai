@@ -52,7 +52,7 @@ export default function CreateProperty() {
   // ── Save to Supabase ──────────────────────────────────────────────────────
   const saveToSupabase = async (status: "active" | "draft") => {
     if (!form.title.trim() || !form.price || !form.district.trim() || !form.area) {
-      toast({ title: "Missing fields", description: "Please fill in title, price, district, and area.", variant: "destructive" });
+      toast({ title: t("common.error"), description: t("landForm.fillRequired"), variant: "destructive" });
       return false;
     }
     if (isNaN(Number(form.price)) || Number(form.price) <= 0) {
@@ -145,7 +145,7 @@ export default function CreateProperty() {
       } else {
         setAiResult(data.analysis);
         setActiveTab("ai");
-        toast({ title: "Analysis complete ✨", description: "AI listing and analysis are ready!" });
+        toast({ title: t("aiAnalysisResult.analysisComplete"), description: t("aiAnalysisResult.analysisReady") });
       }
     } catch (err: any) {
       toast({ title: "Generation failed", description: err.message, variant: "destructive" });
@@ -390,7 +390,7 @@ function AIResultsPanel({ result, loading, expanded, toggle, applyAIToForm }: an
     return (
       <div className="rounded-xl bg-card border border-border p-16 text-center">
         <Loader2 className="w-10 h-10 mx-auto text-primary animate-spin mb-4" />
-        <p className="text-sm text-muted-foreground">Analyzing market data & generating your listing...</p>
+        <p className="text-sm text-muted-foreground">{t("aiAnalysisResult.analyzingMarket")}</p>
       </div>);
 
   }
@@ -399,7 +399,7 @@ function AIResultsPanel({ result, loading, expanded, toggle, applyAIToForm }: an
     return (
       <div className="rounded-xl bg-card border border-border p-16 text-center">
         <Brain className="w-14 h-14 mx-auto text-muted-foreground/20 mb-4" />
-        <h3 className="font-semibold text-foreground mb-2">No AI Analysis Yet</h3>
+        <h3 className="font-semibold text-foreground mb-2">{t("aiAnalysisResult.readyTitle")}</h3>
         <p className="text-sm text-muted-foreground max-w-md mx-auto" dir="auto">
           {t("createProperty.noAiYet")}
         </p>
@@ -460,11 +460,11 @@ function AIResultsPanel({ result, loading, expanded, toggle, applyAIToForm }: an
           <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2"><DollarSign className="w-4 h-4 text-warning" /> {t("createProperty.priceRecommendation")}</h3>
           <div className="grid grid-cols-3 gap-3 mb-3">
             <div className="text-center p-3 rounded-lg bg-primary/5 border border-primary/10">
-              <p className="text-xs text-muted-foreground">Recommended</p>
+              <p className="text-xs text-muted-foreground">{t("aiAnalysisResult.recommended")}</p>
               <p className="text-xl font-bold text-primary">${result.pricing.recommendedPrice?.toLocaleString()}</p>
             </div>
             <div className="text-center p-3 rounded-lg bg-secondary/30">
-              <p className="text-xs text-muted-foreground">Range</p>
+              <p className="text-xs text-muted-foreground">{t("aiAnalysisResult.range")}</p>
               <p className="text-sm font-medium text-foreground">${result.pricing.priceRange?.min?.toLocaleString()} - ${result.pricing.priceRange?.max?.toLocaleString()}</p>
             </div>
             <div className="text-center p-3 rounded-lg bg-secondary/30">

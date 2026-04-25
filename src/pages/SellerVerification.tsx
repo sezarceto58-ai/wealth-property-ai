@@ -31,10 +31,10 @@ type PropertyDoc = {
   created_at: string;
 };
 
-const STATUS_CONFIG: Record<string, { icon: typeof CheckCircle2; color: string; label: string }> = {
-  pending: { icon: Clock, color: "text-warning", label: "Pending Review" },
-  approved: { icon: CheckCircle2, color: "text-success", label: "Approved" },
-  rejected: { icon: XCircle, color: "text-destructive", label: "Rejected" },
+const STATUS_CONFIG: Record<string, { icon: typeof CheckCircle2; color: string; labelKey: string }> = {
+  pending: { icon: Clock, color: "text-warning", labelKey: "sellerVerification.statusPending" },
+  approved: { icon: CheckCircle2, color: "text-success", labelKey: "sellerVerification.statusApproved" },
+  rejected: { icon: XCircle, color: "text-destructive", labelKey: "sellerVerification.statusRejected" },
 };
 
 export default function SellerVerification() {
@@ -91,7 +91,7 @@ export default function SellerVerification() {
     if (!file || !user) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("File must be under 5MB");
+      toast.error(t("sellerVerification.fileTooLarge5mb"));
       return;
     }
 
@@ -103,7 +103,7 @@ export default function SellerVerification() {
       .upload(path, file);
 
     if (uploadError) {
-      toast.error("Upload failed: " + uploadError.message);
+      toast.error(t("sellerVerification.uploadFailed", { message: uploadError.message }));
       setUploading(false);
       return;
     }
@@ -122,9 +122,9 @@ export default function SellerVerification() {
       }) as any);
 
     if (insertError) {
-      toast.error("Failed to save verification record");
+      toast.error(t("sellerVerification.saveFailed"));
     } else {
-      toast.success("ID document submitted for verification!");
+      toast.success(t("sellerVerification.idSubmitted"));
       qc.invalidateQueries({ queryKey: ["seller-verifications"] });
     }
     setUploading(false);
@@ -134,12 +134,12 @@ export default function SellerVerification() {
   const handlePropertyDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user || !selectedProperty) {
-      toast.error("Select a property first");
+      toast.error(t("sellerVerification.selectPropertyFirst"));
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      toast.error("File must be under 10MB");
+      toast.error(t("sellerVerification.fileTooLarge10mb"));
       return;
     }
 
@@ -151,7 +151,7 @@ export default function SellerVerification() {
       .upload(path, file);
 
     if (uploadError) {
-      toast.error("Upload failed: " + uploadError.message);
+      toast.error(t("sellerVerification.uploadFailed", { message: uploadError.message }));
       setUploading(false);
       return;
     }
@@ -172,9 +172,9 @@ export default function SellerVerification() {
       }) as any);
 
     if (insertError) {
-      toast.error("Failed to save document record");
+      toast.error(t("sellerVerification.saveDocFailed"));
     } else {
-      toast.success("Property document uploaded!");
+      toast.success(t("sellerVerification.propDocUploaded"));
       qc.invalidateQueries({ queryKey: ["property-documents"] });
     }
     setUploading(false);
@@ -185,7 +185,7 @@ export default function SellerVerification() {
     await supabase.storage.from("seller-documents").remove([doc.storage_path]);
     await (supabase.from("property_documents" as any).delete().eq("id", doc.id) as any);
     qc.invalidateQueries({ queryKey: ["property-documents"] });
-    toast.success("Document deleted");
+    toast.success(t("sellerVerification.docDeleted"));
   };
 
   const latestVerification = verifications[0];
@@ -195,21 +195,21 @@ export default function SellerVerification() {
     <div className="max-w-3xl mx-auto space-y-8">
       <div>
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-          <Shield className="w-6 h-6 text-primary" /> Seller Verification
+          <Shield className="w-6 h-6 text-primary" /> {t("sellerVerification.title")}
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Verify your identity and upload property documents for trust & compliance
+          {t("sellerVerification.subtitle")}
         </p>
       </div>
 
       {/* ID Verification Section */}
       <section className="rounded-xl bg-card border border-border p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">Identity Verification</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t("sellerVerification.identityTitle")}</h2>
           {statusInfo && (
             <span className={`flex items-center gap-1.5 text-sm font-medium ${statusInfo.color}`}>
               <statusInfo.icon className="w-4 h-4" />
-              {statusInfo.label}
+              {t(statusInfo.labelKey)}
             </span>
           )}
         </div>
@@ -217,27 +217,27 @@ export default function SellerVerification() {
         {latestVerification?.status === "approved" ? (
           <div className="flex items-center gap-3 p-4 rounded-lg bg-success/10 border border-success/20">
             <CheckCircle2 className="w-5 h-5 text-success" />
-            <p className="text-sm text-foreground">Your identity has been verified. You're a trusted seller!</p>
+            <p className="text-sm text-foreground">{t("sellerVerification.identityApproved")}</p>
           </div>
         ) : (
           <>
             <p className="text-sm text-muted-foreground">
-              Upload a government-issued ID (passport, national ID, or driver's license) to become a verified seller.
+              {t("sellerVerification.identityDesc")}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label>Document Type</Label>
+                <Label>{t("sellerVerification.docType")}</Label>
                 <Select value={docType} onValueChange={setDocType}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="id_card">National ID Card</SelectItem>
-                    <SelectItem value="passport">Passport</SelectItem>
-                    <SelectItem value="drivers_license">Driver's License</SelectItem>
+                    <SelectItem value="id_card">{t("sellerVerification.nationalId")}</SelectItem>
+                    <SelectItem value="passport">{t("sellerVerification.passport")}</SelectItem>
+                    <SelectItem value="drivers_license">{t("sellerVerification.driversLicense")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label>Upload Document</Label>
+                <Label>{t("sellerVerification.uploadDoc")}</Label>
                 <div className="relative">
                   <Input
                     type="file"
@@ -251,7 +251,7 @@ export default function SellerVerification() {
             </div>
             {uploading && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="w-4 h-4 animate-spin" /> Uploading...
+                <Loader2 className="w-4 h-4 animate-spin" /> {t("sellerVerification.uploading")}
               </div>
             )}
           </>
@@ -259,14 +259,14 @@ export default function SellerVerification() {
 
         {verifications.length > 0 && (
           <div className="space-y-2 pt-2 border-t border-border">
-            <p className="text-xs font-medium text-muted-foreground uppercase">Submission History</p>
+            <p className="text-xs font-medium text-muted-foreground uppercase">{t("sellerVerification.submissionHistory")}</p>
             {verifications.map((v) => {
               const s = STATUS_CONFIG[v.status] ?? STATUS_CONFIG.pending;
               return (
                 <div key={v.id} className="flex items-center justify-between py-2 text-sm">
                   <span className="text-foreground capitalize">{v.verification_type.replace("_", " ")}</span>
                   <span className={`flex items-center gap-1 ${s.color}`}>
-                    <s.icon className="w-3.5 h-3.5" /> {s.label}
+                    <s.icon className="w-3.5 h-3.5" /> {t(s.labelKey)}
                   </span>
                 </div>
               );
@@ -278,17 +278,17 @@ export default function SellerVerification() {
       {/* Property Documents Section */}
       <section className="rounded-xl bg-card border border-border p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-          <FileText className="w-5 h-5 text-primary" /> Property Documents
+          <FileText className="w-5 h-5 text-primary" /> {t("sellerVerification.propDocsTitle")}
         </h2>
         <p className="text-sm text-muted-foreground">
-          Upload deeds, permits, and legal documents for your properties.
+          {t("sellerVerification.propDocsDesc")}
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <Label>Property</Label>
+            <Label>{t("sellerVerification.property")}</Label>
             <Select value={selectedProperty} onValueChange={setSelectedProperty}>
-              <SelectTrigger><SelectValue placeholder="Select property" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t("sellerVerification.selectProperty")} /></SelectTrigger>
               <SelectContent>
                 {properties.map((p) => (
                   <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>
@@ -297,20 +297,20 @@ export default function SellerVerification() {
             </Select>
           </div>
           <div>
-            <Label>Document Type</Label>
+            <Label>{t("sellerVerification.docType")}</Label>
             <Select value={propDocType} onValueChange={setPropDocType}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="deed">Title Deed</SelectItem>
-                <SelectItem value="permit">Building Permit</SelectItem>
-                <SelectItem value="survey">Land Survey</SelectItem>
-                <SelectItem value="legal">Legal Document</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
+                <SelectItem value="deed">{t("sellerVerification.titleDeed")}</SelectItem>
+                <SelectItem value="permit">{t("sellerVerification.buildingPermit")}</SelectItem>
+                <SelectItem value="survey">{t("sellerVerification.landSurvey")}</SelectItem>
+                <SelectItem value="legal">{t("sellerVerification.legalDoc")}</SelectItem>
+                <SelectItem value="other">{t("sellerVerification.other")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div>
-            <Label>Upload File</Label>
+            <Label>{t("sellerVerification.uploadFile")}</Label>
             <Input
               type="file"
               accept="image/*,.pdf,.doc,.docx"
@@ -323,7 +323,7 @@ export default function SellerVerification() {
 
         {propertyDocs.length > 0 && (
           <div className="space-y-2 pt-4 border-t border-border">
-            <p className="text-xs font-medium text-muted-foreground uppercase">Uploaded Documents</p>
+            <p className="text-xs font-medium text-muted-foreground uppercase">{t("sellerVerification.uploadedDocs")}</p>
             {propertyDocs.map((doc) => (
               <div key={doc.id} className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/50">
                 <div className="flex items-center gap-3">
@@ -343,7 +343,7 @@ export default function SellerVerification() {
 
         {properties.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-4">
-            Create a listing first to upload property documents.
+            {t("sellerVerification.noPropertiesHint")}
           </p>
         )}
       </section>

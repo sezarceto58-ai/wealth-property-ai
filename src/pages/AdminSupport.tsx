@@ -29,6 +29,7 @@ const AGENTS = ["Sarah (Support)", "Omar (Support)", "Zainab (Support)", "Unassi
 function TicketRow({ ticket, onClick, isSelected }: {
   ticket: Ticket; onClick: () => void; isSelected: boolean;
 }) {
+  const { t } = useTranslation();
   const sc = STATUS_CONFIG[ticket.status];
   const pc = PRIORITY_CONFIG[ticket.priority];
   const hasUnreplied = ticket.messages[ticket.messages.length - 1]?.authorRole === "user";
@@ -47,7 +48,7 @@ function TicketRow({ ticket, onClick, isSelected }: {
           <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${pc.style}`}>{pc.icon} {pc.label}</span>
           {hasUnreplied && (
             <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 text-[10px] font-bold">
-              Needs reply
+              {t("admin.needsReply")}
             </span>
           )}
         </div>
@@ -68,6 +69,7 @@ function TicketDetail({ ticket, onUpdate }: {
   ticket: Ticket;
   onUpdate: (updated: Ticket) => void;
 }) {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [reply,      setReply]      = useState("");
   const [internalNote, setNote]     = useState("");
@@ -82,7 +84,7 @@ function TicketDetail({ ticket, onUpdate }: {
   const saveProperty = (field: Partial<Ticket>) => {
     const updated = { ...ticket, ...field, updatedAt: new Date().toISOString() };
     onUpdate(updated);
-    toast({ title: "Ticket updated." });
+    toast({ title: t("support.ticketUpdated") });
   };
 
   const handleReply = () => {
@@ -95,7 +97,7 @@ function TicketDetail({ ticket, onUpdate }: {
     const updated = { ...ticket, messages: [...ticket.messages, msg], status: "waiting" as TicketStatus, updatedAt: new Date().toISOString() };
     onUpdate(updated);
     setReply("");
-    toast({ title: "Reply sent to user." });
+    toast({ title: t("support.replySent") });
   };
 
   const handleNote = () => {
@@ -109,7 +111,7 @@ function TicketDetail({ ticket, onUpdate }: {
     onUpdate(updated);
     setNote("");
     setShowNote(false);
-    toast({ title: "Internal note added." });
+    toast({ title: t("support.noteAdded") });
   };
 
   const selectClass = "w-full h-9 rounded-xl border border-border bg-background px-3 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30";
@@ -131,7 +133,7 @@ function TicketDetail({ ticket, onUpdate }: {
         {/* Controls */}
         <div className="grid grid-cols-3 gap-2 pt-1">
           <div>
-            <label className="text-[10px] text-muted-foreground mb-1 block uppercase tracking-wide">Status</label>
+            <label className="text-[10px] text-muted-foreground mb-1 block uppercase tracking-wide">{t("support.status")}</label>
             <select
               value={status}
               onChange={e => {
@@ -146,7 +148,7 @@ function TicketDetail({ ticket, onUpdate }: {
             </select>
           </div>
           <div>
-            <label className="text-[10px] text-muted-foreground mb-1 block uppercase tracking-wide">Priority</label>
+            <label className="text-[10px] text-muted-foreground mb-1 block uppercase tracking-wide">{t("support.priority")}</label>
             <select
               value={priority}
               onChange={e => {
@@ -161,7 +163,7 @@ function TicketDetail({ ticket, onUpdate }: {
             </select>
           </div>
           <div>
-            <label className="text-[10px] text-muted-foreground mb-1 block uppercase tracking-wide">Assigned</label>
+            <label className="text-[10px] text-muted-foreground mb-1 block uppercase tracking-wide">{t("support.assigned")}</label>
             <select
               value={assignedTo}
               onChange={e => {
@@ -202,11 +204,11 @@ function TicketDetail({ ticket, onUpdate }: {
                     <span className="text-xs font-semibold text-foreground">{msg.authorName}</span>
                     {isNote && (
                       <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 flex items-center gap-0.5">
-                        <Lock className="w-2.5 h-2.5" /> Internal
+                        <Lock className="w-2.5 h-2.5" /> {t("support.internal")}
                       </span>
                     )}
                     {isStaff && !isNote && (
-                      <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary">Support</span>
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary">{t("support.teamBadge")}</span>
                     )}
                     <span className="text-[10px] text-muted-foreground ml-auto">{timeAgo(msg.createdAt)}</span>
                   </div>
@@ -227,20 +229,20 @@ function TicketDetail({ ticket, onUpdate }: {
               onClick={() => setShowNote(false)}
               className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${!showNote ? "bg-primary text-white" : "text-secondary-foreground"}`}
             >
-              Reply to User
+              {t("support.replyToUser")}
             </button>
             <button
               onClick={() => setShowNote(true)}
               className={`px-3 py-1 rounded-lg text-xs font-medium transition-all flex items-center gap-1 ${showNote ? "bg-amber-500 text-white" : "text-secondary-foreground"}`}
             >
-              <Lock className="w-3 h-3" /> Internal Note
+              <Lock className="w-3 h-3" /> {t("support.internalNote")}
             </button>
           </div>
 
           {!showNote ? (
             <>
               <Textarea
-                placeholder="Write a reply to the user…"
+                placeholder={t("support.replyPlaceholder")}
                 value={reply}
                 onChange={e => setReply(e.target.value)}
                 className="min-h-[72px] resize-none rounded-xl text-sm bg-background"
@@ -251,20 +253,20 @@ function TicketDetail({ ticket, onUpdate }: {
                   disabled={!reply.trim()}
                   className="flex-1 py-2 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 disabled:opacity-40 transition-colors flex items-center justify-center gap-2"
                 >
-                  <Send className="w-3.5 h-3.5" /> Send Reply
+                  <Send className="w-3.5 h-3.5" /> {t("support.sendReply")}
                 </button>
                 <button
                   onClick={() => saveProperty({ status: "resolved" })}
                   className="px-4 py-2 rounded-xl border border-emerald-500/40 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors flex items-center gap-1"
                 >
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Resolve
+                  <CheckCircle2 className="w-3.5 h-3.5" /> {t("support.resolve")}
                 </button>
               </div>
             </>
           ) : (
             <>
               <Textarea
-                placeholder="Add an internal note (not visible to the user)…"
+                placeholder={t("support.notePlaceholder")}
                 value={internalNote}
                 onChange={e => setNote(e.target.value)}
                 className="min-h-[72px] resize-none rounded-xl text-sm bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800"
@@ -274,7 +276,7 @@ function TicketDetail({ ticket, onUpdate }: {
                 disabled={!internalNote.trim()}
                 className="w-full py-2 rounded-xl bg-amber-500 text-white text-sm font-semibold hover:bg-amber-600 disabled:opacity-40 transition-colors flex items-center justify-center gap-2"
               >
-                <Lock className="w-3.5 h-3.5" /> Add Note
+                <Lock className="w-3.5 h-3.5" /> {t("support.addNote")}
               </button>
             </>
           )}
@@ -321,17 +323,17 @@ export default function AdminSupport() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-display font-bold text-foreground flex items-center gap-2">
-          <Headphones className="w-6 h-6 text-primary" /> Support Console
+          <Headphones className="w-6 h-6 text-primary" /> {t("support.consoleTitle")}
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">Manage all support tickets, respond to users, assign agents.</p>
+        <p className="text-sm text-muted-foreground mt-1">{t("support.consoleSubtitle")}</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <StatsCard title="Total Tickets"    value={total}      icon={Inbox}        />
-        <StatsCard title="Open"             value={openCount}  icon={AlertCircle}  change="Needs attention" trend={openCount > 3 ? "down" : "neutral"} />
-        <StatsCard title="High / Urgent"    value={urgCount}   icon={TrendingUp}   change="Priority queue"  trend={urgCount > 2 ? "down" : "neutral"} />
-        <StatsCard title="Awaiting Reply"   value={unresolved} icon={MessageSquare} />
+        <StatsCard title={t("support.totalTickets")}    value={total}      icon={Inbox}        />
+        <StatsCard title={t("support.open")}             value={openCount}  icon={AlertCircle}  change={t("support.needsAttention")} trend={openCount > 3 ? "down" : "neutral"} />
+        <StatsCard title={t("support.highUrgent")}    value={urgCount}   icon={TrendingUp}   change={t("support.priorityQueue")}  trend={urgCount > 2 ? "down" : "neutral"} />
+        <StatsCard title={t("support.awaitingReply")}   value={unresolved} icon={MessageSquare} />
       </div>
 
       {/* Main layout */}
@@ -344,7 +346,7 @@ export default function AdminSupport() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 className="w-full h-9 pl-9 pr-3 rounded-xl border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-                placeholder="Search tickets…"
+                placeholder={t("support.searchPlaceholder")}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
@@ -359,7 +361,7 @@ export default function AdminSupport() {
             <div className="flex gap-1 flex-wrap">
               {(["all", "urgent", "high", "medium", "low"] as const).map(p => (
                 <button key={p} onClick={() => setPriorityF(p)} className={`${pillBase} ${priorityF === p ? pillActive : pillInactive}`}>
-                  {p === "all" ? "All Priority" : `${PRIORITY_CONFIG[p]?.icon} ${PRIORITY_CONFIG[p]?.label}`}
+                  {p === "all" ? t("support.allPriority") : `${PRIORITY_CONFIG[p]?.icon} ${PRIORITY_CONFIG[p]?.label}`}
                 </button>
               ))}
             </div>
@@ -370,7 +372,7 @@ export default function AdminSupport() {
             {filtered.length === 0 ? (
               <div className="py-12 text-center text-muted-foreground">
                 <Inbox className="w-8 h-8 mx-auto mb-2 opacity-25" />
-                <p className="text-sm">No tickets match filters.</p>
+                <p className="text-sm">{t("support.noTickets")}</p>
               </div>
             ) : (
               filtered.map(t => (
@@ -392,9 +394,9 @@ export default function AdminSupport() {
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-10 text-muted-foreground">
               <Headphones className="w-12 h-12 mb-4 opacity-20" />
-              <p className="font-medium">Select a ticket to view</p>
+              <p className="font-medium">{t("support.selectTicket")}</p>
               <p className="text-xs mt-1 max-w-xs">
-                Click any ticket in the queue to read the conversation and respond.
+                {t("support.selectTicketDesc")}
               </p>
             </div>
           )}

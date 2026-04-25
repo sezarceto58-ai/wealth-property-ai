@@ -212,7 +212,7 @@ export default function AdminDashboard() {
 
       {activeTab === "fraud" && (
         <div className="space-y-4">
-          <h2 className="font-semibold text-foreground">Fraud & Risk Alerts</h2>
+          <h2 className="font-semibold text-foreground">{t("admin.fraudAlerts")}</h2>
           {fraudAlerts.map((alert) => (
             <div key={alert.id} className="rounded-xl bg-card border border-border p-5 animate-fade-in">
               <div className="flex items-start justify-between">
@@ -229,8 +229,8 @@ export default function AdminDashboard() {
                 </span>
               </div>
               <div className="flex gap-2 mt-3">
-                <button className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium">Investigate</button>
-                <button className="px-3 py-1.5 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium">Dismiss</button>
+                <button className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium">{t("admin.investigate")}</button>
+                <button className="px-3 py-1.5 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium">{t("admin.dismiss")}</button>
               </div>
             </div>
           ))}
@@ -240,11 +240,11 @@ export default function AdminDashboard() {
       {activeTab === "users" && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-foreground">Users & Plans Management</h2>
+            <h2 className="font-semibold text-foreground">{t("admin.usersManagement")}</h2>
             <div className="flex gap-2 items-center">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-                <input placeholder="Search users..." className="pl-8 pr-3 py-1.5 rounded-lg bg-secondary text-foreground text-xs outline-none w-48" />
+                <input placeholder={t("admin.searchUsers")} className="pl-8 pr-3 py-1.5 rounded-lg bg-secondary text-foreground text-xs outline-none w-48" />
               </div>
             </div>
           </div>
@@ -252,12 +252,12 @@ export default function AdminDashboard() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-xs text-muted-foreground">
-                  <th className="text-left p-3 font-medium">User</th>
-                  <th className="text-left p-3 font-medium">Plan</th>
-                  <th className="text-left p-3 font-medium">Status</th>
-                  <th className="text-left p-3 font-medium">Offers</th>
-                  <th className="text-left p-3 font-medium">Joined</th>
-                  <th className="text-left p-3 font-medium">Actions</th>
+                  <th className="text-left p-3 font-medium">{t("admin.colUser")}</th>
+                  <th className="text-left p-3 font-medium">{t("admin.colPlan")}</th>
+                  <th className="text-left p-3 font-medium">{t("admin.colStatus")}</th>
+                  <th className="text-left p-3 font-medium">{t("admin.colOffers")}</th>
+                  <th className="text-left p-3 font-medium">{t("admin.colJoined")}</th>
+                  <th className="text-left p-3 font-medium">{t("admin.colActions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -295,16 +295,16 @@ export default function AdminDashboard() {
 
       {activeTab === "audit" && (
         <div className="space-y-4">
-          <h2 className="font-semibold text-foreground">Audit Log</h2>
+          <h2 className="font-semibold text-foreground">{t("admin.auditLog")}</h2>
           <div className="rounded-xl bg-card border border-border overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-xs text-muted-foreground">
-                  <th className="text-left p-3 font-medium">Timestamp</th>
-                  <th className="text-left p-3 font-medium">Action</th>
-                  <th className="text-left p-3 font-medium">Actor</th>
-                  <th className="text-left p-3 font-medium">Target</th>
-                  <th className="text-left p-3 font-medium">Details</th>
+                  <th className="text-left p-3 font-medium">{t("admin.colTimestamp")}</th>
+                  <th className="text-left p-3 font-medium">{t("admin.colAction")}</th>
+                  <th className="text-left p-3 font-medium">{t("admin.colActor")}</th>
+                  <th className="text-left p-3 font-medium">{t("admin.colTarget")}</th>
+                  <th className="text-left p-3 font-medium">{t("admin.colDetails")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -327,7 +327,7 @@ export default function AdminDashboard() {
         <div className="space-y-6">
           <div>
             <h2 className="font-semibold text-foreground flex items-center gap-2 mb-4">
-              <Globe className="w-4 h-4 text-primary" /> Cities & Districts
+              <Globe className="w-4 h-4 text-primary" /> {t("admin.citiesDistricts")}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {masterCities.map((city) => (
@@ -337,9 +337,9 @@ export default function AdminDashboard() {
                     <span className="font-semibold text-foreground text-sm">{city.name}</span>
                   </div>
                   <div className="space-y-1 text-xs text-muted-foreground">
-                    <p>{city.districts} districts</p>
-                    <p>{city.listings} active listings</p>
-                    <p>Avg price: {city.avgPrice}</p>
+                    <p>{city.districts} {t("admin.districts")}</p>
+                    <p>{city.listings} {t("admin.activeListingsCount")}</p>
+                    <p>{t("admin.avgPriceLabel")} {city.avgPrice}</p>
                   </div>
                 </div>
               ))}
@@ -348,16 +348,16 @@ export default function AdminDashboard() {
 
           <div>
             <h2 className="font-semibold text-foreground flex items-center gap-2 mb-4">
-              <Coins className="w-4 h-4 text-primary" /> Exchange Rates
+              <Coins className="w-4 h-4 text-primary" /> {t("admin.exchangeRates")}
             </h2>
             <div className="rounded-xl bg-card border border-border overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border text-xs text-muted-foreground">
-                    <th className="text-left p-3 font-medium">Pair</th>
-                    <th className="text-left p-3 font-medium">Rate</th>
-                    <th className="text-left p-3 font-medium">Last Updated</th>
-                    <th className="text-left p-3 font-medium">Action</th>
+                    <th className="text-left p-3 font-medium">{t("admin.colPair")}</th>
+                    <th className="text-left p-3 font-medium">{t("admin.colRate")}</th>
+                    <th className="text-left p-3 font-medium">{t("admin.colLastUpdated")}</th>
+                    <th className="text-left p-3 font-medium">{t("admin.colAction")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -367,7 +367,7 @@ export default function AdminDashboard() {
                       <td className="p-3 text-foreground font-mono">{rate.rate}</td>
                       <td className="p-3 text-muted-foreground text-xs">{rate.updated}</td>
                       <td className="p-3">
-                        <button className="px-3 py-1 rounded-lg bg-primary/10 text-primary text-xs font-medium">Update</button>
+                        <button className="px-3 py-1 rounded-lg bg-primary/10 text-primary text-xs font-medium">{t("admin.updateRate")}</button>
                       </td>
                     </tr>
                   ))}

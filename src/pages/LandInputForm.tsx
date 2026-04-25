@@ -139,7 +139,7 @@ export default function LandInputForm() {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      toast({ title: "Analysis complete", description: "Your feasibility report is ready." });
+      toast({ title: t("aiAnalysisResult.analysisComplete") });
       navigate(`/developer/plan/${data.plan_id}`);
     } catch (err: any) {
       toast({

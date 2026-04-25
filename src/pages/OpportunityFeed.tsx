@@ -184,7 +184,7 @@ export default function OpportunityFeed() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-sm font-semibold text-foreground truncate">{opp.title}</p>
+                  <p className="text-sm font-semibold text-foreground truncate" dir="auto">{opp.title}</p>
                   <Badge variant="outline" className={`text-[10px] ${typeColors[opp.investment_type]}`}>
                     {opp.investment_type.toUpperCase()}
                   </Badge>
