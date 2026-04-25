@@ -124,6 +124,8 @@ export default function AIValuationWidget({ property, input, compact = false }: 
   const userId = user?.id ?? "anonymous";
   const [usedCount, setUsedCount]   = useState(() => getUsageCount(userId));
   const [result, setResult]         = useState<ValuationResult | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const submitLockRef = useRef(false);
   const [stage, setStage]           = useState<Stage>(() => {
     if (!property) return "no_property";
     if (getUsageCount(userId) >= FREE_USES) return "exhausted";
@@ -156,13 +158,23 @@ export default function AIValuationWidget({ property, input, compact = false }: 
 
   // ── Rule 3: user confirms the exact property → run valuation ───────────────
   const handleConfirm = useCallback(() => {
+    if (submitLockRef.current) return;          // hard lock against double-clicks
     if (!property || !input) return;
-    const valuation = calculateValuation(input);
-    const newCount = incrementUsage(userId);
-    setUsedCount(newCount);
-    setResult(valuation);
-    setStage("result");
-  }, [property, input, userId]);
+    if (usedCount >= FREE_USES) { setStage("exhausted"); return; }
+    submitLockRef.current = true;
+    setIsSubmitting(true);
+    try {
+      const valuation = calculateValuation(input);
+      const newCount = incrementUsage(userId);
+      setUsedCount(newCount);
+      setResult(valuation);
+      setStage("result");
+    } finally {
+      setIsSubmitting(false);
+      // release lock on next tick so a fresh confirm (after reset) works
+      setTimeout(() => { submitLockRef.current = false; }, 0);
+    }
+  }, [property, input, userId, usedCount]);
 
   // ── Rule 3: user denies → back to idle ─────────────────────────────────────
   const handleDeny = () => setStage("idle");
@@ -325,15 +337,22 @@ export default function AIValuationWidget({ property, input, compact = false }: 
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={handleDeny}
-            className="py-2.5 rounded-xl border border-border text-foreground text-sm font-medium hover:bg-secondary/40 transition-colors"
+            disabled={isSubmitting}
+            className="py-2.5 rounded-xl border border-border text-foreground text-sm font-medium hover:bg-secondary/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             No, go back
           </button>
           <button
             onClick={handleConfirm}
-            className="py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+            disabled={isSubmitting}
+            aria-busy={isSubmitting}
+            className="py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            <CheckCircle2 className="w-4 h-4" /> Yes, proceed
+            {isSubmitting ? (
+              <><RefreshCw className="w-4 h-4 animate-spin" /> Processing…</>
+            ) : (
+              <><CheckCircle2 className="w-4 h-4" /> Yes, proceed</>
+            )}
           </button>
         </div>
 
