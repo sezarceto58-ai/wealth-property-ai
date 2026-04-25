@@ -21,8 +21,9 @@ import Alerts from "@/pages/Alerts";
 import InvestorTools from "@/pages/InvestorTools";
 import BuyerPropertyAnalysis from "@/pages/BuyerPropertyAnalysis";
 import MarketIntelligence from "@/pages/MarketIntelligence";
-import SyndicationDeals from "@/pages/SyndicationDeals";
-import SyndicationDealDetail from "@/pages/SyndicationDealDetail";
+// Investor Syndication — hidden & deactivated (kept for future phases)
+// import SyndicationDeals from "@/pages/SyndicationDeals";
+// import SyndicationDealDetail from "@/pages/SyndicationDealDetail";
 
 // Seller pages
 import SellerDashboard from "@/pages/SellerDashboard";
