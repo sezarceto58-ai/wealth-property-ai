@@ -284,21 +284,21 @@ export default function Pricing() {
             </thead>
             <tbody>
               {[
-                { feature: "Browse marketplace",          free: true,   pro: true,   elite: true  },
-                { feature: "Basic property search",       free: true,   pro: true,   elite: true  },
-                { feature: "Save favorites",              free: "5 max", pro: "∞",   elite: "∞"  },
-                { feature: "Send offers",                 free: "3/mo",  pro: "∞",   elite: "∞"  },
-                { feature: "Analytics dashboard",         free: false,  pro: true,   elite: true  },
-                { feature: "Priority alerts",             free: false,  pro: true,   elite: true  },
-                { feature: "CRM tools",                   free: false,  pro: true,   elite: true  },
-                { feature: "Investor portfolio tools",    free: false,  pro: false,  elite: true  },
-                { feature: "Deposit verification",        free: false,  pro: false,  elite: true  },
-                { feature: "Proof-of-funds uploads",      free: false,  pro: false,  elite: true  },
-                { feature: "Dedicated support",           free: false,  pro: false,  elite: true  },
-                { feature: "Mortgage calculator",         free: true,   pro: true,   elite: true  },
-              ].map(({ feature, ...vals }) => (
-                <tr key={feature} className="border-b border-border last:border-0 hover:bg-secondary/10">
-                  <td className="px-5 py-3 text-foreground">{feature}</td>
+                { featureKey: "pricing.feat_browse",       free: true,    pro: true,   elite: true  },
+                { featureKey: "pricing.feat_search",       free: true,    pro: true,   elite: true  },
+                { featureKey: "pricing.feat_favorites",    free: t("pricing.feat_favorites_free"), pro: "∞", elite: "∞" },
+                { featureKey: "pricing.feat_offers",       free: t("pricing.feat_offers_free"),    pro: "∞", elite: "∞" },
+                { featureKey: "pricing.feat_analytics",    free: false,   pro: true,   elite: true  },
+                { featureKey: "pricing.feat_alerts",       free: false,   pro: true,   elite: true  },
+                { featureKey: "pricing.feat_crm",          free: false,   pro: true,   elite: true  },
+                { featureKey: "pricing.feat_investor",     free: false,   pro: false,  elite: true  },
+                { featureKey: "pricing.feat_deposit",      free: false,   pro: false,  elite: true  },
+                { featureKey: "pricing.feat_proof",        free: false,   pro: false,  elite: true  },
+                { featureKey: "pricing.feat_support",      free: false,   pro: false,  elite: true  },
+                { featureKey: "pricing.feat_mortgage",     free: true,    pro: true,   elite: true  },
+              ].map(({ featureKey, ...vals }) => (
+                <tr key={featureKey} className="border-b border-border last:border-0 hover:bg-secondary/10">
+                  <td className="px-5 py-3 text-foreground">{t(featureKey)}</td>
                   {(["free", "pro", "elite"] as TierKey[]).map((k) => {
                     const val = vals[k as keyof typeof vals];
                     return (
@@ -327,10 +327,10 @@ export default function Pricing() {
         </h2>
         <div className="rounded-2xl border border-border overflow-hidden divide-y divide-border">
           {[
-            { q: "Can I switch plans at any time?", a: "Yes — upgrades take effect immediately. Downgrades apply at the end of your current billing period." },
-            { q: "What happens to my data if I downgrade?", a: "All your data is preserved. Gated features become inaccessible but nothing is deleted." },
-            { q: "Is there a free trial for Pro or Elite?", a: "We offer a 7-day trial for Pro. Contact support@aqarai.iq for an Elite trial." },
-            { q: "Are the prices in USD?", a: "Yes, all prices are in US Dollars. IQD payments can be arranged through our support team." },
+            { q: t("pricing.faq_switch_q"),   a: t("pricing.faq_switch_a")   },
+            { q: t("pricing.faq_data_q"),     a: t("pricing.faq_data_a")     },
+            { q: t("pricing.faq_trial_q"),    a: t("pricing.faq_trial_a")    },
+            { q: t("pricing.faq_currency_q"), a: t("pricing.faq_currency_a") },
           ].map((item) => (
             <details key={item.q} className="group">
               <summary className="flex items-center justify-between px-5 py-4 cursor-pointer list-none hover:bg-secondary/20 transition-colors">
