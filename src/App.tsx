@@ -21,8 +21,9 @@ import Alerts from "@/pages/Alerts";
 import InvestorTools from "@/pages/InvestorTools";
 import BuyerPropertyAnalysis from "@/pages/BuyerPropertyAnalysis";
 import MarketIntelligence from "@/pages/MarketIntelligence";
-import SyndicationDeals from "@/pages/SyndicationDeals";
-import SyndicationDealDetail from "@/pages/SyndicationDealDetail";
+// Investor Syndication — hidden & deactivated (kept for future phases)
+// import SyndicationDeals from "@/pages/SyndicationDeals";
+// import SyndicationDealDetail from "@/pages/SyndicationDealDetail";
 
 // Seller pages
 import SellerDashboard from "@/pages/SellerDashboard";
@@ -90,8 +91,8 @@ const App = () => (
                       <Route path="/investor" element={<InvestorTools />} />
                       <Route path="/analysis/:id" element={<BuyerPropertyAnalysis />} />
                       <Route path="/market-intelligence" element={<MarketIntelligence />} />
-                      <Route path="/syndication" element={<SyndicationDeals />} />
-                      <Route path="/syndication/:id" element={<SyndicationDealDetail />} />
+                      <Route path="/syndication" element={<Navigate to="/buyer" replace />} />
+                      <Route path="/syndication/:id" element={<Navigate to="/buyer" replace />} />
                       <Route path="/valuation" element={<AIValuation />} />
                       <Route path="/valuation/:id" element={<AIValuation />} />
                     </Routes>
@@ -121,8 +122,8 @@ const App = () => (
                       <Route path="/verification" element={<SellerVerification />} />
                       <Route path="/investor" element={<InvestorTools />} />
                       <Route path="/market-intelligence" element={<MarketIntelligence />} />
-                      <Route path="/syndication" element={<SyndicationDeals />} />
-                      <Route path="/syndication/:id" element={<SyndicationDealDetail />} />
+                      <Route path="/syndication" element={<Navigate to="/seller" replace />} />
+                      <Route path="/syndication/:id" element={<Navigate to="/seller" replace />} />
                       <Route path="/valuation" element={<AIValuation />} />
                       <Route path="/valuation/:id" element={<AIValuation />} />
                     </Routes>
@@ -149,8 +150,8 @@ const App = () => (
                       <Route path="/portfolio" element={<PortfolioInsights />} />
                       <Route path="/messages" element={<Messaging />} />
                       <Route path="/market-intelligence" element={<MarketIntelligence />} />
-                      <Route path="/syndication" element={<SyndicationDeals />} />
-                      <Route path="/syndication/:id" element={<SyndicationDealDetail />} />
+                      <Route path="/syndication" element={<Navigate to="/developer" replace />} />
+                      <Route path="/syndication/:id" element={<Navigate to="/developer" replace />} />
                       <Route path="/valuation" element={<AIValuation />} />
                       <Route path="/valuation/:id" element={<AIValuation />} />
                     </Routes>
