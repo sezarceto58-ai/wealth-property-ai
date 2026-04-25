@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -117,133 +117,143 @@ export default function PropertyAIAnalysis({ property }: Props) {
 
   const downloadReport = () => {
     if (!analysis) return;
+
     const recLabel2 = REC_LABELS[lang]?.[analysis.recommendation?.toUpperCase()] ?? analysis.recommendation ?? "";
-    const html = `<!DOCTYPE html>
-<html lang="${lang}" dir="${lang === "ar" || lang === "ku" ? "rtl" : "ltr"}">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Property Analysis — ${property.title}</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #fff; color: #111; padding: 40px; max-width: 900px; margin: 0 auto; }
-    h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
-    .subtitle { color: #666; font-size: 0.85rem; margin-bottom: 24px; }
-    .badge { display: inline-block; padding: 4px 14px; border-radius: 999px; font-weight: 700; font-size: 0.9rem; border: 1.5px solid; }
-    .badge-buy { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
-    .badge-avoid { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
-    .badge-other { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
-    .summary { background: #f8fafc; border-left: 4px solid #6366f1; padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 20px 0; font-size: 0.95rem; line-height: 1.6; color: #334155; }
-    .section { margin: 24px 0; }
-    .section-title { font-size: 1rem; font-weight: 600; color: #6366f1; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }
-    .card { background: #f8fafc; border-radius: 10px; padding: 14px; border: 1px solid #e2e8f0; }
-    .card-label { font-size: 0.72rem; color: #94a3b8; margin-top: 4px; }
-    .card-value { font-size: 1.3rem; font-weight: 700; color: #111; }
-    .swot-box { background: #f8fafc; border-radius: 8px; padding: 12px; border: 1px solid #e2e8f0; }
-    .swot-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
-    .swot-box ul { padding-left: 14px; }
-    .swot-box li { font-size: 0.82rem; color: #475569; line-height: 1.5; }
-    .kv-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.88rem; }
-    .kv-label { color: #64748b; }
-    .kv-value { font-weight: 600; }
-    .risk-level { display: inline-block; padding: 2px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
-    .risk-low { background: #d1fae5; color: #065f46; }
-    .risk-medium { background: #fef3c7; color: #92400e; }
-    .risk-high { background: #fee2e2; color: #991b1b; }
-    .meta { color: #94a3b8; font-size: 0.78rem; margin-top: 40px; padding-top: 16px; border-top: 1px solid #e2e8f0; }
-    @media print { body { padding: 20px; } }
-  </style>
-</head>
-<body>
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px">
-    <div>
-      <h1>${property.title}</h1>
-      <p class="subtitle">📍 ${property.district}, ${property.city} · ${property.area}m² · $${property.price.toLocaleString()}</p>
-    </div>
-    <span class="badge ${analysis.recommendation?.toUpperCase() === 'BUY' ? 'badge-buy' : analysis.recommendation?.toUpperCase() === 'AVOID' ? 'badge-avoid' : 'badge-other'}">${recLabel2}</span>
-  </div>
+    const recKey2   = analysis.recommendation?.toUpperCase() ?? "";
+    const badgeCls  = recKey2 === "BUY" ? "badge-buy" : recKey2 === "AVOID" ? "badge-avoid" : "badge-other";
+    const dir       = (lang === "ar" || lang === "ku") ? "rtl" : "ltr";
 
-  ${analysis.summary ? `<div class="summary">${analysis.summary}</div>` : ""}
+    // Build each section as a string variable to avoid complex expressions inside template literals
+    const summaryHtml = analysis.summary
+      ? `<div class="summary">${analysis.summary}</div>`
+      : "";
 
-  ${analysis.investmentScore ? `
-  <div class="section">
-    <div class="section-title">📊 Investment Score</div>
-    <div class="grid-3">
-      ${Object.entries(analysis.investmentScore).map(([k, v]) => `
-        <div class="card">
-          <div class="card-value">${v}</div>
-          <div class="card-label">${k.replace(/([A-Z])/g, " $1")}</div>
-        </div>
-      `).join("")}
-    </div>
-  </div>` : ""}
+    let investmentHtml = "";
+    if (analysis.investmentScore) {
+      const cards = Object.entries(analysis.investmentScore)
+        .map(([k, v]) => `<div class="card"><div class="card-value">${v}</div><div class="card-label">${k.replace(/([A-Z])/g, " $1")}</div></div>`)
+        .join("");
+      investmentHtml = `<div class="section"><div class="section-title">📊 Investment Score</div><div class="grid-3">${cards}</div></div>`;
+    }
 
-  ${analysis.swot ? `
-  <div class="section">
-    <div class="section-title">🔲 SWOT Analysis</div>
-    <div class="grid-2">
-      <div class="swot-box"><div class="swot-title" style="color:#065f46">✅ Strengths</div><ul>${(analysis.swot.strengths || []).map((s: string) => `<li>${s}</li>`).join("")}</ul></div>
-      <div class="swot-box"><div class="swot-title" style="color:#991b1b">❌ Weaknesses</div><ul>${(analysis.swot.weaknesses || []).map((s: string) => `<li>${s}</li>`).join("")}</ul></div>
-      <div class="swot-box"><div class="swot-title" style="color:#1d4ed8">📈 Opportunities</div><ul>${(analysis.swot.opportunities || []).map((s: string) => `<li>${s}</li>`).join("")}</ul></div>
-      <div class="swot-box"><div class="swot-title" style="color:#b45309">⚠️ Threats</div><ul>${(analysis.swot.threats || []).map((s: string) => `<li>${s}</li>`).join("")}</ul></div>
-    </div>
-  </div>` : ""}
+    let swotHtml = "";
+    if (analysis.swot) {
+      const s = (analysis.swot.strengths || []).map((x: string) => `<li>${x}</li>`).join("");
+      const w = (analysis.swot.weaknesses || []).map((x: string) => `<li>${x}</li>`).join("");
+      const o = (analysis.swot.opportunities || []).map((x: string) => `<li>${x}</li>`).join("");
+      const th = (analysis.swot.threats || []).map((x: string) => `<li>${x}</li>`).join("");
+      swotHtml = `<div class="section"><div class="section-title">🔲 SWOT Analysis</div><div class="grid-2">
+        <div class="swot-box"><div class="swot-title" style="color:#065f46">✅ Strengths</div><ul>${s}</ul></div>
+        <div class="swot-box"><div class="swot-title" style="color:#991b1b">❌ Weaknesses</div><ul>${w}</ul></div>
+        <div class="swot-box"><div class="swot-title" style="color:#1d4ed8">📈 Opportunities</div><ul>${o}</ul></div>
+        <div class="swot-box"><div class="swot-title" style="color:#b45309">⚠️ Threats</div><ul>${th}</ul></div>
+      </div></div>`;
+    }
 
-  ${analysis.financials ? `
-  <div class="section">
-    <div class="section-title">💰 Financials</div>
-    ${Object.entries(analysis.financials).map(([k, v]) => `
-      <div class="kv-row">
-        <span class="kv-label">${k.replace(/([A-Z])/g, " $1")}</span>
-        <span class="kv-value">${typeof v === "number" ? v.toLocaleString() : v}</span>
-      </div>`).join("")}
-  </div>` : ""}
+    let financialsHtml = "";
+    if (analysis.financials) {
+      const rows = Object.entries(analysis.financials)
+        .map(([k, v]) => {
+          const val = typeof v === "number" ? v.toLocaleString() : String(v);
+          return `<div class="kv-row"><span class="kv-label">${k.replace(/([A-Z])/g, " $1")}</span><span class="kv-value">${val}</span></div>`;
+        })
+        .join("");
+      financialsHtml = `<div class="section"><div class="section-title">💰 Financials</div>${rows}</div>`;
+    }
 
-  ${analysis.risk ? `
-  <div class="section">
-    <div class="section-title">🛡️ Risk Assessment</div>
-    <p style="margin-bottom:10px">Overall: <strong>${analysis.risk.overallScore}/100</strong>
-      <span class="risk-level risk-${analysis.risk.level}">${analysis.risk.level?.toUpperCase()}</span>
-    </p>
-    ${(analysis.risk.factors || []).map((f: any) => `
-      <div class="kv-row"><span class="kv-label">${f.name}</span><span class="kv-value">${f.score}/100</span></div>`).join("")}
-  </div>` : ""}
+    let riskHtml = "";
+    if (analysis.risk) {
+      const factors = (analysis.risk.factors || [])
+        .map((f: any) => `<div class="kv-row"><span class="kv-label">${f.name}</span><span class="kv-value">${f.score}/100</span></div>`)
+        .join("");
+      riskHtml = `<div class="section"><div class="section-title">🛡️ Risk Assessment</div>
+        <p style="margin-bottom:10px">Overall: <strong>${analysis.risk.overallScore}/100</strong>
+          <span class="risk-level risk-${analysis.risk.level}">${analysis.risk.level?.toUpperCase()}</span>
+        </p>${factors}</div>`;
+    }
 
-  ${analysis.marketInsights ? `
-  <div class="section">
-    <div class="section-title">📈 Market Insights</div>
-    ${Object.entries(analysis.marketInsights).map(([k, v]) => `
-      <div class="kv-row">
-        <span class="kv-label">${k.replace(/([A-Z])/g, " $1")}</span>
-        <span class="kv-value">${typeof v === "number" ? v.toLocaleString() : v}</span>
-      </div>`).join("")}
-  </div>` : ""}
+    let marketHtml = "";
+    if (analysis.marketInsights) {
+      const rows = Object.entries(analysis.marketInsights)
+        .map(([k, v]) => {
+          const val = typeof v === "number" ? v.toLocaleString() : String(v);
+          return `<div class="kv-row"><span class="kv-label">${k.replace(/([A-Z])/g, " $1")}</span><span class="kv-value">${val}</span></div>`;
+        })
+        .join("");
+      marketHtml = `<div class="section"><div class="section-title">📈 Market Insights</div>${rows}</div>`;
+    }
 
-  ${analysis.esg ? `
-  <div class="section">
-    <div class="section-title">🌿 ESG Score</div>
-    <div class="grid-4">
-      ${["score","environmental","social","governance"].map(k => `
-        <div class="card">
-          <div class="card-value">${analysis.esg[k]}</div>
-          <div class="card-label">${k}</div>
-        </div>`).join("")}
-    </div>
-    ${analysis.esg.notes ? `<p style="font-size:0.82rem;color:#64748b;margin-top:10px">${analysis.esg.notes}</p>` : ""}
-  </div>` : ""}
+    let esgHtml = "";
+    if (analysis.esg) {
+      const cards = ["score", "environmental", "social", "governance"]
+        .map(k => `<div class="card"><div class="card-value">${analysis.esg[k]}</div><div class="card-label">${k}</div></div>`)
+        .join("");
+      const notes = analysis.esg.notes ? `<p style="font-size:0.82rem;color:#64748b;margin-top:10px">${analysis.esg.notes}</p>` : "";
+      esgHtml = `<div class="section"><div class="section-title">🌿 ESG Score</div><div class="grid-4">${cards}</div>${notes}</div>`;
+    }
 
-  <div class="meta">Generated by AqarAI · ${new Date().toLocaleDateString()} · AI analysis is for informational purposes only and does not constitute financial or legal advice.</div>
-</body>
-</html>`;
+    const html = [
+      `<!DOCTYPE html>`,
+      `<html lang="${lang}" dir="${dir}">`,
+      `<head>`,
+      `<meta charset="UTF-8" />`,
+      `<meta name="viewport" content="width=device-width, initial-scale=1.0" />`,
+      `<title>AI Property Analysis — ${property.title}</title>`,
+      `<style>`,
+      `* { box-sizing: border-box; margin: 0; padding: 0; }`,
+      `body { font-family: 'Segoe UI', system-ui, sans-serif; background: #fff; color: #111; padding: 40px; max-width: 900px; margin: 0 auto; }`,
+      `h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }`,
+      `.subtitle { color: #666; font-size: 0.85rem; margin-bottom: 24px; }`,
+      `.badge { display: inline-block; padding: 4px 14px; border-radius: 999px; font-weight: 700; font-size: 0.9rem; border: 1.5px solid; }`,
+      `.badge-buy { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }`,
+      `.badge-avoid { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }`,
+      `.badge-other { background: #fef3c7; color: #92400e; border-color: #fcd34d; }`,
+      `.summary { background: #f8fafc; border-left: 4px solid #6366f1; padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 20px 0; font-size: 0.95rem; line-height: 1.6; color: #334155; }`,
+      `.section { margin: 24px 0; }`,
+      `.section-title { font-size: 1rem; font-weight: 600; color: #6366f1; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #e2e8f0; }`,
+      `.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }`,
+      `.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }`,
+      `.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }`,
+      `.card { background: #f8fafc; border-radius: 10px; padding: 14px; border: 1px solid #e2e8f0; }`,
+      `.card-label { font-size: 0.72rem; color: #94a3b8; margin-top: 4px; }`,
+      `.card-value { font-size: 1.3rem; font-weight: 700; color: #111; }`,
+      `.swot-box { background: #f8fafc; border-radius: 8px; padding: 12px; border: 1px solid #e2e8f0; }`,
+      `.swot-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }`,
+      `.swot-box ul { padding-left: 14px; }`,
+      `.swot-box li { font-size: 0.82rem; color: #475569; line-height: 1.5; }`,
+      `.kv-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.88rem; }`,
+      `.kv-label { color: #64748b; }`,
+      `.kv-value { font-weight: 600; }`,
+      `.risk-level { display: inline-block; padding: 2px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; margin-left: 8px; }`,
+      `.risk-low { background: #d1fae5; color: #065f46; }`,
+      `.risk-medium { background: #fef3c7; color: #92400e; }`,
+      `.risk-high { background: #fee2e2; color: #991b1b; }`,
+      `.meta { color: #94a3b8; font-size: 0.78rem; margin-top: 40px; padding-top: 16px; border-top: 1px solid #e2e8f0; }`,
+      `@media print { body { padding: 20px; } }`,
+      `</style>`,
+      `</head>`,
+      `<body>`,
+      `<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px">`,
+      `  <div><h1>${property.title}</h1>`,
+      `  <p class="subtitle">📍 ${property.district}, ${property.city} · ${property.area}m² · $${property.price.toLocaleString()}</p></div>`,
+      `  <span class="badge ${badgeCls}">${recLabel2}</span>`,
+      `</div>`,
+      summaryHtml,
+      investmentHtml,
+      swotHtml,
+      financialsHtml,
+      riskHtml,
+      marketHtml,
+      esgHtml,
+      `<div class="meta">Generated by AqarAI · ${new Date().toLocaleDateString()} · AI analysis is for informational purposes only.</div>`,
+      `</body></html>`,
+    ].join("\n");
 
     const blob = new Blob([html], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = \`AqarAI-Analysis-\${property.title.replace(/\s+/g, "-")}.html\`;
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = "AqarAI-Analysis-" + property.title.replace(/\s+/g, "-") + ".html";
     a.click();
     URL.revokeObjectURL(url);
   };
