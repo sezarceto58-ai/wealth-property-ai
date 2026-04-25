@@ -1291,5 +1291,22 @@
     "saveDocFailed": "Failed to save document record",
     "propDocUploaded": "Property document uploaded!",
     "docDeleted": "Document deleted"
+  },
+  "planResults": {
+    "title": "Feasibility Report",
+    "notFound": "Plan not found",
+    "backToDashboard": "Back to Dashboard",
+    "analyzing": "AI is analyzing your land…",
+    "analyzingHint": "This usually takes 30–60 seconds. The page will update automatically.",
+    "analysisFailed": "Analysis failed. Please try again or adjust your inputs.",
+    "statusComplete": "Complete",
+    "statusProcessing": "Processing",
+    "statusError": "Error",
+    "tabUse": "Use",
+    "tabDesign": "Design",
+    "tabPricing": "Pricing",
+    "tabMarketing": "Marketing",
+    "tabFeasibility": "Feasibility",
+    "pricingUpdated": "Pricing updated"
   }
 }
