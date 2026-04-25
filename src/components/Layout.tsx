@@ -3,9 +3,10 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Building2, LayoutDashboard, Users, MessageSquare, TrendingUp,
-  Shield, Heart, Bell, Search, Menu, X, ChevronRight,
+  Shield, Heart, Bell, Search, X, ChevronRight,
   BadgeDollarSign, GitCompareArrows, Plus, BarChart3, LogOut,
-  Settings, CreditCard, Briefcase, User, LifeBuoy, Headphones,
+  Settings, CreditCard, Briefcase, User, LifeBuoy, Sparkles,
+  Menu, ChevronDown,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -14,19 +15,26 @@ import PageTransition from "@/components/PageTransition";
 import MobileNav from "@/components/MobileNav";
 import InstallBanner from "@/components/InstallBanner";
 
-// ─────────────────────────────────────────────────────────────
-// Nav definitions — all shared pages use role-prefixed paths
-// ─────────────────────────────────────────────────────────────
+type NavRole = "buyer" | "seller" | "developer" | "admin";
+const SHARED_PATHS = ["/settings", "/profile", "/support", "/pricing", "/property"];
+
+function getRoleFromPath(pathname: string): NavRole | null {
+  if (pathname.startsWith("/buyer"))     return "buyer";
+  if (pathname.startsWith("/seller"))    return "seller";
+  if (pathname.startsWith("/developer")) return "developer";
+  if (pathname.startsWith("/admin"))     return "admin";
+  return null;
+}
 
 const buyerNav = (t: any) => [
   { label: t("nav.home"), items: [
     { path: "/buyer", icon: LayoutDashboard, label: t("nav.dashboard") },
   ]},
   { label: t("nav.marketplace"), items: [
-    { path: "/buyer/discover",   icon: Search,           label: t("nav.discover") },
-    { path: "/buyer/compare",    icon: GitCompareArrows, label: t("nav.compare") },
-    { path: "/buyer/favorites",  icon: Heart,            label: t("nav.favorites") },
-    { path: "/buyer/alerts",     icon: Bell,             label: t("nav.alerts") },
+    { path: "/buyer/discover",            icon: Search,           label: t("nav.discover") },
+    { path: "/buyer/compare",             icon: GitCompareArrows, label: t("nav.compare") },
+    { path: "/buyer/favorites",           icon: Heart,            label: t("nav.favorites") },
+    { path: "/buyer/alerts",              icon: Bell,             label: t("nav.alerts") },
   ]},
   { label: t("nav.offersDeals"), items: [
     { path: "/buyer/offers",   icon: BadgeDollarSign, label: t("nav.myOffers") },
@@ -35,8 +43,7 @@ const buyerNav = (t: any) => [
   { label: t("nav.investorTools"), items: [
     { path: "/buyer/investor",            icon: TrendingUp, label: t("nav.aiIntelligence") },
     { path: "/buyer/market-intelligence", icon: BarChart3,  label: t("nav.marketIntelligence") },
-    
-    { path: "/buyer/valuation",           icon: TrendingUp, label: t("nav.aiValuation") },
+    { path: "/buyer/valuation",           icon: Sparkles,   label: t("nav.aiValuation") },
   ]},
   { label: t("nav.support"), items: [
     { path: "/support", icon: LifeBuoy, label: t("support.title") },
@@ -63,8 +70,7 @@ const sellerNav = (t: any) => [
   { label: t("nav.aiTools"), items: [
     { path: "/seller/investor",            icon: TrendingUp, label: t("nav.investorIntelligence") },
     { path: "/seller/market-intelligence", icon: BarChart3,  label: t("nav.marketIntelligence") },
-    
-    { path: "/seller/valuation",           icon: TrendingUp, label: t("nav.aiValuation") },
+    { path: "/seller/valuation",           icon: Sparkles,   label: t("nav.aiValuation") },
   ]},
   { label: t("nav.support"), items: [
     { path: "/support", icon: LifeBuoy, label: t("support.title") },
@@ -86,8 +92,7 @@ const developerNav = (t: any) => [
   { label: t("nav.tools"), items: [
     { path: "/developer/messages",            icon: MessageSquare, label: t("common.messages") },
     { path: "/developer/market-intelligence", icon: BarChart3,     label: t("nav.marketIntelligence") },
-    
-    { path: "/developer/valuation",           icon: TrendingUp,    label: t("nav.aiValuation") },
+    { path: "/developer/valuation",           icon: Sparkles,      label: t("nav.aiValuation") },
   ]},
   { label: t("nav.support"), items: [
     { path: "/support", icon: LifeBuoy, label: t("support.title") },
@@ -98,33 +103,26 @@ const adminNav = (t: any) => [
   { label: t("nav.governance"), items: [
     { path: "/admin",               icon: Shield,     label: t("nav.console") },
     { path: "/admin/verifications", icon: Shield,     label: t("nav.sellerVerifications") },
-    { path: "/admin/support",       icon: Headphones, label: t("admin.supportConsole") },
+    { path: "/admin/support",       icon: Headphones, label: t("nav.supportTickets") },
   ]},
 ];
 
-// Shared paths that don't carry a role prefix
-const SHARED_PATHS = ["/support", "/pricing", "/profile", "/settings"];
-
-type NavRole = "buyer" | "seller" | "developer" | "admin";
+function Headphones(props: any) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 14h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h2" />
+    </svg>
+  );
+}
 
 function getNavForRole(role: NavRole, t: any) {
-  if (role === "developer") return developerNav(t);
-  if (role === "seller")    return sellerNav(t);
-  if (role === "admin")     return adminNav(t);
-  return buyerNav(t);
+  switch (role) {
+    case "buyer":     return buyerNav(t);
+    case "seller":    return sellerNav(t);
+    case "developer": return developerNav(t);
+    case "admin":     return adminNav(t);
+  }
 }
-
-function getRoleFromPath(pathname: string): NavRole | null {
-  if (pathname.startsWith("/developer")) return "developer";
-  if (pathname.startsWith("/seller"))    return "seller";
-  if (pathname.startsWith("/admin"))     return "admin";
-  if (pathname.startsWith("/buyer"))     return "buyer";
-  return null;
-}
-
-// ─────────────────────────────────────────────────────────────
-// Layout component
-// ─────────────────────────────────────────────────────────────
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -132,26 +130,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const navigate  = useNavigate();
   const { user, signOut } = useAuth();
   const { t, i18n } = useTranslation();
-
-  // Reactive RTL detection — re-renders when language changes
   const isRTL = i18n.dir() === "rtl";
 
-  // Close sidebar on route change
+  useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
   useEffect(() => {
-    setSidebarOpen(false);
-  }, [location.pathname]);
-
-  // Prevent body scroll when sidebar is open on mobile
-  useEffect(() => {
-    if (sidebarOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = sidebarOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [sidebarOpen]);
 
-  // Remember last role-prefixed path so shared pages keep the correct nav
   const lastRoleRef = useRef<NavRole>("buyer");
   useEffect(() => {
     const detected = getRoleFromPath(location.pathname);
@@ -159,30 +145,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, [location.pathname]);
 
   const isShared   = SHARED_PATHS.some(p => location.pathname.startsWith(p));
-  const activeRole = isShared
-    ? lastRoleRef.current
-    : (getRoleFromPath(location.pathname) ?? lastRoleRef.current);
+  const activeRole = isShared ? lastRoleRef.current : (getRoleFromPath(location.pathname) ?? lastRoleRef.current);
   const nav = getNavForRole(activeRole, t);
 
-  const initials = user?.user_metadata?.display_name
-    ? user.user_metadata.display_name.slice(0, 2).toUpperCase()
-    : user?.email?.slice(0, 2).toUpperCase() ?? "TV";
+  const displayName = user?.user_metadata?.display_name ?? user?.email ?? "";
+  const initials    = displayName.slice(0, 2).toUpperCase() || "A";
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
-  };
+  const handleSignOut = async () => { await signOut(); navigate("/"); };
 
-  // Sidebar translate classes — must be reactive to RTL
   const sidebarHiddenClass = isRTL ? "translate-x-full" : "-translate-x-full";
-  const sidebarSideClass   = isRTL ? "right-0 border-l border-sidebar-border" : "left-0 border-r border-sidebar-border";
+  const sidebarSideClass   = isRTL ? "right-0" : "left-0";
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Sidebar backdrop — full screen, high z-index, closes on tap */}
+      {/* ── Backdrop ── */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
         />
@@ -190,52 +169,69 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* ── Sidebar ── */}
       <aside
-        className={`fixed inset-y-0 z-50 w-72 bg-sidebar flex flex-col transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:w-64 lg:z-auto
+        className={`fixed inset-y-0 z-50 w-72 flex flex-col transform transition-all duration-300 ease-in-out
+          lg:translate-x-0 lg:static lg:w-64 lg:z-auto
           ${sidebarSideClass}
           ${sidebarOpen ? "translate-x-0 shadow-2xl" : sidebarHiddenClass}
+          sidebar-dark
         `}
+        style={{ borderRight: isRTL ? "none" : "1px solid hsl(var(--sidebar-border))", borderLeft: isRTL ? "1px solid hsl(var(--sidebar-border))" : "none" }}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between p-5 border-b border-sidebar-border shrink-0">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-gold flex items-center justify-center">
-              <Building2 className="w-4 h-4 text-white" />
+        <div className="flex items-center justify-between px-5 py-4 border-b shrink-0" style={{ borderColor: "hsl(var(--sidebar-border))" }}>
+          <Link to="/" className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-2xl bg-gradient-gold flex items-center justify-center shadow-gold shrink-0">
+              <Building2 className="w-4.5 h-4.5 text-white" style={{ width: "1.1rem", height: "1.1rem" }} />
             </div>
-            <span className="text-lg font-display font-bold text-gradient-gold">AqarAI</span>
+            <div>
+              <span className="text-base font-display font-bold text-gradient-gold block leading-tight">AqarAI</span>
+              <span className="text-[10px] text-muted-foreground leading-none opacity-60 hidden sm:block">
+                {activeRole.charAt(0).toUpperCase() + activeRole.slice(1)}
+              </span>
+            </div>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors"
+            className="lg:hidden p-2 rounded-xl transition-colors hover:bg-white/10"
+            style={{ color: "hsl(var(--sidebar-foreground))" }}
             aria-label="Close sidebar"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Scrollable nav */}
-        <nav className="flex-1 overflow-y-auto p-3 space-y-5 pb-2">
+        {/* Nav sections */}
+        <nav className="flex-1 overflow-y-auto p-3 space-y-4 pb-2">
           {nav.map((section) => (
             <div key={section.label}>
-              <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+              <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest opacity-40" style={{ color: "hsl(var(--sidebar-foreground))" }}>
                 {section.label}
               </p>
               <div className="space-y-0.5">
-                {section.items.map((item) => {
-                  const isActive = location.pathname === item.path;
+                {section.items.map((navItem) => {
+                  const isActive = location.pathname === navItem.path;
                   return (
                     <Link
-                      key={item.path}
-                      to={item.path}
+                      key={navItem.path}
+                      to={navItem.path}
                       onClick={() => setSidebarOpen(false)}
                       className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                         isActive
-                          ? "bg-primary/10 text-primary"
-                          : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                          ? "bg-primary/20 text-white shadow-sm"
+                          : "hover:bg-white/8 opacity-75 hover:opacity-100"
                       }`}
+                      style={{
+                        color: isActive ? "#fff" : "hsl(var(--sidebar-foreground))",
+                        background: isActive ? "rgba(var(--primary), 0.18)" : undefined,
+                      }}
                     >
-                      <item.icon className="w-4 h-4 shrink-0" />
-                      <span className="truncate">{item.label}</span>
-                      {isActive && <ChevronRight className={`w-3 h-3 ms-auto shrink-0 opacity-60 ${isRTL ? "rotate-180" : ""}`} />}
+                      <div className={`p-1.5 rounded-lg shrink-0 ${isActive ? "bg-primary/25" : "bg-white/5"}`}>
+                        <navItem.icon className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="truncate flex-1">{navItem.label}</span>
+                      {isActive && (
+                        <ChevronRight className={`w-3 h-3 shrink-0 opacity-50 ${isRTL ? "rotate-180" : ""}`} />
+                      )}
                     </Link>
                   );
                 })}
@@ -244,43 +240,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           ))}
         </nav>
 
-        {/* Bottom account links */}
-        <div className="shrink-0 p-3 border-t border-sidebar-border space-y-0.5">
-          <Link
-            to="/pricing"
-            onClick={() => setSidebarOpen(false)}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
-          >
-            <CreditCard className="w-4 h-4" />
-            {t("common.pricing")}
-          </Link>
-          <Link
-            to="/profile"
-            onClick={() => setSidebarOpen(false)}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
-          >
-            <User className="w-4 h-4" />
-            {t("common.profile")}
-          </Link>
-          <Link
-            to="/settings?tab=language"
-            onClick={() => setSidebarOpen(false)}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
-          >
-            <LifeBuoy className="w-4 h-4" />
-            {t("settings.language")}
-          </Link>
-          <Link
-            to="/settings"
-            onClick={() => setSidebarOpen(false)}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
-          >
-            <Settings className="w-4 h-4" />
-            {t("common.settings")}
-          </Link>
+        {/* Bottom account section */}
+        <div className="shrink-0 p-3 border-t space-y-0.5" style={{ borderColor: "hsl(var(--sidebar-border))" }}>
+          {[
+            { to: "/pricing", icon: CreditCard, label: t("common.pricing") },
+            { to: "/profile",  icon: User,       label: t("common.profile") },
+            { to: "/settings", icon: Settings,   label: t("common.settings") },
+          ].map(({ to, icon: Icon, label }) => (
+            <Link
+              key={to}
+              to={to}
+              onClick={() => setSidebarOpen(false)}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/8 opacity-70 hover:opacity-100"
+              style={{ color: "hsl(var(--sidebar-foreground))" }}
+            >
+              <Icon className="w-4 h-4" />
+              {label}
+            </Link>
+          ))}
           <button
             onClick={handleSignOut}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-destructive transition-colors"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-red-500/15 opacity-60 hover:opacity-100"
+            style={{ color: "hsl(var(--sidebar-foreground))" }}
           >
             <LogOut className="w-4 h-4" />
             {t("common.signOut")}
@@ -291,34 +272,46 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* ── Main content ── */}
       <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
         {/* Top header */}
-        <header className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3 border-b border-border bg-background/90 backdrop-blur-md lg:px-6 shrink-0">
+        <header className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3 border-b border-border/60 bg-background/85 backdrop-blur-xl shrink-0 lg:px-6">
+          {/* Hamburger */}
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-2 -ml-1 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+            className="lg:hidden p-2 -ml-1 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-all active:scale-95"
             aria-label="Open menu"
           >
             <Menu className="w-5 h-5" />
           </button>
+
+          {/* Mobile Logo (only shown on mobile when sidebar is closed) */}
+          <Link to="/" className="lg:hidden flex items-center gap-2">
+            <div className="w-7 h-7 rounded-xl bg-gradient-gold flex items-center justify-center shadow-gold">
+              <Building2 className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="text-sm font-display font-bold text-gradient-gold">AqarAI</span>
+          </Link>
+
           <div className="flex-1" />
-          <div className="flex items-center gap-2">
+
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <LanguageToggle />
             <NotificationBell />
-            <div className="w-8 h-8 rounded-full bg-gradient-gold flex items-center justify-center text-xs font-bold text-white shrink-0 cursor-pointer">
+            {/* Avatar */}
+            <Link
+              to="/profile"
+              className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow-primary hover:scale-105 transition-transform"
+            >
               {initials}
-            </div>
+            </Link>
           </div>
         </header>
 
-        {/* Page content — extra bottom padding on mobile so content isn't hidden behind MobileNav */}
-        <div className="flex-1 p-4 lg:p-6 pb-24 lg:pb-6 overflow-x-hidden">
+        {/* Page content */}
+        <div className="flex-1 p-4 lg:p-6 pb-nav lg:pb-6 overflow-x-hidden">
           <PageTransition>{children}</PageTransition>
         </div>
       </main>
 
-      {/* ── Mobile bottom nav (shown on small screens only) ── */}
       <MobileNav />
-
-      {/* ── PWA install banner ── */}
       <InstallBanner />
     </div>
   );
