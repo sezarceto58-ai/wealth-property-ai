@@ -109,7 +109,7 @@ serve(async (req) => {
 
     const langSuffix = `\n\nLANGUAGE INSTRUCTION (MANDATORY): ${langInstruction} All string values in the JSON response (summaries, descriptions, factor names, notes, insights, labels, recommendations text, rationales, strategies) MUST be written in the specified language. Only numeric values, JSON keys, and fixed enum tokens (like "low", "high", "medium") stay in English.`;
 
-    const prompt = `You are a world-class real estate feasibility consultant. Given the land data below, produce a COMPREHENSIVE feasibility report. Return ONLY valid JSON matching this exact schema (no markdown, no explanation):${langSuffix}`;
+    const prompt = `You are a world-class real estate feasibility consultant. Given the land data below, produce a COMPREHENSIVE feasibility report. Return ONLY valid JSON matching this exact schema (no markdown, no explanation):${langSuffix}
 
 {
   "land_use": {
@@ -289,7 +289,7 @@ CRITICAL PRICING RULES:
 - SWOT must be specific to this exact location, not generic
 - Scenario testing must show realistic impacts
 - Return ONLY the JSON object
-- All text content MUST be in the specified language (${language})";
+- All text content MUST be in the specified language (${language})`;
 
     const systemMsg = `You are a senior real estate feasibility consultant with 20+ years experience in Middle East and global markets. You produce realistic, data-driven analysis. Return only valid JSON.${langSuffix}`;
 
