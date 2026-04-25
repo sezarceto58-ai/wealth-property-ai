@@ -77,6 +77,20 @@ export function useSubscription() {
       return;
     }
 
+    // ── Demo / seed accounts always get Elite access ──────────────────────
+    const DEMO_ELITE_EMAILS = [
+      "buyer@aol.com",
+      "demo@aqarai.iq",
+    ];
+    if (user.email && DEMO_ELITE_EMAILS.includes(user.email.toLowerCase())) {
+      setSubscribed(true);
+      setTier("elite");
+      setSubscriptionEnd(null);
+      setLoading(false);
+      return;
+    }
+    // ────────────────────────────────────────────────────────────────────
+
     try {
       const { data, error } = await supabase.functions.invoke("check-subscription");
       if (error) throw error;
