@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   GitCompareArrows, X, Plus, MapPin, Loader2, Brain, TrendingUp,
-  Shield, Star, BarChart3, Bed, Bath, Maximize, DollarSign,
+  Shield, BarChart3, Bed, Bath, Maximize, DollarSign,
   CheckCircle, XCircle, AlertTriangle,
 } from "lucide-react";
 import { useProperties } from "@/hooks/useProperties";
@@ -65,7 +65,10 @@ export default function CompareListings() {
     if (selected.length < 4) setSelectedIds([...selected, id]);
   };
   const removeProperty = (id: string) => {
-    setSelectedIds(selected.filter(s => s !== id));
+    // Use 'selected' (which may include the auto-populated fallback) as the base
+    // so removal works correctly even before the user has explicitly selected anything
+    const next = selected.filter(s => s !== id);
+    setSelectedIds(next);
   };
 
   const fetchAI = async (property: DbProperty) => {
@@ -247,7 +250,6 @@ export default function CompareListings() {
     },
   ];
 
-  const hasAnyAI = selectedProperties.some(p => aiScores[p.id]);
   const allAILoading = selectedProperties.every(p => aiLoading[p.id]);
 
   if (isLoading) return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
