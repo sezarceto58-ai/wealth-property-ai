@@ -40,6 +40,33 @@ function incrementUsage(userId: string): number {
   } catch { return 1; }
 }
 
+// ── Per-valuation submission lock (persists across page refreshes) ──────────
+// Keyed by user + property id + listing price so that refreshing the page
+// cannot trigger a second confirm for the same valuation snapshot. If the
+// listing price changes later, a fresh valuation is allowed.
+function getSubmissionKey(userId: string, propertyId: string, price: number) {
+  return `aqar_valuation_submitted_${userId}_${propertyId}_${price}`;
+}
+function isAlreadySubmitted(userId: string, propertyId: string, price: number): boolean {
+  try { return localStorage.getItem(getSubmissionKey(userId, propertyId, price)) !== null; } catch { return false; }
+}
+function markSubmitted(userId: string, propertyId: string, price: number, payload: ValuationResult) {
+  try {
+    localStorage.setItem(
+      getSubmissionKey(userId, propertyId, price),
+      JSON.stringify({ at: Date.now(), result: payload }),
+    );
+  } catch { /* ignore quota errors */ }
+}
+function getSubmittedResult(userId: string, propertyId: string, price: number): ValuationResult | null {
+  try {
+    const raw = localStorage.getItem(getSubmissionKey(userId, propertyId, price));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed?.result ?? null;
+  } catch { return null; }
+}
+
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
 function VerdictBadge({ verdict }: { verdict: ValuationResult["verdict"] }) {
