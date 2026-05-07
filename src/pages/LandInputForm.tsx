@@ -115,7 +115,23 @@ export default function LandInputForm() {
 
     setLoading(true);
     try {
-      const lang = i18n.language?.split("-")[0] ?? "en";
+      // Auto-detect language: i18n (user's app choice) → localStorage → browser → fallback
+      const SUPPORTED = ["en", "ar", "ku"] as const;
+      const normalize = (raw?: string | null) => {
+        if (!raw) return null;
+        const base = raw.toLowerCase().split("-")[0].split("_")[0];
+        // Kurdish variants: ku, ckb (Sorani), kmr (Kurmanji)
+        if (base === "ckb" || base === "kmr") return "ku";
+        return (SUPPORTED as readonly string[]).includes(base) ? base : null;
+      };
+      const browserLangs = typeof navigator !== "undefined"
+        ? [navigator.language, ...(navigator.languages ?? [])]
+        : [];
+      const lang =
+        normalize(i18n.language) ||
+        normalize(typeof localStorage !== "undefined" ? localStorage.getItem("i18nextLng") : null) ||
+        browserLangs.map(normalize).find(Boolean) ||
+        "en";
       const { data, error } = await supabase.functions.invoke("planner-analyze", {
         body: {
           language: lang,
